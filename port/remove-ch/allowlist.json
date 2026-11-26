@@ -77,13 +77,13 @@
       "path": ".github/scripts/__tests__/pr-triage-classify.test.js",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": ".github/scripts/__tests__/release-notes.test.mjs",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "CONTRIBUTING.md",
@@ -101,7 +101,7 @@
       "path": "agent_docs/observability.md",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "agent_docs/tech_stack.md",
@@ -113,55 +113,25 @@
       "path": "packages/api/.env.development",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/api/.env.test",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/api/migrations/mongo/20261112220000-add_kind_to_connections.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/api/migrations/mongo/20261113200000-disable_legacy_connections.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/openapi.json",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/api/src/__tests__/addKindMigration.test.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/__tests__/setupDefaults.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/__tests__/telemetry.test.ts",
       "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
       "reason": "retained_dependency",
       "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/api/src/config.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
     },
     {
       "path": "packages/api/src/index.ts",
@@ -173,379 +143,331 @@
       "path": "packages/api/src/mcp/__tests__/alerts.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/dashboards/patchDashboard.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/dashboards/prompts.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/dashboards/queryTile.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/dashboards/queryTiles.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/dashboards/queryTilesHandler.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/dashboards/saveDashboard.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/api/src/mcp/__tests__/dashboards/setup.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/dashboards/variables.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/deltasTool.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/describeTable.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/emergingSignalsTool.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/listMetricsCursor.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/listMetricsQueries.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/query.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/queryTool.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/savedSearches.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/serviceHealthTool.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/sources.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/sqlToolVariableGuard.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/timeout.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/toolSchemas.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/__tests__/trace.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/tools/alerts/saveWebhook.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/tools/alerts/schemas.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/tools/annotations.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/tools/dashboards/schemas.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/tools/query/__tests__/patternDrilldown.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/tools/query/builderCatalog.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/tools/query/helpers.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/tools/query/prepareSql.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/tools/sources/describeMetric.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/tools/sources/describeSource.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/tools/sources/describeTable.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/tools/sources/listSources.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/tools/sources/metricKinds.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/tools/sources/metricNames.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/mcp/tools/sources/schemas.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/api/src/mcp/tools/trace/breakdown.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/middleware/__tests__/queryAttribution.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/api/src/models/connection.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/opamp/controllers/__tests__/opampController.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/routers/api/__tests__/alerts.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/api/src/routers/api/__tests__/connections.int.test.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/routers/api/__tests__/couchbase.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/routers/api/__tests__/couchbase.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/routers/api/__tests__/couchbaseCluster.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/routers/api/__tests__/couchbaseConnections.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/routers/api/__tests__/dashboard.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/routers/api/__tests__/iac.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/routers/api/connections.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/routers/api/couchbaseCluster.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/routers/api/sources.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/routers/external-api/__tests__/alerts.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/routers/external-api/__tests__/charts.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/api/src/routers/external-api/__tests__/connections.int.test.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/routers/external-api/__tests__/dashboards.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/api/src/routers/external-api/__tests__/savedSearches-crud.int.test.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/api/src/routers/external-api/__tests__/search.int.test.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/routers/external-api/__tests__/sources-crud.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/api/src/routers/external-api/__tests__/sources.int.test.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/routers/external-api/v2/connections.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/routers/external-api/v2/sources.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/server.ts",
@@ -563,43 +485,37 @@
       "path": "packages/api/src/tasks/checkAlerts/__tests__/checkAlerts.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/tasks/checkAlerts/__tests__/checkAlertsTask.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/tasks/checkAlerts/__tests__/errors.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/tasks/checkAlerts/__tests__/evaluators.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/api/src/tasks/checkAlerts/__tests__/multiChannelAlerts.harness.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/tasks/checkAlerts/__tests__/renderAlertTemplate.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/tasks/checkAlerts/__tests__/singleInvocationAlert.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/tasks/index.ts",
@@ -611,37 +527,25 @@
       "path": "packages/api/src/telemetry.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/utils/__tests__/redactSecrets.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/api/src/utils/__tests__/validators.test.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/utils/couchbaseConsumerErrors.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/api/src/utils/redactSecrets.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/api/src/utils/validators.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/instrumentation-client.ts",
@@ -653,19 +557,19 @@
       "path": "packages/app/jest.config.js",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/next.config.mjs",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/scripts/parse-whats-new.js",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/DBChartPage.tsx",
@@ -677,13 +581,13 @@
       "path": "packages/app/src/DBSearchPage.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/KubernetesDashboardPage.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/NamespaceDetailsSidePanel.tsx",
@@ -701,25 +605,19 @@
       "path": "packages/app/src/OnboardingChecklist/useOnboardingCompletion.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/DatabaseTab.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/ServicesDashboardPage/HttpTab.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/app/src/Spotlights.tsx",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/ThemeWrapper.tsx",
@@ -737,7 +635,7 @@
       "path": "packages/app/src/__mocks__/clickstack-browser.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/__mocks__/react-syntax-highlighter.tsx",
@@ -749,43 +647,31 @@
       "path": "packages/app/src/__tests__/DBDashboardImportPage.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/__tests__/DBSearchPage.saveSearch.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/__tests__/HDXMultiSeriesTableChart.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/app/src/__tests__/OnboardingChecklist.test.tsx",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/app/src/__tests__/Spotlights.test.tsx",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/__tests__/dashboardReplaySearch.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/__tests__/eventsSearchUrl.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/__tests__/hdxDebug.test.ts",
@@ -797,25 +683,25 @@
       "path": "packages/app/src/__tests__/metricDrilldownWarning.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/__tests__/utils.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/api.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/AdhocDashboardFilter/useAdhocFilterOptions.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/AppNav/AppNav.components.tsx",
@@ -827,7 +713,7 @@
       "path": "packages/app/src/components/AppNav/AppNav.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/AppNav/InstanceLabel.tsx",
@@ -869,25 +755,25 @@
       "path": "packages/app/src/components/ChartSQLPreview.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/CollectorOnboarding/__tests__/installSnippets.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/CollectorOnboarding/installSnippets.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/ConnectionForm.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/ContactSupportText.tsx",
@@ -923,25 +809,25 @@
       "path": "packages/app/src/components/DBEditTimeChartForm/__tests__/utils.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/DBHeatmapChart/__tests__/heatmapBounds.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/DBHeatmapChart/__tests__/heatmapGrid.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/DBRowJsonViewer.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/DBRowSidePanel.tsx",
@@ -953,7 +839,7 @@
       "path": "packages/app/src/components/DBSearchPageFilters.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/DBSearchPageFilters/FilterSettingsPopover.tsx",
@@ -965,25 +851,25 @@
       "path": "packages/app/src/components/DBSearchPageFilters/hooks.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/DBSearchPageFilters/jsonAddToFilter.pipeline.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/DBSearchPageFilters/utils.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/DBSearchPageFilters/utils.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/DashboardFiltersModal/AdhocFilterEditForm.tsx",
@@ -998,16 +884,10 @@
       "note": "Retained @clickhouse package import or reference."
     },
     {
-      "path": "packages/app/src/components/Dashboards/DashboardsListPage.tsx",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
       "path": "packages/app/src/components/Dashboards/__tests__/DashboardsListPage.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/ExceptionSubpanel.tsx",
@@ -1031,19 +911,19 @@
       "path": "packages/app/src/components/Iac/__tests__/ResourceTerraformPopover.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/Iac/useTerraformSnippets.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/KubeComponents.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/ListingCard.tsx",
@@ -1073,7 +953,7 @@
       "path": "packages/app/src/components/MetricExplorer/MetricExplorer.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/NetworkPropertyPanel.tsx",
@@ -1085,7 +965,7 @@
       "path": "packages/app/src/components/Patterns/__tests__/reconstructTemplate.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/RequestLine.tsx",
@@ -1097,49 +977,49 @@
       "path": "packages/app/src/components/RevealSnippet/RevealSnippet.stories.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/SQLEditor/SQLEditor.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/SQLEditor/SQLInlineEditor.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/SQLEditor/__tests__/SQLInlineEditor.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/SQLEditor/__tests__/variableCompletions.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/SQLEditor/utils.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/SearchGroupBy/searchGroupBy.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/SearchInput/__tests__/SearchWhereInput.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/SeriesNumberFormatDrawer.tsx",
@@ -1169,13 +1049,13 @@
       "path": "packages/app/src/components/Sources/SourceForm/MetricTableModelForm.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/Sources/SourceForm/SourceForm.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/Sources/SourceForm/TraceTableModelForm.tsx",
@@ -1187,7 +1067,7 @@
       "path": "packages/app/src/components/Sources/SourceForm/constants.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/Sources/SourcesList.tsx",
@@ -1205,7 +1085,7 @@
       "path": "packages/app/src/components/TeamSettings/ConnectionsSection.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/TeamSettings/IacMigrationSection.tsx",
@@ -1253,7 +1133,7 @@
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/TeamSettings/WebhooksSection.tsx",
@@ -1265,13 +1145,13 @@
       "path": "packages/app/src/components/TeamSettings/__tests__/IacMigrationSection.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/TeamSettings/__tests__/TeamQueryConfigSection.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/TimePicker/TimePicker.tsx",
@@ -1283,13 +1163,13 @@
       "path": "packages/app/src/components/TimelineChart/TimelineChart.stories.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/TraceLogsPanel.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/__tests__/AppNavUserMenu.test.tsx",
@@ -1301,61 +1181,61 @@
       "path": "packages/app/src/components/__tests__/DBDeltaChart.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/__tests__/DBInfraPanel.buildChartConfig.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/__tests__/DBNumberChart.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/__tests__/DBRowOverviewPanel.exception.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/__tests__/DBRowOverviewPanel.http.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/__tests__/DBRowTable.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/__tests__/DBSearchPageFilters.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/__tests__/DBTableChart.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/__tests__/DBTraceWaterfallChart.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/__tests__/ExceptionSubpanel.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/__tests__/FormatPodStatus.test.tsx",
@@ -1367,37 +1247,37 @@
       "path": "packages/app/src/components/__tests__/HyperJson.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/__tests__/MetricExplorer.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/__tests__/NetworkPropertyPanel.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/__tests__/OnboardingModal.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/__tests__/TraceLogsPanel.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/__tests__/deltaChartFilterKeys.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/alerts/AlertDetailProperties.tsx",
@@ -1421,7 +1301,7 @@
       "path": "packages/app/src/components/alerts/__tests__/AlertHistoryCards.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/components/alerts/__tests__/AlertStateBadge.test.tsx",
@@ -1433,109 +1313,103 @@
       "path": "packages/app/src/components/linkedSpans.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/app/src/connection.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/couchbase/__tests__/dialect.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/couchbase/__tests__/dialectExpr.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/couchbase/__tests__/sessionsList.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/couchbase/__tests__/sources.gating.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/couchbase/__tests__/sources.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/couchbase/connection.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/couchbase/dialect.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/couchbase/dialectExpr.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/dataLayerSetup.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/hdxDebug.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/hooks/__tests__/useAutoCompleteOptions.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/hooks/__tests__/useDashboardFilterValues.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/hooks/__tests__/useFieldExpressionGenerator.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/hooks/__tests__/useRowWhere.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/hooks/useMetricCatalog.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/layout.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/llm/__tests__/ChatMessageItem.test.tsx",
@@ -1553,13 +1427,13 @@
       "path": "packages/app/src/llm/__tests__/chartConfig.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/llm/__tests__/cost.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/llm/components/ChatMessageItem.tsx",
@@ -1589,25 +1463,25 @@
       "path": "packages/app/src/searchFilters.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/searchFilters.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/sessions.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/sessionsListQuery.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/setupTests.tsx",
@@ -1619,7 +1493,7 @@
       "path": "packages/app/src/stories/Brand.stories.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/stories/ClickUI.stories.tsx",
@@ -1631,13 +1505,13 @@
       "path": "packages/app/src/stories/Code.stories.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/utils.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/utils/__tests__/nextServerTelemetry.test.ts",
@@ -1649,25 +1523,25 @@
       "path": "packages/app/src/utils/__tests__/rrwebChunkAssembler.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/utils/browserTelemetry.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/utils/codeMirror.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/utils/httpSpanAttributes.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/src/utils/nextServerTelemetry.ts",
@@ -1685,367 +1559,1099 @@
       "path": "packages/app/src/utils/sessionId.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/tests/e2e/features/couchbase-cluster.spec.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/tests/e2e/features/dashboard-adhoc-click-filters.spec.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/tests/e2e/features/dashboard-filter-value-format.spec.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/tests/e2e/features/dashboard-filter-variables.spec.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/tests/e2e/features/dashboard-static-filters.spec.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/tests/e2e/features/dashboard.spec.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/tests/e2e/features/filter-key-edge-cases.spec.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/app/tests/e2e/features/heatmap-series.spec.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/tests/e2e/features/search/json-add-to-filter.spec.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/tests/e2e/features/search/json-at-prefixed-key-row-details.spec.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/tests/e2e/features/search/json-viewer-key-order.spec.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/tests/e2e/features/search/saved-search.spec.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/tests/e2e/features/sessions.spec.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/tests/e2e/parseValuesTuples.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/tests/e2e/seed-data.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/app/tests/e2e/utils/constants.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/cli/CONTRIBUTING.md",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/cli/src/api/client.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/cli/src/components/EventViewer/DetailPanel.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/cli/src/components/EventViewer/EventViewer.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/cli/src/components/EventViewer/usePatternData.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/cli/src/components/TraceWaterfall/TraceWaterfall.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/cli/src/components/TraceWaterfall/types.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/cli/src/components/TraceWaterfall/useTraceData.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/cli/src/mcp/install.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/cli/src/utils/parseError.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
-    },
-    {
-      "path": "packages/common-utils/.env.test",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/common-utils/src/__tests__/filters.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/common-utils/src/__tests__/iac.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/common-utils/src/__tests__/macros.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/common-utils/src/__tests__/sqlFormatter.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/common-utils/src/__tests__/variables.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/common-utils/src/core/eventDeltas.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/common-utils/src/couchbase/__tests__/functions.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/common-utils/src/couchbase/__tests__/settings.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/common-utils/src/couchbase/__tests__/source.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/common-utils/src/couchbase/__tests__/types.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/common-utils/src/couchbase/functions.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/common-utils/src/couchbase/source.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/common-utils/src/dataLayer/index.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/common-utils/src/iac.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/common-utils/src/iacEligibility.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/common-utils/src/query/columnTypes.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/common-utils/src/selfTelemetry.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/common-utils/src/sqlFormatter.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/common-utils/src/types.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/common-utils/src/variables.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/hdx-eval/src/__tests__/aggregate.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/hdx-eval/src/__tests__/blind.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/hdx-eval/src/__tests__/grade.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/hdx-eval/src/__tests__/markdown.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/hdx-eval/src/__tests__/mcpConfig.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/hdx-eval/src/__tests__/metrics.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/hdx-eval/src/__tests__/preflight.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/hdx-eval/src/__tests__/programmatic.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/hdx-eval/src/cli.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/hdx-eval/src/grading/types.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/hdx-eval/src/harness/systemPrompt.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "packages/hdx-eval/src/hyperdx/setup.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
       "path": "scripts/dev-portal/server.js",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or \u00a712 messaging."
+      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
+    },
+    {
+      "path": ".opencode/commands/eval-summary.md",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "retained_dependency",
+      "note": "hdx-eval compares the MCP server against a ClickHouse eval store."
+    },
+    {
+      "path": "Makefile",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "retained_dependency",
+      "note": "Ports reserved for the hdx-eval ClickHouse eval store."
+    },
+    {
+      "path": "README.md",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "upstream_attribution",
+      "note": "Explains what replaced ClickHouse for users of the upstream project."
+    },
+    {
+      "path": "agent_docs/evals.md",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "retained_dependency",
+      "note": "hdx-eval compares the MCP server against a ClickHouse eval store."
+    },
+    {
+      "path": "docker/hyperdx/Dockerfile",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "docker/hyperdx/entry.local.base.sh",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Unused upstream entry script (D31)."
+    },
+    {
+      "path": "docker/otel-collector/custom.config.yaml",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "docs/data-model.md",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "upstream_attribution",
+      "note": "Maps each upstream ClickHouse column type to its document field."
+    },
+    {
+      "path": "docs/mongo-elimination-plan.md",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Port plan; records what was replaced."
+    },
+    {
+      "path": "docs/v1-release-plan.md",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Port plan; records what was replaced."
+    },
+    {
+      "path": "packages/api/src/fixtureStore.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/api/src/mcp/prompts/dashboards/__tests__/sqlppExamples.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/api/src/mcp/tools/query/__tests__/orderBySqlpp.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/api/src/mcp/tools/query/__tests__/patternQueries.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/api/src/mcp/tools/query/__tests__/serviceHealthSqlpp.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/api/src/mcp/tools/query/orderBy.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/api/src/mcp/tools/query/patternDrilldown.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/api/src/mcp/tools/query/patternQueries.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/api/src/mcp/tools/query/serviceHealth/errorGroups.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/api/src/mcp/tools/query/sqlDescriptions.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/api/src/mcp/tools/query/unknownColumns.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/api/src/mcp/tools/trace/__tests__/traceSqlpp.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/api/src/metadata/schemas/connection.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "type_vocabulary",
+      "note": "Connection kind enum keeps the legacy clickhouse value."
+    },
+    {
+      "path": "packages/api/src/tasks/checkAlerts/__tests__/aliasConnection.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/api/src/tasks/checkAlerts/__tests__/responseMetadata.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/api/src/tasks/checkAlerts/index.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/api/src/tasks/checkAlerts/providers/__tests__/default.int.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/src/__tests__/ChartUtils.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/src/__tests__/connection.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/src/__tests__/serviceDashboard.expressions.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/src/__tests__/useSourceDataPresence.test.tsx",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/src/components/DBHeatmapChart/heatmapBucketSqlpp.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/src/components/Iac/TerraformHelperPanel.stories.tsx",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "retained_dependency",
+      "note": "The Terraform provider is ClickHouse's; named on purpose (D2b, docs/port-notes.md)."
+    },
+    {
+      "path": "packages/app/src/components/__tests__/DBRowDataPanel.rowQuery.test.tsx",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/src/components/__tests__/DBRowDataPanel.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/src/components/__tests__/linkedSpans.test.tsx",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/src/couchbase/__tests__/linkedSpansWhere.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/src/couchbase/__tests__/serviceMap.live.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/src/couchbase/__tests__/serviceMap.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/src/couchbase/linkedSpansWhere.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/src/couchbase/serviceMap.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/src/llm/__tests__/expressions.couchbase.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/src/llm/dashboard/chartConfig.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "type_vocabulary",
+      "note": "SqlDialect keeps the upstream clickhouse dialect next to couchbase."
+    },
+    {
+      "path": "packages/app/src/llm/hooks/useLLMDashboardExpressions.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/src/llm/lib/detect.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "type_vocabulary",
+      "note": "SqlDialect keeps the upstream clickhouse dialect next to couchbase."
+    },
+    {
+      "path": "packages/app/src/llm/lib/expressions.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "type_vocabulary",
+      "note": "SqlDialect keeps the upstream clickhouse dialect next to couchbase."
+    },
+    {
+      "path": "packages/app/src/llm/lib/sqlDialect.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "type_vocabulary",
+      "note": "SqlDialect keeps the upstream clickhouse dialect next to couchbase."
+    },
+    {
+      "path": "packages/app/src/serviceDashboard.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "type_vocabulary",
+      "note": "SqlDialect keeps the upstream clickhouse dialect next to couchbase."
+    },
+    {
+      "path": "packages/app/src/source.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/src/utils/sessions.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/tests/e2e/features/search/histogram-group-by.spec.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/tests/e2e/features/search/select-star-error-state.spec.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/tests/e2e/features/sources.spec.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/tests/e2e/page-objects/DashboardsListPage.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-alt-bucket.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-otel-sessions.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-rows-filter-keys.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-rows-k8s.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/tests/e2e/seed-rows-sessions.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/tests/e2e/utils/sqlpp-interval.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/app/tests/e2e/utils/sqlpp-raw.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/clickhouseOnly.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "type_vocabulary",
+      "note": "Guard listing ClickHouse-only functions that generated SQL++ must not contain."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/crc32.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/documentPresence.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/expHistogramCount.couchbase.int.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/expHistogramFixtures.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/fieldRefs.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/histogramQuantile.couchbase.int.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/mapAccess.couchbase.int.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/mapAccess.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/metricQueries.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/metricWarmup.couchbase.int.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/metricWhere.couchbase.int.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/nodeAttribution.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/pageQueries.couchbase.int.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/rangeEndWhereLanguage.couchbase.int.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/traceDefects.couchbase.int.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/traceQueries.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/clickhouseOnly.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "type_vocabulary",
+      "note": "Guard listing ClickHouse-only functions that generated SQL++ must not contain."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/facetKey.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/fieldRefs.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/fields.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/fn/quantile.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/inferMeta.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/jsonExtract.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/mapAccess.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/metricQueries.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/otelSchema.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/render/__tests__/aliasWith.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/render/__tests__/formulaColumns.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/render/__tests__/mapAccess.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/render/__tests__/multiSeriesMixedGroups.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/render/__tests__/pageQueries.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/render/__tests__/starColumn.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/render/__tests__/stringSelect.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/render/groupBy.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/render/havingAliases.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/render/metrics/multiSeriesOuter.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/render/orderBy.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/render/postprocess.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/render/select.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/render/selectAliases.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/render/with.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/settings.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/sqlInLists.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/sqlpp.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/traceQueries.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/query/__tests__/attribution.test.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/common-utils/src/query/attribution.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/hdx-eval/README.md",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "retained_dependency",
+      "note": "hdx-eval compares the MCP server against a ClickHouse eval store."
+    },
+    {
+      "path": "packages/hdx-eval/eval.config.example.json",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "retained_dependency",
+      "note": "hdx-eval compares the MCP server against a ClickHouse eval store."
+    },
+    {
+      "path": "packages/hdx-eval/src/generators/metrics.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "retained_dependency",
+      "note": "hdx-eval compares the MCP server against a ClickHouse eval store."
+    },
+    {
+      "path": "packages/hdx-eval/src/generators/templates.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "retained_dependency",
+      "note": "hdx-eval compares the MCP server against a ClickHouse eval store."
+    },
+    {
+      "path": "packages/hdx-eval/src/generators/types.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "retained_dependency",
+      "note": "hdx-eval compares the MCP server against a ClickHouse eval store."
+    },
+    {
+      "path": "packages/hdx-eval/src/runs/instrument.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "retained_dependency",
+      "note": "hdx-eval compares the MCP server against a ClickHouse eval store."
+    },
+    {
+      "path": "packages/hdx-eval/src/scenarios/dashboard-build/generate.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "retained_dependency",
+      "note": "hdx-eval compares the MCP server against a ClickHouse eval store."
+    },
+    {
+      "path": "packages/hdx-eval/src/scenarios/dashboard-build/ground-truth.json",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "retained_dependency",
+      "note": "hdx-eval compares the MCP server against a ClickHouse eval store."
+    },
+    {
+      "path": "packages/hdx-eval/src/store/client.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "retained_dependency",
+      "note": "hdx-eval compares the MCP server against a ClickHouse eval store."
+    },
+    {
+      "path": "packages/hdx-eval/src/store/insert.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "retained_dependency",
+      "note": "hdx-eval compares the MCP server against a ClickHouse eval store."
+    },
+    {
+      "path": "packages/ingest/src/setup/docs.ts",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "packages/otel-collector/README.md",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "scripts/ci/check-legacy-store-text.mjs",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "scripts/slots.sh",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "retained_dependency",
+      "note": "Ports reserved for the hdx-eval ClickHouse eval store."
+    },
+    {
+      "path": "smoke-tests/otel-collector-removed.md",
+      "pattern": "clickhouse|clickstack|chSql",
+      "reason": "port_history",
+      "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
     }
   ]
 }

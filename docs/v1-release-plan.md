@@ -95,6 +95,7 @@ no releases, and no git tags exist on `origin`).
 | P11 | `main.yml` also triggers on a `v1` branch                | `.github/workflows/main.yml:4,6` (`branches: [main, v1]`, upstream legacy)                                                                                                                                                                                                                                                                                                                                                                                     | Leave as is; if the user wants a `release/1.x` maintenance branch later, add it then                                  | S              |
 | P12 | Upstream TODOs                                           | 11 port-unrelated `TODO`s (e.g. `tasks/checkAlerts/transports/generic.ts:203` webhook signing, `controllers/ai.ts:122`)                                                                                                                                                                                                                                                                                                                                        | Track as normal backlog; webhook signing is the one with security value                                               | —              |
 | P13 | Completed-requests log settings at startup (v1.0.1)      | D29: `system:completed_requests` keeps only requests over `queryCompletedThreshold` (default 1000 ms) and at most `queryCompletedLimit` (default 4000), so fast attributed queries are not recorded; v1.0.0 leaves both as they are (Q52)                                                                                                                                                                                                                      | Optional `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` / `CBT_COUCHBASE_COMPLETED_LIMIT`, applied by `ingest` setup; see 2.3 | S              |
+| P14 | Dead `all-in-one-noauth` Dockerfile stage (v1.0.1)       | D31: the stage copies `entry.local.noauth.sh` (deleted in Phase 10) and `build.sh` uses the deleted `evalstore` context; no shipped target uses it                                                                                                                                                                                                                                                                                                             | Delete the stage, its entry scripts, and the `build.sh` context (user, 2026-11-26)                                    | S              |
 
 Accepted, no action: the 51 skipped `metadata.couchbase.int.test.ts` tests on
 the compose CI stack (user decision after C0; they run in the
@@ -467,6 +468,7 @@ pushes to `main` directly.
 | D28   | Defects: unset `whereLanguage` is Lucene, not SQL           | Found in D24 (section 9.1); with D26 in one PR before R2a (Q50); fixed                                                                                                                                               | S    | —                             |
 | D29   | Defects: request query attribution never reaches SQL++      | Found in R2a (section 9.1); own PR right after R2a, before R2c and R2b (Q51); carries the `queryAttribution` int suite; fixed                                                                                        | M    | R2a                           |
 | D30   | Defects: all-in-one ingest setup races the admin password   | Found in R6 (section 9.1); own small PR after R6, before R7 (Q60); fixed                                                                                                                                             |
+| D31   | Cleanup: dead `all-in-one-noauth` stage and entry scripts   | Found in R7 (section 9.1); v1.0.1 backlog P14 (user, 2026-11-26)                                                                                                                                                     |
 | D14   | Dev tooling: live-test port offset fallback                 | Found in D7 (section 9.1)                                                                                                                                                                                            | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API         | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`); 9 ported, `queryAttribution` moves to D29 | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                            | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                                                                | L    | R2c, D1, D4, D6               |
@@ -1303,6 +1305,40 @@ filters by `SpanAttributes['http.route']` and gets the seeded groups. Depends
 on: D2. Size: M. Placement (Q14): next after D2, before D2b, so D2b rewrites the
 builder docs once in their final form.
 
+#### R7 findings
+
+- **H1 was red on `main`** (fixed here). `port/rebrand.sh verify branding`
+  failed on 22 allowlist entries whose lines the Mongo elimination deleted, and
+  on new `hyperdx` hits in R6's `release-images.sh`, the `Makefile`, and
+  `docs/v1-release-plan.md`. `port/remove-ch/verify.mjs` failed on 23 stale
+  entries and about 300 uncovered "ClickHouse" lines added since Phase 10 (code
+  comments explaining upstream behavior, the `SqlDialect` vocabulary, hdx-eval,
+  port plans). The last acceptance run (`6599628`) predates them. Fix: prune the
+  stale entries, allowlist the new ones with reasons, and exempt
+  `docs/v1-release-plan.md` and `docs/mongo-elimination-plan.md` from the
+  rebrand scan like the `PHASE_*_SPEC.md` files (`port/rebrand/lib/names.mjs`,
+  test `port/rebrand/test/exempt.test.mjs`).
+- **The acceptance report could never be final** (fixed here). H1 rewrites
+  tracked files (`docs/acceptance.md`, `docs/port-notes.md`,
+  `port/state/rebrand/verify.json`), and `buildReport` read `git status` after
+  the checks, so `dirty` was always true. The runner now reads the git state
+  before any check runs (`readGitState`, 3 new tests in `report.test.mjs`).
+- **The acceptance product stack could not start** (fixed here).
+  `port/acceptance/docker-compose.observe.yml` still overrode the Mongo `db`
+  service that the Mongo elimination removed from `docker-compose.yml`, so
+  compose rejected the project ("service db has neither an image nor a build
+  context") and B1, B2, A3, D1, E1, F1, G1, H2, H3, I1, and I2 all failed. The
+  override and I2's service list drop `db`, and `scripts/ci/check-no-mongo.sh`
+  now scans `port/acceptance` (it flags the old override).
+- **D31** (new, size S, proposed after 1.0): the `all-in-one-noauth` stage in
+  `docker/hyperdx/Dockerfile` copies `entry.local.noauth.sh`, which Phase 10
+  deleted, so the stage cannot build. `docker/hyperdx/build.sh` builds that
+  stage with a `docker/evalstore` context that no longer exists, and
+  `entry.local.base.sh` / `entry.local.auth.sh` are used by nothing. No make
+  target, workflow, or release script touches them, and the shipped images are
+  unaffected. Fix: delete the stage, `build.sh`, and both scripts, and drop the
+  `IS_LOCAL_IMAGE` branch in `packages/api/src/config.ts`.
+
 #### D30: All-in-one ingest setup races the admin password (found in R6, size S)
 
 Evidence: one of two local runs of `scripts/ci/smoke-all-in-one.sh` against the
@@ -1908,6 +1944,39 @@ release-candidate commit and record the Main CI run (K2). Acceptance: acceptance
 status **pass** at a commit no older than R6; M2 (docs, no TODO/TBD) green;
 H1–H3 branding green.
 
+R7 result (2026-11-25, `mm--v1-r7-docs-acceptance`): see "R7 findings" in
+section 9.1 and `docs/acceptance.md`.
+
+- **Acceptance** at `b2a5ef6`, Final true: 20/23 pass. Status **blocked**: C1
+  and C2 need Capella credentials (`--capella`), and K2 can be recorded only
+  after them (see `docs/port-notes.md`). Main CI for PR #49 succeeded.
+- **Open for R7 to reach pass:** a Capella 8.x cluster prepared per
+  `docs/capella.md` and the `CBT_ACCEPT_CAPELLA_*` variables (Q62).
+- **Capella probe (2026-11-26, read-only).** The user's credentials are in the
+  ignored `.env.local`. All three (setup, query, ingest) connect; Query reports
+  8.0.3 Enterprise; Search is reachable. Bucket `otel` exists with scope
+  `default`, all 8 `otel_*` collections, and 45 indexes. Bucket **`cbt_meta`
+  does not exist**. Setup does not create buckets on Capella (`docs/capella.md`
+  step 2), so C1/C2 were not run. Once `cbt_meta` exists, run
+  `node port/acceptance/run.mjs --capella`, then record K2 with `--record-ci`.
+  This is a prerequisite for the v1.0.0 tag (R8).
+
+- **Plan corrections.** `run.mjs` has no `--final` flag: a run is final when no
+  check is filtered (`--only` / `--skip`) or reused (`--reuse-stack`) and none
+  is skipped, and the tree was clean at the start. Without `--capella`, C1 and
+  C2 are reported `blocked`, so the report status is `blocked` until a Capella
+  run. `docs/port-notes.md` "Pending user decisions" was already closed in R6
+  (both items struck through), so B14 needed no change.
+- **Docs.** `README.md` (status, supported versions, images, upgrading from the
+  upstream project), `DEPLOY.md` (published image table and tags, new app
+  metadata and ingest settings tables), `LOCAL.md`, `docs/self-managed.md`
+  (buckets, users and roles, setup flags, the D30 auth retry), `docs/capella.md`
+  (`cbt_meta` bucket, credential roles, `.env.local`), `docs/development.md`
+  (tag example and memory note), and the new `docs/release.md` runbook. Agent
+  docs: `observability.md` described ClickHouse `log_comment`/`query_id`
+  attribution and named deleted files; now SQL++ comment plus `clientContextId`.
+  `development.md` and `data_viz_colors.md` named deleted paths.
+
 ### R8: Release v1.0.0
 
 On branch `mm--release-v1-0-0`:
@@ -2011,6 +2080,7 @@ in that phase.
 | Q59 | Wire `set-version --check` into `make ci-lint` in R6 (2026-11-25)?                                                      | Deferred to R8 (user, 2026-11-25). Nothing changes in R6 beyond adding `make version-check`. The versions are not lock-stepped today (root 2.0.0; api, app, ingest and collector 2.44.0; cli 0.9.0; common-utils 0.34.0), so the gate would fail on `main`. R8 must, in the bump commit: run `make version VERSION=1.0.0`, add `version-check` to the Makefile `ci-lint` target, and check that `make ci-lint` passes at 1.0.0 and fails on a single reverted location.                                                                                                                                                                         |
 | Q60 | Placement of D30, the all-in-one ingest setup race (2026-11-25)                                                         | Its own small PR after R6 and before R7 (user, 2026-11-25), so R7's acceptance run and the R8 image smoke don't hit it. Started only on the user's go-ahead.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Q61 | `kubernetes.spec.ts` chart and autocomplete waits time out under CI load (found on PR #48, 2026-11-25)                  | Accepted (user, 2026-11-25): watch it. If it recurs, open a D-numbered fix that makes the K8s chart and field-value queries cheaper (or seeds fewer gauge points); do not raise timeouts. One failing run so far; local 13/13 and `main` green.                                                                                                                                                                                                                                                                                                                                                                                                 |
+| Q62 | C1/C2 need a Capella cluster for R7 acceptance status **pass** (2026-11-25)                                             | Credentials provided (user, 2026-11-26). Cluster lacks the `cbt_meta` bucket; user to create it (Magma, 256 MB or more), then re-run acceptance with `--capella` before the v1.0.0 tag                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 

@@ -2,13 +2,6 @@
   "schemaVersion": 1,
   "entries": [
     {
-      "path": ".github/actions/e2e-setup/action.yml",
-      "term": "hyperdx",
-      "snippet": "echo \"MONGO_URI=mongodb://localhost:$MONGO_PORT/hyperdx-e2e\" >> $GITHUB_ENV",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx-e2e\" allowed in the token map"
-    },
-    {
       "path": ".github/scripts/__tests__/pr-triage-classify.test.js",
       "term": "hyperdx",
       "snippet": "'docker/hyperdx/Dockerfile',",
@@ -46,7 +39,7 @@
     {
       "path": ".github/workflows/docker-build.yml",
       "term": "hyperdx",
-      "snippet": "# App/prod image (API + App + common-utils Node build) \u2014 docker/hyperdx target prod.",
+      "snippet": "# App/prod image (API + App + common-utils Node build) — docker/hyperdx target prod.",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -88,7 +81,21 @@
     {
       "path": "Makefile",
       "term": "hyperdx",
-      "snippet": "--build-context hyperdx=./docker/hyperdx \\",
+      "snippet": "$(HOME)/.config/hyperdx/dev-slots/$(CBT_CI_SLOT)/int.lock",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "Makefile",
+      "term": "hyperdx",
+      "snippet": "--build-context hyperdx=./docker/hyperdx",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "Makefile",
+      "term": "hyperdx",
+      "snippet": "-f ./docker/hyperdx/Dockerfile",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -114,11 +121,25 @@
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
-      "path": "Makefile",
+      "path": "README.md",
       "term": "hyperdx",
-      "snippet": "docker build . -f ./docker/hyperdx/Dockerfile \\",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
+      "snippet": "## Upgrading from HyperDX",
+      "reason": "upstream_attribution",
+      "note": "Upgrade notes for users moving from the upstream project"
+    },
+    {
+      "path": "README.md",
+      "term": "hyperdx",
+      "snippet": "HyperDX data is not migrated",
+      "reason": "upstream_attribution",
+      "note": "Upgrade notes for users moving from the upstream project"
+    },
+    {
+      "path": "README.md",
+      "term": "hyperdx",
+      "snippet": "`HYPERDX_API_KEY` is",
+      "reason": "upstream_attribution",
+      "note": "Upgrade notes for users moving from the upstream project"
     },
     {
       "path": "README.md",
@@ -126,6 +147,13 @@
       "snippet": "derived from HyperDX",
       "reason": "upstream_attribution",
       "note": "Required attribution to the upstream project."
+    },
+    {
+      "path": "README.md",
+      "term": "hyperdx",
+      "snippet": "not a drop-in replacement for a HyperDX deployment",
+      "reason": "upstream_attribution",
+      "note": "Upgrade notes for users moving from the upstream project"
     },
     {
       "path": "agent_docs/development.md",
@@ -284,9 +312,9 @@
     {
       "path": "agent_docs/observability.md",
       "term": "hyperdx",
-      "snippet": "`buildLogComment(attribution)` in the `x-hyperdx-query-attribution` header",
+      "snippet": "`x-hyperdx-query-attribution`",
       "reason": "internal_identifier",
-      "note": "Token \"x-hyperdx-query-attribution\" allowed in the token map"
+      "note": "Upstream query attribution header name, kept for wire compatibility"
     },
     {
       "path": "agent_docs/observability.md",
@@ -296,9 +324,16 @@
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
-      "path": "docker-compose.yml",
+      "path": "docker-compose.build-local.yml",
       "term": "hyperdx",
-      "snippet": "MONGO_URI: 'mongodb://db:27017/hyperdx'",
+      "snippet": "dockerfile: docker/hyperdx/Dockerfile",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "docker-compose.build-local.yml",
+      "term": "hyperdx",
+      "snippet": "hyperdx: ./docker/hyperdx",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -373,13 +408,6 @@
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
-      "path": "docker/hyperdx/entry.cbt.sh",
-      "term": "hyperdx",
-      "snippet": "export MONGO_URI=\"${MONGO_URI:-mongodb://127.0.0.1:27017/hyperdx}\"",
-      "reason": "internal_identifier",
-      "note": "Legacy Mongo database name kept for local volume compatibility."
-    },
-    {
       "path": "docker/hyperdx/entry.local.base.sh",
       "term": "hyperdx",
       "snippet": "\"./packages/api/bin/hyperdx task check-alerts\" \\",
@@ -396,14 +424,7 @@
     {
       "path": "docker/hyperdx/entry.local.base.sh",
       "term": "hyperdx",
-      "snippet": "export EXPRESS_SESSION_SECRET=\"${EXPRESS_SESSION_SECRET:-hyperdx is cool \ud83d\udc4b}\"",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/hyperdx/entry.local.base.sh",
-      "term": "hyperdx",
-      "snippet": "export MONGO_URI=\"mongodb://db:27017/hyperdx\"",
+      "snippet": "export EXPRESS_SESSION_SECRET=\"${EXPRESS_SESSION_SECRET:-hyperdx is cool 👋}\"",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -492,27 +513,6 @@
       "note": "Token \"CLICKSTACK_CAPTURE_HTTP_BODY\" allowed in the token map"
     },
     {
-      "path": "packages/api/.env.development",
-      "term": "hyperdx",
-      "snippet": "MONGO_URI=\"mongodb://localhost:${CBT_DEV_MONGO_PORT}/hyperdx\"",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/.env.e2e",
-      "term": "hyperdx",
-      "snippet": "MONGO_URI=mongodb://localhost:${CBT_E2E_MONGO_PORT:-21100}/hyperdx-e2e",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx-e2e\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/.env.test",
-      "term": "hyperdx",
-      "snippet": "MONGO_URI=mongodb://localhost:${CBT_CI_MONGO_PORT:-39999}/hyperdx-test",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx-test\" allowed in the token map"
-    },
-    {
       "path": "packages/api/Dockerfile",
       "term": "hyperdx",
       "snippet": "ENTRYPOINT [\"./packages/api/bin/hyperdx\", \"api\"]",
@@ -523,13 +523,6 @@
       "path": "packages/api/bin/hyperdx",
       "term": "hyperdx",
       "snippet": "echo \"Usage: hyperdx <command> [args...]\"",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/migrate-mongo-config.ts",
-      "term": "hyperdx",
-      "snippet": "databaseName: 'hyperdx',",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -555,23 +548,16 @@
       "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
     },
     {
-      "path": "packages/api/scripts/seed-alerts.ts",
+      "path": "packages/api/src/__tests__/config.test.ts",
       "term": "hyperdx",
-      "snippet": "return `mongodb://localhost:${port}/hyperdx`;",
+      "snippet": "expect(config.EXPRESS_SESSION_SECRET).toBe('hyperdx is cool 👋');",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
       "path": "packages/api/src/__tests__/config.test.ts",
       "term": "hyperdx",
-      "snippet": "expect(config.EXPRESS_SESSION_SECRET).toBe('hyperdx is cool \ud83d\udc4b');",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/__tests__/config.test.ts",
-      "term": "hyperdx",
-      "snippet": "for (const value of [undefined, '', 'hyperdx is cool \ud83d\udc4b']) {",
+      "snippet": "for (const value of [undefined, '', 'hyperdx is cool 👋']) {",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -585,28 +571,28 @@
     {
       "path": "packages/api/src/__tests__/config.test.ts",
       "term": "hyperdx",
-      "snippet": "process.env.EXPRESS_SESSION_SECRET = 'hyperdx is cool \ud83d\udc4b';",
+      "snippet": "process.env.EXPRESS_SESSION_SECRET = 'hyperdx is cool 👋';",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
       "path": "packages/api/src/__tests__/sessionSecretStartup.test.ts",
       "term": "hyperdx",
-      "snippet": "[false, 'hyperdx is cool \ud83d\udc4b', 1],",
+      "snippet": "[false, 'hyperdx is cool 👋', 1],",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
       "path": "packages/api/src/__tests__/sessionSecretStartup.test.ts",
       "term": "hyperdx",
-      "snippet": "[true, 'hyperdx is cool \ud83d\udc4b', 0],",
+      "snippet": "[true, 'hyperdx is cool 👋', 0],",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
       "path": "packages/api/src/config.ts",
       "term": "hyperdx",
-      "snippet": "const LEGACY_PUBLIC_SESSION_SECRET = 'hyperdx is cool \ud83d\udc4b';",
+      "snippet": "const LEGACY_PUBLIC_SESSION_SECRET = 'hyperdx is cool 👋';",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -618,11 +604,18 @@
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
-      "path": "packages/api/src/middleware/__tests__/queryAttribution.int.test.ts",
+      "path": "packages/api/src/controllers/connection.ts",
       "term": "hyperdx",
-      "snippet": "'x-hyperdx-query-attribution',",
+      "snippet": "'id' | 'hyperdxSettingPrefix'",
       "reason": "internal_identifier",
-      "note": "Token \"x-hyperdx-query-attribution\" allowed in the token map"
+      "note": "hyperdxSettingPrefix is part of the upstream connection contract"
+    },
+    {
+      "path": "packages/api/src/controllers/connection.ts",
+      "term": "hyperdx",
+      "snippet": "? ['hyperdxSettingPrefix']",
+      "reason": "internal_identifier",
+      "note": "hyperdxSettingPrefix is part of the upstream connection contract"
     },
     {
       "path": "packages/api/src/middleware/auth.ts",
@@ -630,20 +623,6 @@
       "snippet": "email: 'local-user@hyperdx.io',",
       "reason": "internal_identifier",
       "note": "Token \"local-user@hyperdx.io\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/models/__tests__/connectRetry.test.ts",
-      "term": "hyperdx",
-      "snippet": "MONGO_URI: 'mongodb://localhost:27017/hyperdx-test',",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx-test\" allowed in the token map"
-    },
-    {
-      "path": "packages/api/src/models/__tests__/connectRetry.test.ts",
-      "term": "hyperdx",
-      "snippet": "mockConfig.MONGO_URI = 'mongodb://localhost:27017/hyperdx-test';",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx-test\" allowed in the token map"
     },
     {
       "path": "packages/api/src/routers/api/__tests__/iac.int.test.ts",
@@ -774,7 +753,7 @@
     {
       "path": "packages/app/src/components/Iac/useTerraformSnippets.ts",
       "term": "clickstack",
-      "snippet": "? ' The generated config pins dashboard_id and tile_id as literals \u2014 replace them with clickhouse_clickstack_dashboard references before you apply, or a later d",
+      "snippet": "? ' The generated config pins dashboard_id and tile_id as literals — replace them with clickhouse_clickstack_dashboard references before you apply, or a later d",
       "reason": "external_dependency",
       "note": "Token \"clickhouse_clickstack_dashboard\" allowed in the token map"
     },
@@ -912,46 +891,11 @@
       "note": "Storybook download filename for the brand asset card; the story is a test file kept at its substituted base."
     },
     {
-      "path": "packages/app/tests/e2e/features/dashboard.spec.ts",
-      "term": "hyperdx",
-      "snippet": "\"use('hyperdx-e2e');\",",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx-e2e\" allowed in the token map"
-    },
-    {
       "path": "packages/app/tests/e2e/features/search/row-multi-select.spec.ts",
       "term": "hyperdx",
       "snippet": "expect(clipboard).not.toContain('__hyperdx_');",
       "reason": "internal_identifier",
       "note": "Token \"__hyperdx_\" allowed in the token map"
-    },
-    {
-      "path": "packages/app/tests/e2e/global-setup-fullstack.ts",
-      "term": "hyperdx",
-      "snippet": "runMongoshScript(\"use('hyperdx-e2e'); db.dropDatabase();\");",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx-e2e\" allowed in the token map"
-    },
-    {
-      "path": "packages/app/tests/e2e/global-setup-fullstack.ts",
-      "term": "hyperdx",
-      "snippet": "use('hyperdx-e2e');",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx-e2e\" allowed in the token map"
-    },
-    {
-      "path": "packages/app/tests/e2e/utils/db-helpers.ts",
-      "term": "hyperdx",
-      "snippet": "use('hyperdx-e2e');",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx-e2e\" allowed in the token map"
-    },
-    {
-      "path": "packages/cli/AGENTS.md",
-      "term": "hyperdx",
-      "snippet": "- Passes `x-hyperdx-connection-id` header",
-      "reason": "internal_identifier",
-      "note": "Token \"x-hyperdx-connection-id\" allowed in the token map"
     },
     {
       "path": "packages/cli/CONTRIBUTING.md",
@@ -963,13 +907,6 @@
     {
       "path": "packages/cli/CONTRIBUTING.md",
       "term": "hyperdx",
-      "snippet": "- Injects session cookies + `x-hyperdx-connection-id` header",
-      "reason": "internal_identifier",
-      "note": "Token \"x-hyperdx-connection-id\" allowed in the token map"
-    },
-    {
-      "path": "packages/cli/CONTRIBUTING.md",
-      "term": "hyperdx",
       "snippet": "2. Saved session's `appUrl` from `~/.config/hyperdx/cli/session.json`",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
@@ -977,9 +914,16 @@
     {
       "path": "packages/cli/CONTRIBUTING.md",
       "term": "hyperdx",
-      "snippet": "\u251c\u2500\u2500 config.ts          # Session persistence (~/.config/hyperdx/cli/session.json)",
+      "snippet": "├── config.ts          # Session persistence (~/.config/hyperdx/cli/session.json)",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "packages/cli/src/__tests__/config.test.ts",
+      "term": "hyperdx",
+      "snippet": "path.join(home, '.config', 'hyperdx', 'cli', 'session.json');",
+      "reason": "test_fixture",
+      "note": "Legacy upstream CLI config dir the CLI migrates from"
     },
     {
       "path": "packages/cli/src/shared/useRowWhere.ts",
@@ -1201,14 +1145,28 @@
     {
       "path": "packages/common-utils/src/couchbase/__tests__/types.test.ts",
       "term": "hyperdx",
-      "snippet": "expect(parsed).not.toHaveProperty('hyperdxSettingPrefix');",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdxSettingPrefix\" allowed in the token map"
+      "snippet": "expect(parsed.hyperdxSettingPrefix).toBe('hyperdx_');",
+      "reason": "test_fixture",
+      "note": "Asserts the upstream hyperdxSettingPrefix field survives parsing"
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/types.test.ts",
+      "term": "hyperdx",
+      "snippet": "hyperdxSettingPrefix: 'hyperdx_',",
+      "reason": "test_fixture",
+      "note": "Asserts the upstream hyperdxSettingPrefix field survives parsing"
+    },
+    {
+      "path": "packages/common-utils/src/couchbase/__tests__/types.test.ts",
+      "term": "hyperdx",
+      "snippet": "keeps hyperdxSettingPrefix, part of the upstream connection contract",
+      "reason": "test_fixture",
+      "note": "Asserts the upstream hyperdxSettingPrefix field survives parsing"
     },
     {
       "path": "packages/common-utils/src/iac.ts",
       "term": "clickstack",
-      "snippet": "#   (clickstack_service_id) rejects any team-scoped call \u2014 on that path a",
+      "snippet": "#   (clickstack_service_id) rejects any team-scoped call — on that path a",
       "reason": "external_dependency",
       "note": "Token \"clickstack_service_id\" allowed in the token map"
     },
@@ -1453,7 +1411,7 @@
     {
       "path": "packages/hdx-eval/README.md",
       "term": "hyperdx",
-      "snippet": "| Metric         | hyperdx-main | hyperdx-feature | \u0394 (hyperdx-feature) |",
+      "snippet": "| Metric         | hyperdx-main | hyperdx-feature | Δ (hyperdx-feature) |",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx-main\" allowed in the token map"
     },
@@ -1999,7 +1957,7 @@
     {
       "path": "packages/hdx-eval/src/__tests__/markdown.test.ts",
       "term": "hyperdx",
-      "snippet": "expect(md).toContain('\u0394 (hyperdx/none)');",
+      "snippet": "expect(md).toContain('Δ (hyperdx/none)');",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -2237,7 +2195,7 @@
     {
       "path": "packages/hdx-eval/src/__tests__/reportsStore.test.ts",
       "term": "hyperdx",
-      "snippet": "expect(md).toContain('\u0394 (hyperdx/none)');",
+      "snippet": "expect(md).toContain('Δ (hyperdx/none)');",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -2545,7 +2503,7 @@
     {
       "path": "packages/otel-collector/README.md",
       "term": "hyperdx",
-      "snippet": "**`docker/hyperdx/Dockerfile`** \u2014 ARG defaults:",
+      "snippet": "**`docker/hyperdx/Dockerfile`** — ARG defaults:",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
@@ -2623,6 +2581,13 @@
       "path": "scripts/dev-portal/server.js",
       "term": "hyperdx",
       "snippet": "'hyperdx',",
+      "reason": "internal_identifier",
+      "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "scripts/release/release-images.sh",
+      "term": "hyperdx",
+      "snippet": "docker/hyperdx/Dockerfile|prod|--build-context hyperdx=./docker/hyperdx",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },

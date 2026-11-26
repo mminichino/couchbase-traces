@@ -1,7 +1,7 @@
 {
-  "status": "pass",
-  "generatedAt": "2026-11-18T08:53:39.878Z",
-  "gitSha": "65996288823fd6e097811098f4aea9711f453404",
+  "status": "blocked",
+  "generatedAt": "2026-11-26T04:56:24.969Z",
+  "gitSha": "b2a5ef6218ca1410f01e7742c5dc5b4ba31a4dfa",
   "checks": [
     {
       "id": "A1",
@@ -16,7 +16,7 @@
     {
       "id": "A3",
       "status": "pass",
-      "summary": "24 app page routes loaded"
+      "summary": "25 app page routes loaded"
     },
     {
       "id": "B1",
@@ -30,18 +30,18 @@
     },
     {
       "id": "C1",
-      "status": "pass",
-      "summary": "Capella connection and logs test-source succeeded"
+      "status": "blocked",
+      "summary": "Capella checks require --capella"
     },
     {
       "id": "C2",
-      "status": "pass",
-      "summary": "All 16 primary views show data on Capella"
+      "status": "blocked",
+      "summary": "Capella checks require --capella"
     },
     {
       "id": "D1",
       "status": "pass",
-      "summary": "50 statements use indexes/key lookups (6 exempt)"
+      "summary": "96 statements use indexes/key lookups (7 exempt)"
     },
     {
       "id": "E1",
@@ -66,7 +66,7 @@
     {
       "id": "H2",
       "status": "pass",
-      "summary": "No brand terms in 56 rendered page(s)"
+      "summary": "No brand terms in 57 rendered page(s)"
     },
     {
       "id": "H3",
@@ -76,7 +76,7 @@
     {
       "id": "I1",
       "status": "pass",
-      "summary": "All 6704 browser requests stayed on origin"
+      "summary": "All 7256 browser requests stayed on origin"
     },
     {
       "id": "I2",
@@ -100,8 +100,8 @@
     },
     {
       "id": "K2",
-      "status": "pass",
-      "summary": "GitHub Actions run succeeded for 65996288823f"
+      "status": "blocked",
+      "summary": "Pending push and --record-ci"
     },
     {
       "id": "L1",

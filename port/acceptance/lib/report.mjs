@@ -31,18 +31,16 @@ export function computeReportStatus(checks) {
 }
 
 /**
- * @param {object} args
- * @param {CheckResult[]} args.checks
- * @param {boolean} args.final
- * @param {object} args.environment
- * @param {string} args.root
- * @returns {object}
+ * The commit and whether the tree had uncommitted changes. Read before any
+ * check runs: checks rewrite tracked files (H1 regenerates the rebrand report
+ * and blanks docs/acceptance.md), so the tree at the end says nothing about
+ * what was tested.
+ * @param {string} root
+ * @returns {{ gitSha: string, dirty: boolean }}
  */
-export function buildReport({ checks, final, environment, root }) {
-  let gitSha = 'unknown';
-  let dirty = true;
+export function readGitState(root) {
   try {
-    gitSha = execFileSync('git', ['rev-parse', 'HEAD'], {
+    const gitSha = execFileSync('git', ['rev-parse', 'HEAD'], {
       cwd: root,
       encoding: 'utf8',
     }).trim();
@@ -50,10 +48,23 @@ export function buildReport({ checks, final, environment, root }) {
       cwd: root,
       encoding: 'utf8',
     }).trim();
-    dirty = status.length > 0;
+    return { gitSha, dirty: status.length > 0 };
   } catch {
-    // keep defaults
+    return { gitSha: 'unknown', dirty: true };
   }
+}
+
+/**
+ * @param {object} args
+ * @param {CheckResult[]} args.checks
+ * @param {boolean} args.final
+ * @param {object} args.environment
+ * @param {string} args.root
+ * @param {{ gitSha: string, dirty: boolean }} [args.gitState] state at run start; read now if absent
+ * @returns {object}
+ */
+export function buildReport({ checks, final, environment, root, gitState }) {
+  const { gitSha, dirty } = gitState ?? readGitState(root);
   return {
     schemaVersion: 1,
     generatedAt: new Date().toISOString(),

@@ -30,6 +30,7 @@ import { openBrowserSession } from './lib/browser.mjs';
 import {
   buildReport,
   computeReportStatus,
+  readGitState,
   writeReportArtifacts,
 } from './lib/report.mjs';
 import {
@@ -168,6 +169,7 @@ async function main() {
   }
 
   const headSha = gitHead(ROOT);
+  const gitStateAtStart = readGitState(ROOT);
   const priorReport = loadCommittedReport(ROOT);
   const priorChecks = Array.isArray(priorReport?.checks) ? priorReport.checks : [];
   const priorOnlyK2Open = priorChecks.length > 0 &&
@@ -499,6 +501,7 @@ async function main() {
     final,
     environment,
     root: ROOT,
+    gitState: gitStateAtStart,
   });
 
   // Filtered runs never produce a passing final report

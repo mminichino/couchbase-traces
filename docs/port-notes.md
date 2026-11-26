@@ -4131,3 +4131,69 @@ to run outside the agent sandbox, which blocks `git init` in a temp dir.
   regression. Q61 (user, 2026-11-25): watch it. If it recurs, a D-numbered fix
   makes the K8s queries cheaper or seeds fewer points; timeouts stay as they
   are.
+
+### R7: docs and acceptance (2026-11-25, `mm--v1-r7-docs-acceptance`)
+
+- **Plan corrections.** `port/acceptance/run.mjs` has no `--final` flag. A run
+  is final when nothing is filtered or reused, no check is skipped, and the tree
+  was clean at the start. Without `--capella`, C1 and C2 are `blocked`, so the
+  status stays `blocked` until a Capella run. B14 ("Pending user decisions") was
+  already closed in R6.
+- **H1 was red on `main`.** Both branding verifiers had drifted since the last
+  acceptance run (`6599628`, 2026-11-18). `port/rebrand.sh verify branding`
+  failed on 22 allowlist entries for lines the Mongo elimination deleted. It
+  also failed on new `hyperdx` hits: R6's `release-images.sh` and `Makefile`
+  build contexts, `docker-compose.build-local.yml`, the CLI legacy config dir
+  test, `hyperdxSettingPrefix`, and the two port plans.
+  `port/remove-ch/verify.mjs` failed on 23 stale entries and about 320 uncovered
+  "ClickHouse" lines in 124 files. Nearly all are comments explaining the
+  upstream behavior the SQL++ code reproduces, plus the `SqlDialect` vocabulary,
+  hdx-eval (which still benchmarks a ClickHouse eval store), and the Terraform
+  provider name (ClickHouse's, kept on purpose in D2b). Fix: prune stale
+  entries, allowlist each new file with a reason, and exempt
+  `docs/v1-release-plan.md` and `docs/mongo-elimination-plan.md` in `isExempt`
+  like the phase specs.
+- **Final could never be true.** H1 rewrites `docs/acceptance.md`, this file's
+  rebrand section, and `port/state/rebrand/verify.json`, and J2 rewrites the
+  date in `docs/licenses.md`. `buildReport` read `git status` after the checks,
+  so every run was dirty. The runner now records the git state before any check
+  (`readGitState`).
+- **Acceptance stack.** `port/acceptance/docker-compose.observe.yml` still
+  overrode the removed Mongo `db` service, so `docker compose` rejected the
+  project and every product-stack check failed. Removed it (and `db` from I2's
+  service list); `check-no-mongo.sh` now scans `port/acceptance`.
+- **Q61** (user, 2026-11-25), already recorded with D30: watch the
+  `kubernetes.spec.ts` CI timeout. If it recurs, open a D-numbered defect to
+  make the Kubernetes chart and field-value queries cheaper or seed fewer
+  points; do not raise timeouts.
+- **Rebrand unit tests** fail 17/37 inside the agent sandbox (they create temp
+  repos) and pass 60/60 outside it. Not a product issue.
+- **Docs drift fixed.** `agent_docs/observability.md` documented ClickHouse
+  `log_comment` / `query_id` attribution over `system.query_log`, and pointed at
+  the deleted `evalstore/attribution.ts`, `prometheus.ts`, `clickhouseProxy.ts`,
+  and `models/index.ts`. It now describes the SQL++ trailing comment and
+  `clientContextId`. `agent_docs/development.md` named
+  `packages/api/src/models/`, now `packages/api/src/metadata/`, and
+  `data_viz_colors.md` named the old `DBHeatmapChart.tsx`.
+- **D31** (new): the `all-in-one-noauth` Dockerfile stage copies the deleted
+  `entry.local.noauth.sh`, `docker/hyperdx/build.sh` builds it from a missing
+  `docker/evalstore` context, and `entry.local.base.sh` / `entry.local.auth.sh`
+  are unused. Nothing builds or ships them. Proposed after 1.0.
+- **Version locations.** `docs/development.md`, `DEPLOY.md`, and `LOCAL.md` keep
+  exactly one tagged image reference each, so `set-version` still owns 16/16
+  locations (`--dry-run 9.9.9` changes all 16).
+- **Gates at `574aac0`.** `make ci-lint`, `make ci-unit`, and `yarn lint:fix`
+  green. `make ci-int`: common-utils 20/20 suites, API 62/63 (the skipped one is
+  the harness-only metadata suite). `make e2e`: 454 passed, 3 skipped, 1 flaky
+  (`dashboard.spec.ts` "should warn when closing tile editor with unsaved
+  changes", passed on retry). Acceptance (`docs/acceptance.md`, `b2a5ef6`, Final
+  true): 20/23 pass, C1/C2 blocked (no Capella credentials), K2 blocked. PR #49
+  CI: 25/25 green, Main run 45758470165 succeeded.
+- **K2 not recorded.** `--record-ci` reuses committed results only when every
+  check other than K2 passed, so with C1/C2 blocked it would re-run the whole
+  suite and still report `blocked`. Record K2 together with the Capella run:
+  `node port/acceptance/run.mjs --capella`, push, then `--record-ci <Main run>`.
+- **First full run** failed K1 only: M1's E2E shard left its API web server
+  (`ts-node`, port 21047) running, so K1's shard could not bind. Killing the
+  orphan and re-running fixed it. Interrupted runs leave the same orphan; check
+  `lsof -iTCP:21047` before re-running.

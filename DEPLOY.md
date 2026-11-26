@@ -13,24 +13,37 @@ Couchbase Traces can be deployed in a few different ways:
 
 ## Container image names
 
-Image names use `ghcr.io/mminichino`. They are not published yet; build them
-locally with the `make` targets until they are.
+Releases publish three images to `ghcr.io/mminichino`. Each release is tagged
+`X.Y.Z`, `X.Y`, and `X`, and the newest release also gets `latest`. A prerelease
+such as `1.1.0-rc.1` gets only its exact tag. `docker-compose.yml` pulls
+`${IMAGE_VERSION}` (the major tag, `IMAGE_VERSION=1` in `.env.example`), so it
+follows patch and minor releases.
 
-| Image                       | Name                                         |
-| --------------------------- | -------------------------------------------- |
-| Couchbase Traces (UI + API) | `mminichino/couchbase-traces`                |
-| All-in-one (with auth)      | `ghcr.io/mminichino/couchbase-traces-all-in-one`     |
-| Ingest                      | `ghcr.io/mminichino/couchbase-traces-ingest`         |
-| OpenTelemetry collector     | `ghcr.io/mminichino/couchbase-traces-otel-collector` |
+| Image                       | Name                                                 | Published |
+| --------------------------- | ---------------------------------------------------- | --------- |
+| Couchbase Traces (UI + API) | `ghcr.io/mminichino/couchbase-traces`                | Yes       |
+| Ingest                      | `ghcr.io/mminichino/couchbase-traces-ingest`         | Yes       |
+| OpenTelemetry collector     | `ghcr.io/mminichino/couchbase-traces-otel-collector` | Yes       |
+| All-in-one (with auth)      | `ghcr.io/mminichino/couchbase-traces-all-in-one`     | No        |
 
-Images are built locally (`make build-app`, `make build-ingest`, `make build-all-in-one`); they are not published to a registry yet.
+The all-in-one image bundles Couchbase Server Enterprise, which is not
+redistributed, so it is built locally only. Every image carries
+`org.opencontainers.image.version` and `org.opencontainers.image.revision`
+labels, and the API reports its version on `/api/health`.
+
+To build an image locally instead of pulling it, run `make build-app`,
+`make build-ingest`, `make build-otel-collector`, or `make build-all-in-one`.
+Each tags the same names as above with the full version and the major tag.
 
 ## Bring Your Own Couchbase
 
 If you already run Couchbase Server 8.x or Capella, deploy the API/UI container
-with `CBT_METADATA_CONNSTR` (plus `CBT_METADATA_USER` / `CBT_METADATA_PASSWORD`) and a Couchbase connection configured in the UI (or via
-`DEFAULT_CONNECTIONS`). See [docs/self-managed.md](docs/self-managed.md) and
-[docs/capella.md](docs/capella.md).
+with `CBT_METADATA_CONNSTR` (plus `CBT_METADATA_USER` / `CBT_METADATA_PASSWORD`)
+and a Couchbase connection configured in the UI (or via `DEFAULT_CONNECTIONS`).
+See [docs/self-managed.md](docs/self-managed.md) and
+[docs/capella.md](docs/capella.md). The cluster needs the `cbt_meta` bucket and
+a metadata user; `ingest setup` creates both on self-managed clusters (see
+[App metadata settings](#app-metadata-settings)).
 
 To get started, you can run the following image:
 
@@ -38,8 +51,9 @@ To get started, you can run the following image:
 docker run -e CBT_METADATA_CONNSTR=couchbase://YOUR_COUCHBASE_HOST -e CBT_METADATA_USER=YOUR_USER -e CBT_METADATA_PASSWORD=YOUR_PASSWORD -p 8080:8080 ghcr.io/mminichino/couchbase-traces:2
 ```
 
-The `CBT_METADATA_*` variables point the API at the Couchbase cluster that
-holds the `cbt_meta` app metadata bucket. Afterwards, visit http://localhost:8080 and add a Couchbase connection.
+The `CBT_METADATA_*` variables point the API at the Couchbase cluster that holds
+the `cbt_meta` app metadata bucket. Afterwards, visit http://localhost:8080 and
+add a Couchbase connection.
 
 Before deploying into production, set the `EXPRESS_SESSION_SECRET` environment
 variable to a random string (e.g. `openssl rand -hex 32`). Without it the API
@@ -68,11 +82,53 @@ environment variables tune it; each takes a positive integer.
 
 Full stacks query Couchbase through the API (SQL++).
 
+### App metadata settings
+
+Teams, users, sessions, saved searches, dashboards, alerts, and connections are
+stored in the Couchbase bucket `cbt_meta` (scope `app`). The API refuses to
+start without it. `CBT_METADATA_CONNSTR` defaults to `CBT_COUCHBASE_CONNSTR`, so
+metadata and telemetry can share a cluster.
+
+| Variable                        | Default                      | Purpose                                                                                                |
+| ------------------------------- | ---------------------------- | ------------------------------------------------------------------------------------------------------ |
+| `CBT_METADATA_CONNSTR`          | `CBT_COUCHBASE_CONNSTR`      | Cluster that holds the metadata bucket                                                                 |
+| `CBT_METADATA_USER`             | (required)                   | Metadata user (`data_reader`, `data_writer`, and `query_*` on the bucket, plus `query_system_catalog`) |
+| `CBT_METADATA_PASSWORD`         | (required)                   | Password for `CBT_METADATA_USER`                                                                       |
+| `CBT_METADATA_BUCKET`           | `cbt_meta`                   | Metadata bucket                                                                                        |
+| `CBT_METADATA_SCOPE`            | `app`                        | Metadata scope                                                                                         |
+| `CBT_METADATA_RAM_MB`           | `256`                        | Bucket quota when setup creates the bucket                                                             |
+| `CBT_METADATA_AUTO_PROVISION`   | `false`                      | Let the API create missing collections and indexes (needs `scope_admin` and `query_manage_index`)      |
+| `CBT_METADATA_CA_CERT_PATH`     | `CBT_COUCHBASE_CA_CERT_PATH` | CA certificate for `couchbases://`                                                                     |
+| `CBT_METADATA_WAN_PROFILE`      | `CBT_COUCHBASE_WAN_PROFILE`  | Use the SDK's WAN timeouts (on by default for `couchbases://`)                                         |
+| `CBT_METADATA_TX_DURABILITY`    | `majority`                   | Transaction durability, `majority` or `none`                                                           |
+| `CBT_METADATA_KV_TIMEOUT_MS`    | `2500`                       | Key-value operation timeout                                                                            |
+| `CBT_METADATA_QUERY_TIMEOUT_MS` | `10000`                      | Metadata query timeout                                                                                 |
+| `CBT_METADATA_TX_TIMEOUT_MS`    | `15000`                      | Transaction timeout                                                                                    |
+| `CBT_METADATA_INDEX_WAIT_MS`    | `120000`                     | Startup wait for metadata indexes to come online                                                       |
+
+### Ingest settings
+
+The ingest service receives OTLP from the collector and writes it to Couchbase.
+It needs `CBT_INGEST_TOKEN` (32 or more characters, shared with the collector)
+and the ingest user (`CBT_COUCHBASE_INGEST_USER` /
+`CBT_COUCHBASE_INGEST_PASSWORD`).
+
+| Variable                            | Default     | Purpose                                      |
+| ----------------------------------- | ----------- | -------------------------------------------- |
+| `CBT_INGEST_PORT`                   | `4320`      | Listen port                                  |
+| `CBT_INGEST_HOST`                   | `0.0.0.0`   | Listen address                               |
+| `CBT_INGEST_MAX_BODY_BYTES`         | `16777216`  | Largest compressed request body              |
+| `CBT_INGEST_MAX_DECOMPRESSED_BYTES` | `134217728` | Largest decompressed request body            |
+| `CBT_INGEST_MAX_DOC_BYTES`          | `20970496`  | Largest single document                      |
+| `CBT_INGEST_MAX_INFLIGHT_REQUESTS`  | `64`        | Concurrent requests before ingest sheds load |
+| `CBT_INGEST_KV_CONCURRENCY`         | `256`       | Concurrent key-value writes                  |
+| `CBT_INGEST_KV_TIMEOUT_MS`          | `10000`     | Key-value write timeout                      |
+
 ## All-in-one Docker Compose Stack
 
 The easiest way to get started from scratch is the product Docker Compose stack
-(Couchbase, ingest, OpenTelemetry collector, API, and UI). Copy
-`.env.example` to `.env`, set required secrets, then:
+(Couchbase, ingest, OpenTelemetry collector, API, and UI). Copy `.env.example`
+to `.env`, set required secrets, then:
 
 To get started, clone this repository and run the following command:
 
