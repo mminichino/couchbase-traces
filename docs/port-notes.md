@@ -4213,3 +4213,12 @@ to run outside the agent sandbox, which blocks `git init` in a temp dir.
 - **Gates.** Lint, unit, integration, E2E (455 passed, 3 skipped), all-in-one
   smoke, and the release-images dry run all passed. No tag, image push, or
   GitHub release.
+- **Capella acceptance (2026-11-26).** With `cbt_meta` created, the first
+  `--capella` run failed C1/C2 because the Capella stack used the example
+  metadata user. The runner now passes `CBT_ACCEPT_CAPELLA_METADATA_*`, falling
+  back to the setup credential. Full run at `606a45e`: 22/23 pass, C1 and C2
+  pass on Capella, K2 open.
+- **D32 (Q61 recurred).** `kubernetes.spec.ts` failed on Main for `main`
+  `4b54ca9` and `6922b3b` and for PR #50 `868e13b` (pod details, node and
+  namespace metrics, all retries). R8 stops before the merge and tag until D32
+  lands.
