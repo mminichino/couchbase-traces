@@ -3,6 +3,7 @@ import { connect, type ConnectOptions } from 'couchbase';
 
 import { isCapella, ttlByCollection, wanProfile } from '@/config';
 import { COLLECTIONS, searchDefinitionWithReplicas } from '@/model/collections';
+import { connectWithAuthRetry } from '@/setup/connect';
 import { writeDocs } from '@/setup/docs';
 import { exitCodeOf, SetupError } from '@/setup/errors';
 import { ensureIndexes, indexStatements } from '@/setup/indexes';
@@ -14,6 +15,11 @@ import {
 } from '@/setup/metadata';
 import { ensureSearchIndexes } from '@/setup/search';
 import { ensureUsers } from '@/setup/users';
+
+// How long to keep retrying authentication failures on the first connect
+// (D30). Long enough for a just-initialized node; short enough that a wrong
+// password fails well before compose or the all-in-one gives up.
+const AUTH_RETRY_DEADLINE_MS = 60_000;
 
 export type SetupOptions = {
   createBucket: boolean;
@@ -120,7 +126,7 @@ export async function runSetup(
     }
     required(env, 'CBT_COUCHBASE_ADMIN_USER');
     required(env, 'CBT_COUCHBASE_ADMIN_PASSWORD');
-    const cluster = await connectAdmin(env, connstr);
+    const cluster = await connectAdmin(env, connstr, log);
     try {
       await ensureBucket(cluster, {
         name: bucket,
@@ -179,7 +185,7 @@ async function provisionMetadata(
   const cluster =
     metaConnstr === connstr
       ? telemetryCluster
-      : await connectAdmin(env, metaConnstr);
+      : await connectAdmin(env, metaConnstr, log);
   try {
     await runMetadataSetup(cluster, {
       cfg: metadataSetupConfig(env, replicas),
@@ -230,7 +236,11 @@ function envInt(raw: string | undefined, fallback: number): number {
   return Number(raw);
 }
 
-async function connectAdmin(env: NodeJS.ProcessEnv, connstr: string) {
+async function connectAdmin(
+  env: NodeJS.ProcessEnv,
+  connstr: string,
+  log: (line: string) => void,
+) {
   const options: ConnectOptions = {
     username: env.CBT_COUCHBASE_ADMIN_USER,
     password: env.CBT_COUCHBASE_ADMIN_PASSWORD,
@@ -243,5 +253,8 @@ async function connectAdmin(env: NodeJS.ProcessEnv, connstr: string) {
   if (env.CBT_COUCHBASE_CA_CERT_PATH) {
     options.security = { trustStorePath: env.CBT_COUCHBASE_CA_CERT_PATH };
   }
-  return connect(connstr, options);
+  return connectWithAuthRetry(() => connect(connstr, options), {
+    deadlineMs: AUTH_RETRY_DEADLINE_MS,
+    log,
+  });
 }

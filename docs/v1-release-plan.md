@@ -466,7 +466,7 @@ pushes to `main` directly.
 | D27   | Defects: metric sources omit upstream `Flags` bit-0 filter  | Found in D24 (section 9.1); with D26 in one PR before R2a (Q49); fixed                                                                                                                                               | S    | —                             |
 | D28   | Defects: unset `whereLanguage` is Lucene, not SQL           | Found in D24 (section 9.1); with D26 in one PR before R2a (Q50); fixed                                                                                                                                               | S    | —                             |
 | D29   | Defects: request query attribution never reaches SQL++      | Found in R2a (section 9.1); own PR right after R2a, before R2c and R2b (Q51); carries the `queryAttribution` int suite; fixed                                                                                        | M    | R2a                           |
-| D30   | Defects: all-in-one ingest setup races the admin password   | Found in R6 (section 9.1); own small PR after R6, before R7 (Q60)                                                                                                                                                    |
+| D30   | Defects: all-in-one ingest setup races the admin password   | Found in R6 (section 9.1); own small PR after R6, before R7 (Q60); fixed                                                                                                                                             |
 | D14   | Dev tooling: live-test port offset fallback                 | Found in D7 (section 9.1)                                                                                                                                                                                            | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API         | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`); 9 ported, `queryAttribution` moves to D29 | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                            | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                                                                | L    | R2c, D1, D4, D6               |
@@ -1321,6 +1321,40 @@ Proposed fix: retry the setup's first SDK connect on
 its own small PR after R6 merges and before R7 (Q60, user 2026-11-25), branch
 `mm--v1-d30-aio-setup-auth-race`; started only on the user's go-ahead.
 
+D30 result (2026-11-25, `mm--v1-d30-aio-setup-auth-race`): fixed.
+
+- **Root cause (measured).** Fresh `couchbase/server:enterprise-8.0.3`, POST
+  `/clusterInit`, then REST and an SDK connect sampled every 250 ms (3 runs).
+  `/pools/default` returned 200 with node `healthy` at +60–70 ms, while SDK
+  connects failed with `AuthenticationFailureError` until +1.0–1.1 s. ns_server
+  accepts the new password before the data service (memcached) has it, so a REST
+  probe is not a readiness signal for the SDK. `init.sh`'s `wait_for_admin`
+  passes in that window, and the all-in-one runs the setup CLI straight after.
+  The comment in `init.sh` is updated to say so.
+- **Fix.** `packages/ingest/src/setup/connect.ts` `connectWithAuthRetry` wraps
+  the setup CLI's `connect()` (telemetry and metadata clusters). It retries only
+  `AuthenticationFailureError`, with backoff 250 ms doubling to a 4 s cap and a
+  60 s total deadline. It logs one line without credentials, and past the
+  deadline it fails with exit 3 and a message naming `CBT_COUCHBASE_ADMIN_USER`
+  / `_PASSWORD`. Other errors are not retried, and a wrong password still fails
+  within 60 s. This is the real readiness signal (the data service accepting the
+  SDK's SASL auth), not a sleep.
+- **Tests.** `src/__tests__/connectRetry.test.ts` (5 tests, a fake connect that
+  fails N times and a fake clock) failed before `connect.ts` existed. Direct
+  repro (fresh node, `clusterInit`, setup CLI at once): before, 3/3
+  `authentication failure` exit 3 in 0 s; after, 3/3 exit 0 with one retry line.
+  The all-in-one smoke looped 10 times: 10/10 green, canary ingested, 77–112 s
+  per run.
+- **Other startup paths.** Compose `couchbase-init` and the all-in-one both run
+  `init.sh`, which runs the setup CLI, so both are covered. E2E
+  (`global-setup-fullstack.ts`) and the golden harness (`port/golden/lib/*`) run
+  the setup CLI after `couchbase-cli cluster-init` plus a REST health wait, so
+  they are covered too. `port/couchbase-test/init.sh` runs
+  `provision-metadata.js` only after buckets, collections and a SQL++ query have
+  succeeded, so the data service already has the password. The API's metadata
+  store (`connectWithRetry`) already retries every connect failure. No change
+  was needed there.
+
 ### R0: Triage and quick fixes
 
 1. Run each of the 23 deferred suites alone on the CI compose stack
@@ -1976,6 +2010,7 @@ in that phase.
 | Q58 | CI E2E shards exceed 45 min on the private repo's 2-vCPU `ubuntu-24.04` runner (2026-11-25)                             | Resolved: the repository was made public (user, 2026-11-25), so the standard `ubuntu-24.04` runner has 4 vCPUs and 16 GB. A larger runner (option (a)) was not available: the repository is personally owned, and larger runners need an organization on Team or Enterprise Cloud. `RUNNER_E2E` and `E2E_WORKERS` stay unset (workflow defaults: `ubuntu-24.04`, 2 workers). A pre-publication scan of all 274 commits (gitleaks and targeted searches) found only fixtures, dev placeholders and upstream test data. Secret scanning and push protection are on; fork-PR approval, Dependabot, branch protection and wiki are unchanged (user) | R5             |
 | Q59 | Wire `set-version --check` into `make ci-lint` in R6 (2026-11-25)?                                                      | Deferred to R8 (user, 2026-11-25). Nothing changes in R6 beyond adding `make version-check`. The versions are not lock-stepped today (root 2.0.0; api, app, ingest and collector 2.44.0; cli 0.9.0; common-utils 0.34.0), so the gate would fail on `main`. R8 must, in the bump commit: run `make version VERSION=1.0.0`, add `version-check` to the Makefile `ci-lint` target, and check that `make ci-lint` passes at 1.0.0 and fails on a single reverted location.                                                                                                                                                                         |
 | Q60 | Placement of D30, the all-in-one ingest setup race (2026-11-25)                                                         | Its own small PR after R6 and before R7 (user, 2026-11-25), so R7's acceptance run and the R8 image smoke don't hit it. Started only on the user's go-ahead.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| Q61 | `kubernetes.spec.ts` chart and autocomplete waits time out under CI load (found on PR #48, 2026-11-25)                  | Accepted (user, 2026-11-25): watch it. If it recurs, open a D-numbered fix that makes the K8s chart and field-value queries cheaper (or seeds fewer gauge points); do not raise timeouts. One failing run so far; local 13/13 and `main` green.                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 

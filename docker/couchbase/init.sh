@@ -239,7 +239,9 @@ if cluster_initialized; then
   log "Cluster already initialized"
 else
   init_cluster
-  # clusterInit returns before the SDK accepts the new admin password.
+  # clusterInit returns before REST accepts the new admin password. The data
+  # service (SDK) learns it about a second later still; the setup CLI retries
+  # that authentication failure itself (D30).
   wait_for_admin
 fi
 

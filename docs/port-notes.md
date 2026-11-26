@@ -4103,3 +4103,31 @@ to run outside the agent sandbox, which blocks `git init` in a temp dir.
   `org.opencontainers.image.version=2.44.0` and the `HEAD` revision. The ingest
   image's size comes from the full workspace `yarn install`. It is not a release
   blocker; slimming it is a candidate for post-1.0.
+
+### D30: all-in-one setup authentication race (2026-11-25, `mm--v1-d30-aio-setup-auth-race`)
+
+- Root cause: after `/clusterInit` on 8.0.3, REST accepts the new admin password
+  at about +65 ms, but SDK connects get `AuthenticationFailureError` until about
+  +1.1 s (3 measured runs). The data service learns the password after ns_server
+  does, so `init.sh`'s REST `wait_for_admin` passes too early for the SDK.
+- Fix: `connectWithAuthRetry` (`packages/ingest/src/setup/connect.ts`) around
+  the setup CLI's connects. It retries authentication failures only, with
+  backoff from 250 ms to a 4 s cap, and gives up after 60 s with exit 3 and a
+  credentials hint. It logs one line and never prints credentials.
+- Evidence: unit tests failed first. Direct repro: 3/3 fail before the fix, 3/3
+  pass after. 10/10 all-in-one smokes green.
+- Not changed: `port/couchbase-test/provision-metadata.js` (runs after SQL++ is
+  already answering), the API metadata store (already retries all connect
+  failures), and the E2E and golden harnesses (they use the setup CLI, so the
+  fix covers them).
+- PR #48 first CI run: shard 3 failed on `kubernetes.spec.ts` only (namespace
+  metrics and Lucene autocomplete failed on all 3 attempts; pod and node metrics
+  passed on retry). The page snapshots show the CPU and memory charts still on
+  "Loading Chart Data…", and the autocomplete still waiting on its suggestions
+  query, when the 5–10 s assertion ran out. The namespace table had rows. The
+  setup retry did not fire in that run (no retry line in the log). `main` at the
+  same base passed every shard, and the spec passes locally (13/13). This is
+  slowness under CI load on the 42k-point K8s gauge queries, not a D30
+  regression. Q61 (user, 2026-11-25): watch it. If it recurs, a D-numbered fix
+  makes the K8s queries cheaper or seeds fewer points; timeouts stay as they
+  are.
