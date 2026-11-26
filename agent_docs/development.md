@@ -278,7 +278,8 @@ yarn run lint
 
 - **Config**: `packages/api/src/config.ts`, `packages/app/next.config.mjs`,
   `docker-compose.dev.yml`
-- **Models**: `packages/api/src/models/`
+- **Metadata (teams, users, dashboards, …)**: `packages/api/src/metadata/`
+  (Zod schemas in `schemas/`, Couchbase repositories in `repos/`)
 - **API Routes**: `packages/api/src/routers/`
 - **Controllers**: `packages/api/src/controllers/`
 - **Pages**: `packages/app/pages/`

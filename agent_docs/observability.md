@@ -239,21 +239,26 @@ auto-instrumentation and error middleware already cover.
 
 ## Query attribution
 
-Every SQL query Couchbase Traces runs is tagged with what asked for it, so a row
-in the customer's `system.query_log` points back to a dashboard tile, a saved
-search, an alert, or an MCP tool. This is the one piece of our instrumentation
-that lands in *their* data rather than ours, so it stays small, carries no
-identity, and must never be able to fail a query.
+Every SQL++ query Couchbase Traces runs is tagged with what asked for it, so a
+row in the cluster's `system:completed_requests` points back to a dashboard
+tile, a saved search, an alert, or an MCP tool. This is the one piece of our
+instrumentation that lands in *their* cluster rather than ours, so it stays
+small, carries no identity, and must never be able to fail a query.
 
-Two channels carry it, set by `BaseDataClient.query`:
+Two channels carry it, set by `resolveQueryOptions` in
+`packages/common-utils/src/couchbase/settings.ts`:
 
 | Where | Shape | What it answers |
 | --- | --- | --- |
-| `log_comment` | JSON payload, e.g. `{"v":1,"surface":"dashboard","dashboard":"…","tile":"…"}` | After the fact: `GROUP BY JSONExtractString(log_comment, 'tile')` over `system.query_log` |
-| `query_id` | `hdx-<surface>-<uuid>` | Right now: reading `system.processes` while a query is still running |
+| Trailing block comment on the statement (`withAttributionComment`) | JSON payload, e.g. `/* {"v":1,"surface":"dashboard","dashboard":"…","tile":"…"} */` | After the fact: `completed_requests.statement` keeps the text |
+| `clientContextId` (`buildClientContextId`) | `hdx-<surface>-<uuid>` | Right now: reading `system:active_requests` while a query is still running |
+
+Upstream used ClickHouse `log_comment` and `query_id` for the same two jobs.
+`system:completed_requests` only logs requests over the cluster's threshold
+(1 s by default); Couchbase Traces does not change that setting (Q52).
 
 The vocabulary lives in
-[`packages/common-utils/src/evalstore/attribution.ts`](../packages/common-utils/src/evalstore/attribution.ts).
+[`packages/common-utils/src/query/attribution.ts`](../packages/common-utils/src/query/attribution.ts).
 `QUERY_SURFACES` is a fixed, short list, because it goes in the `query_id` and
 people group by it. Anything naming one specific dashboard, tile or search goes
 in the id fields instead.
@@ -291,7 +296,7 @@ await withQueryAttribution({ surface: 'alert', alert: alert.id }, async () =>
 ```
 
 Wrap the whole request or job, not the query. One call at the top covers
-everything below it, including the materialized-view `EXPLAIN` probes.
+everything below it.
 
 Order of precedence: the client's default, then the scope around the current
 request or job, then anything passed with an individual query.
@@ -337,17 +342,14 @@ used them for the PromQL route, which was removed with PromQL sources (see
 - Scheduled-task metrics pattern: `packages/api/src/tasks/metrics.ts`
 - Outcome counter + span on a non-HTTP entry point:
   `packages/api/src/opamp/controllers/opampController.ts`
-- Duration + swallowed-error counters where errors never reach the error
-  middleware: `packages/api/src/routers/api/prometheus.ts`
 - Delivery attempt counter + duration around an outbound webhook:
   `packages/api/src/tasks/checkAlerts/transports/generic.ts`
 - Per-event cap counter on a fan-out loop:
   `packages/api/src/tasks/checkAlerts/template.ts`
-- Connection lifecycle-event counter: `packages/api/src/models/index.ts`
 - SLO operation metrics (`withOperationMetrics`) on an external dependency:
   `packages/api/src/routers/api/ai.ts`
 - SLO operation metrics (`recordOperationOutcome`) on a streaming proxy:
-  `packages/api/src/routers/api/clickhouseProxy.ts`
+  `packages/api/src/routers/api/couchbase.ts`
 - End-to-end + sub-operation SLO metrics on a background job (alert evaluation
   and its data fetch): `packages/api/src/tasks/checkAlerts/index.ts`
   (`alerts.evaluate`, `alerts.query`)

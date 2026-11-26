@@ -145,7 +145,10 @@ export function isExempt(p) {
     p === 'COUCHBASE_PORT_PLAN.md' ||
     p === 'yarn.lock' ||
     p === 'docs/port-notes.md' ||
-    p === 'docs/parity.md'
+    p === 'docs/parity.md' ||
+    // Port plans quote upstream names as history, like the PHASE_*_SPEC.md files.
+    p === 'docs/mongo-elimination-plan.md' ||
+    p === 'docs/v1-release-plan.md'
   )
     return true;
   if (/^PHASE_[^/]*_SPEC\.md$/.test(p)) return true;

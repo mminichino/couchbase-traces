@@ -13,7 +13,7 @@ patterns:
 | ------------------------------------ | ------------------------------------- | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------- |
 | **Categorical (10 hues)**            | Multi-series line/bar/area/pie charts | `CATEGORICAL_HEX_BY_TOKEN` in `utils.ts` (CSS vars mirror it) | `getColorProps(index, label)` (positional) / `getColorFromCSSToken('chart-{hue}')` (by name) |
 | **Semantic (success/warn/err/info)** | Status indicators, log levels, deltas | CSS vars `--color-chart-{success,warning,error,info}`         | `getChartColor{Success,Warning,Error,Info}()`                                                |
-| **Heatmap continuous**               | `DBHeatmapChart` density gradients    | `darkPalette`/`lightPalette` arrays                           | Imported directly from `DBHeatmapChart.tsx`                                                  |
+| **Heatmap continuous**               | `DBHeatmapChart` density gradients    | `darkPalette`/`lightPalette` arrays                           | Imported directly from `DBHeatmapChart/palette.ts`                                          |
 
 **Hard rules**:
 
@@ -216,7 +216,7 @@ Migration happens at two complementary layers instead:
 
 ### Heatmap palette (component-local)
 
-`packages/app/src/components/DBHeatmapChart.tsx`:
+`packages/app/src/components/DBHeatmapChart/palette.ts`:
 
 - `darkPalette` (lines ~145–155): 7 stops, indigo → amber.
 - `lightPalette` (lines ~156–164): 7 stops, medium blue → deep orange.
@@ -227,7 +227,7 @@ These are **scheme-aware, not brand-aware**: every dark theme shares the same
 heatmap gradient, same for light. Red is intentionally omitted
 from the high end so it can be reserved for error overlays.
 
-`DBHeatmapChart.tsx` re-exports `darkPalette` and `lightPalette`.
+`DBHeatmapChart/palette.ts` exports `darkPalette` and `lightPalette`.
 `DBSearchHeatmapChart.tsx` imports them via that re-export — **do not**
 duplicate the arrays in another component.
 
@@ -470,6 +470,6 @@ Why each is wrong:
 | Palette token enum + legacy migration               | `packages/common-utils/src/types.ts`                                             |
 | Multi-series wiring (`setLineColors` etc.)          | `packages/app/src/ChartUtils.tsx`                                                |
 | Number-tile color picker                            | `packages/app/src/components/ColorSwatchInput.tsx`                               |
-| Heatmap palettes                                    | `packages/app/src/components/DBHeatmapChart.tsx` (`darkPalette`, `lightPalette`) |
+| Heatmap palettes                                    | `packages/app/src/components/DBHeatmapChart/palette.ts` (`darkPalette`, `lightPalette`) |
 | Storybook visual reference                          | `packages/app/src/theme/ChartColors.stories.tsx`                                 |
 | Delta "all spans" reference color                   | `packages/app/src/components/deltaChartUtils.ts` (`ALL_SPANS_COLOR`)             |
