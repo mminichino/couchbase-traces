@@ -4128,4 +4128,6 @@ to run outside the agent sandbox, which blocks `git init` in a temp dir.
   setup retry did not fire in that run (no retry line in the log). `main` at the
   same base passed every shard, and the spec passes locally (13/13). This is
   slowness under CI load on the 42k-point K8s gauge queries, not a D30
-  regression; recorded as Q61.
+  regression. Q61 (user, 2026-11-25): watch it. If it recurs, a D-numbered fix
+  makes the K8s queries cheaper or seeds fewer points; timeouts stay as they
+  are.
