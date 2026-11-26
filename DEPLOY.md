@@ -48,7 +48,7 @@ a metadata user; `ingest setup` creates both on self-managed clusters (see
 To get started, you can run the following image:
 
 ```bash
-docker run -e CBT_METADATA_CONNSTR=couchbase://YOUR_COUCHBASE_HOST -e CBT_METADATA_USER=YOUR_USER -e CBT_METADATA_PASSWORD=YOUR_PASSWORD -p 8080:8080 ghcr.io/mminichino/couchbase-traces:2
+docker run -e CBT_METADATA_CONNSTR=couchbase://YOUR_COUCHBASE_HOST -e CBT_METADATA_USER=YOUR_USER -e CBT_METADATA_PASSWORD=YOUR_PASSWORD -p 8080:8080 ghcr.io/mminichino/couchbase-traces:1
 ```
 
 The `CBT_METADATA_*` variables point the API at the Couchbase cluster that holds
@@ -167,7 +167,7 @@ Couchbase Server Enterprise — not redistributed without Couchbase approval):
 ```bash
 make build-all-in-one
 docker run --memory=4g -p 8080:8080 -p 4318:4318 \
-  ghcr.io/mminichino/couchbase-traces-all-in-one:2
+  ghcr.io/mminichino/couchbase-traces-all-in-one:1
 ```
 
 Register a user at first visit; the entrypoint generates Couchbase and ingest

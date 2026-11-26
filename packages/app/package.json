@@ -1,6 +1,6 @@
 {
   "name": "@couchbase-traces/app",
-  "version": "2.44.0",
+  "version": "1.0.0",
   "private": true,
   "license": "MIT",
   "engines": {
