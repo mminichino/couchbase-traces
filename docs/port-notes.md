@@ -4356,6 +4356,12 @@ CLI binaries attached to the release (SHA-256 of the downloaded assets):
     a live 8.0.3 node answers a JSON body with `400 {"errors":{"_":"Request
     should have parameters"}}`; the reference's curl example sends a form.
     Found by `querySettings.int.test.ts`.
+  - The first PR build crashed the all-in-one smoke: `import http from
+    'node:http'` compiles, under `importHelpers` and `esModuleInterop`, to a
+    `require("tslib")`, and the ingest image ships no tslib. ts-jest and the
+    int suite run from source and could not see it. Named imports fix it;
+    `buildHelpers.test.ts` transpiles every ingest source with the build's
+    options and fails on any tslib import.
   - The signature takes an injected `http: MgmtHttp` (method, url, credentials,
     JSON body) instead of `fetchImpl?: typeof fetch`, so the client can trust
     `CBT_COUCHBASE_CA_CERT_PATH` for `https://` (global `fetch` has no per-call

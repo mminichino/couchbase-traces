@@ -1,6 +1,8 @@
 import { readFileSync } from 'node:fs';
-import http from 'node:http';
-import https from 'node:https';
+// Named imports: a default import makes tsc emit a tslib helper
+// (importHelpers), and the ingest image ships no tslib.
+import { type IncomingMessage, request as httpRequest } from 'node:http';
+import { request as httpsRequest } from 'node:https';
 
 import { managementBaseUrl } from '@couchbase-traces/common-utils/dist/couchbase/management';
 
@@ -123,7 +125,7 @@ export function nodeMgmtHttp(caPath?: string): MgmtHttp {
         headers['content-length'] = String(Buffer.byteLength(payload));
       }
       const options = { method: req.method, headers, timeout: 10_000 };
-      const handle = (res: http.IncomingMessage) => {
+      const handle = (res: IncomingMessage) => {
         const chunks: Buffer[] = [];
         res.on('data', (chunk: Buffer) => chunks.push(chunk));
         res.on('end', () =>
@@ -136,8 +138,8 @@ export function nodeMgmtHttp(caPath?: string): MgmtHttp {
       };
       const request =
         url.protocol === 'https:'
-          ? https.request(url, { ...options, ...(ca ? { ca } : {}) }, handle)
-          : http.request(url, options, handle);
+          ? httpsRequest(url, { ...options, ...(ca ? { ca } : {}) }, handle)
+          : httpRequest(url, options, handle);
       request.on('timeout', () =>
         request.destroy(new Error('management request timed out')),
       );
