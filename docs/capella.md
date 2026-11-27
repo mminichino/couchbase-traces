@@ -55,6 +55,14 @@ step 3.
 
 ## Known limits
 
+- Setup does not change the cluster's completed-requests settings on Capella:
+  database credentials cannot call the management REST API.
+  `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` and `CBT_COUCHBASE_COMPLETED_LIMIT` are
+  skipped with a notice; ask Couchbase support to change `queryCompletedThreshold`
+  and `queryCompletedLimit` if you need fast queries in
+  `system:completed_requests` (see
+  [DEPLOY.md](../DEPLOY.md#completed-requests-log-settings) for the memory cost).
+
 - Search index replica counts may differ from self-managed defaults; adjust them
   in Capella if index creation fails.
 - WAN latency slows live tail and alerts (`request_plus` scan consistency costs

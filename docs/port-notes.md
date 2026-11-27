@@ -4343,3 +4343,36 @@ CLI binaries attached to the release (SHA-256 of the downloaded assets):
   had the D33 pattern on the same `id=yarn-cache` mount the release Dockerfile
   uses; both now use `sharing=locked` and no `yarn cache clean`.
 - **P13** moved to v1.1.0 (user, 2026-11-26).
+
+## v1.1.0 (2026-11-27)
+
+- **P13: completed-requests settings in setup.** `packages/ingest/src/setup/querySettings.ts`,
+  run by `ingest setup` after users and before metadata. Checked against the
+  8.0 REST reference (`rest-api/rest-cluster-query-settings.html`):
+  `GET`/`POST /settings/querySettings` on 8091/18091,
+  `queryCompletedThreshold` and `queryCompletedLimit` are int32, and the call
+  needs Full Admin or Cluster Admin. Deviations from plan 2.3:
+  - The write is form-encoded. The reference lists `application/json` too, but
+    a live 8.0.3 node answers a JSON body with `400 {"errors":{"_":"Request
+    should have parameters"}}`; the reference's curl example sends a form.
+    Found by `querySettings.int.test.ts`.
+  - The signature takes an injected `http: MgmtHttp` (method, url, credentials,
+    JSON body) instead of `fetchImpl?: typeof fetch`, so the client can trust
+    `CBT_COUCHBASE_CA_CERT_PATH` for `https://` (global `fetch` has no per-call
+    CA), plus `capella` and `log`, like the other setup steps.
+  - `skipped` gains `'unreachable'`: a refused or timed-out management port is
+    a warning, the same as a 403, because the setting is observability only.
+  - The management port is 8091 (18091 for `couchbases://`) on the first
+    connection-string host via `managementBaseUrl` from common-utils, with
+    `CBT_COUCHBASE_MGMT_PORT` as the override (the variable `docker/couchbase/init.sh`
+    already reads). The connection-string port is the KV bootstrap port and is
+    not reused.
+  - Validation follows 2.3: an integer from -1 to 2147483647; `-2` is rejected
+    although the server treats any negative threshold as "none".
+  - The `statement` qualifier in the memory note is node-level
+    (`/admin/settings`, `completed.+statement`, per
+    `n1ql/n1ql-rest-api/admin.html` Logging Parameters); DEPLOY.md says so.
+  - Acceptance 2 runs in `querySettings.int.test.ts` on the
+    `port/couchbase-test` node rather than a compose stack: it sets the
+    threshold through the cluster endpoint, issues a fast query with a
+    `buildQueryId` context id, and finds it in `system:completed_requests`.

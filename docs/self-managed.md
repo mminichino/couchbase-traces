@@ -49,6 +49,13 @@ changed, `--index-replicas N` sets index replicas (default
 `CBT_COUCHBASE_INDEX_REPLICAS`, else 0), `--wait-timeout-s N` bounds the index
 build wait, and `--no-metadata` skips `cbt_meta`.
 
+To record fast queries in `system:completed_requests`, set
+`CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` (for example `0`) and optionally
+`CBT_COUCHBASE_COMPLETED_LIMIT`; setup applies them cluster wide and needs Full
+Admin or Cluster Admin for that step (without it, a warning). Logging every
+request costs Query memory; see
+[DEPLOY.md](../DEPLOY.md#completed-requests-log-settings).
+
 Setup is idempotent: an existing bucket, collection, index, or user reports
 `exists` or `updated`. Right after cluster initialization the data service can
 reject the new admin password for about a second; setup retries authentication

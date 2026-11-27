@@ -13,6 +13,13 @@ import {
   metadataSetupConfig,
   runMetadataSetup,
 } from '@/setup/metadata';
+import {
+  ensureQuerySettings,
+  managementUrl,
+  nodeMgmtHttp,
+  parseCompletedSettings,
+  querySettingsDryRun,
+} from '@/setup/querySettings';
 import { ensureSearchIndexes } from '@/setup/search';
 import { ensureUsers } from '@/setup/users';
 
@@ -96,6 +103,8 @@ export async function runSetup(
         ? opts.indexReplicas
         : envInt(env.CBT_COUCHBASE_INDEX_REPLICAS, 0);
     const ttl = ttlByCollection(env);
+    // Invalid values fail here, before any cluster call (exit 1).
+    const completed = parseCompletedSettings(env);
     if (opts.dryRun) {
       log(`${opts.createBucket ? 'created' : 'skipped'} bucket ${bucket}`);
       for (const spec of COLLECTIONS) log(`created collection ${spec.name}`);
@@ -113,6 +122,7 @@ export async function runSetup(
         log('skipped search');
       }
       log(opts.createUsers ? 'created users' : 'skipped users');
+      querySettingsDryRun(completed, isCapella(connstr), log);
       if (opts.metadata) {
         metadataDryRun(
           metadataSetupConfig(env, replicas),
@@ -157,6 +167,18 @@ export async function runSetup(
       } else {
         log('skipped users');
       }
+      const capella = isCapella(connstr);
+      await ensureQuerySettings({
+        // Capella skips before the URL is used; don't parse its host.
+        mgmtUrl: capella ? '' : managementUrl(connstr, env),
+        username: env.CBT_COUCHBASE_ADMIN_USER ?? '',
+        password: env.CBT_COUCHBASE_ADMIN_PASSWORD ?? '',
+        wanted: completed,
+        dryRun: false,
+        capella,
+        http: nodeMgmtHttp(env.CBT_COUCHBASE_CA_CERT_PATH || undefined),
+        log,
+      });
       if (opts.metadata) {
         await provisionMetadata(env, connstr, cluster, opts, replicas, log);
       } else {
