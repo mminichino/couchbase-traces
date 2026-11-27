@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-26T18:28:57.328Z",
-  "gitSha": "606a45e732f0403bc0778658509483416438da86",
+  "generatedAt": "2026-11-27T00:34:38.746Z",
+  "gitSha": "4db67108c2a7110c7d8ef16fece8698ab55dcef8",
   "dirty": false,
   "final": true,
   "environment": {
@@ -10,7 +10,7 @@
     "dockerCpus": 10,
     "dockerMemoryBytes": 16745758720,
     "node": "v22.23.4",
-    "couchbaseImage": "couchbase/server:enterprise-8.0.3"
+    "couchbaseImage": "unknown"
   },
   "checks": [
     {
@@ -1203,14 +1203,54 @@
       "status": "pass"
     },
     {
-      "summary": "Pending push and --record-ci",
-      "details": null,
+      "summary": "GitHub Actions run succeeded for 4db67108c2a7",
+      "details": {
+        "expectedSha": "4db67108c2a7110c7d8ef16fece8698ab55dcef8",
+        "recordedUrl": "https://github.com/mminichino/couchbase-traces/actions/runs/45915061895",
+        "siblingFailures": [],
+        "runs": [
+          {
+            "name": "PR Triage",
+            "id": 45915061847,
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/mminichino/couchbase-traces/actions/runs/45915061847"
+          },
+          {
+            "name": "Knip - Unused Code Analysis",
+            "id": 45915062192,
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/mminichino/couchbase-traces/actions/runs/45915062192"
+          },
+          {
+            "name": "jscpd - Duplicate Code Analysis",
+            "id": 45915061905,
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/mminichino/couchbase-traces/actions/runs/45915061905"
+          },
+          {
+            "name": "Docker Build",
+            "id": 45915061840,
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/mminichino/couchbase-traces/actions/runs/45915061840"
+          },
+          {
+            "name": "Main",
+            "id": 45915061895,
+            "status": "completed",
+            "conclusion": "success",
+            "html_url": "https://github.com/mminichino/couchbase-traces/actions/runs/45915061895"
+          }
+        ]
+      },
       "evidence": [],
-      "durationMs": 0,
+      "durationMs": 677,
       "id": "K2",
       "title": "GitHub Actions",
-      "status": "blocked",
-      "request": "Push this commit to origin (ORIGIN_URL) and run the acceptance runner with --record-ci <workflow run URL>."
+      "status": "pass"
     },
     {
       "summary": "gitleaks found no secrets",
@@ -1280,5 +1320,5 @@
       "status": "pass"
     }
   ],
-  "status": "blocked"
+  "status": "pass"
 }
