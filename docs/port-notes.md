@@ -4362,6 +4362,13 @@ CLI binaries attached to the release (SHA-256 of the downloaded assets):
     int suite run from source and could not see it. Named imports fix it;
     `buildHelpers.test.ts` transpiles every ingest source with the build's
     options and fails on any tslib import.
+- **E2E `team` "should cancel team name editing" (recurring retry, R4/R5).**
+  The v1.1.0 `make e2e` run failed it on both attempts, and it was flaky with
+  `team.spec.ts` alone, so the race is not the cross-spec rename R4 suspected.
+  `getTeamNameText` read the header before the team query resolved and got
+  the `'My team'` placeholder (`TeamPage.tsx`), then expected it after the
+  cancel. It now reads the name from `GET /team` and waits for the header to
+  show it. Three runs of the spec: 10 passed, none on retry.
   - The signature takes an injected `http: MgmtHttp` (method, url, credentials,
     JSON body) instead of `fetchImpl?: typeof fetch`, so the client can trust
     `CBT_COUCHBASE_CA_CERT_PATH` for `https://` (global `fetch` has no per-call

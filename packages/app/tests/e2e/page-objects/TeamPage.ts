@@ -4,7 +4,9 @@
  * Sources, Connections, Integrations/Webhooks, Team Name,
  * Query Settings, API Keys, and Team Members.
  */
-import { Locator, Page } from '@playwright/test';
+import { expect, Locator, Page } from '@playwright/test';
+
+import { getApiUrl } from '../utils/api-helpers';
 
 export class TeamPage {
   readonly page: Page;
@@ -161,8 +163,22 @@ export class TeamPage {
 
   // --- Team Name ---
 
-  async getTeamNameText() {
-    return this.teamNameDisplay.textContent();
+  /**
+   * The saved team name, once the header shows it. Until the team query
+   * resolves the header renders a 'My team' placeholder, and reading it then
+   * made name tests "restore" the placeholder or expect it after a cancel.
+   */
+  async getTeamNameText(): Promise<string> {
+    const res = await this.page.request.get(`${getApiUrl()}/team`);
+    expect(res.ok()).toBe(true);
+    const body: unknown = await res.json();
+    const name =
+      body != null && typeof body === 'object' && 'name' in body
+        ? String(body.name)
+        : '';
+    expect(name).not.toBe('');
+    await expect(this.teamNameDisplay).toHaveText(name);
+    return name;
   }
 
   async startEditingTeamName() {
