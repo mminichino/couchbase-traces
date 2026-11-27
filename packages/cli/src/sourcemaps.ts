@@ -10,17 +10,13 @@ import { basename, join, resolve } from 'path';
 import { readFileSync, statSync } from 'fs';
 
 import { globSync } from 'glob';
-import { createRequire } from 'module';
+
+import { CLI_VERSION as PKG_VERSION } from '@/version';
 
 // Use process.stderr/stdout directly because console.error/log/info
 // are silenced by silenceLogs.ts for the TUI mode.
 const log = (msg: string) => process.stdout.write(`${msg}\n`);
 const logError = (msg: string) => process.stderr.write(`${msg}\n`);
-
-const require = createRequire(import.meta.url);
-
-const PKG_VERSION: string = (require('../package.json') as { version: string })
-  .version;
 
 const MAX_RETRIES = 3;
 const RETRY_DELAYS = [1000, 3000]; // ms between retries

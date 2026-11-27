@@ -80,7 +80,11 @@ On a branch named `mm--release-vX-Y-Z`:
 
 7. Create the GitHub release (maintainer instruction only), attaching the CLI
    binaries built with `yarn workspace @couchbase-traces/cli compile:linux`,
-   `compile:macos`, and `compile:macos-x64`:
+   `compile:macos`, and `compile:macos-x64`. These need Bun at the version in
+   `packages/cli/package.json` `engines.bun` on `PATH`, and
+   `yarn workspace @couchbase-traces/common-utils build` first (the CLI imports
+   its `dist`). Check that `packages/cli/dist/cbt-darwin-arm64 --version` prints
+   `X.Y.Z` before uploading:
 
    ```bash
    gh release create vX.Y.Z --title "Couchbase Traces vX.Y.Z" --verify-tag \

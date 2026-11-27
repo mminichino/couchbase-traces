@@ -269,6 +269,25 @@ jobs:
         run: |
           echo "::error::Parity golden replay failed"
           exit 1
+  # D34: v1.0.0's compiled CLI binaries crashed on every command and nothing ran
+  # them. Build all three with the pinned Bun; run the Linux one.
+  cli-binaries:
+    name: CLI binaries
+    timeout-minutes: 10
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Setup node
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: '.nvmrc'
+          cache-dependency-path: 'yarn.lock'
+          cache: 'yarn'
+      - name: Install root dependencies
+        run: yarn install --immutable
+      - name: Build and run the CLI binaries
+        run: make cli-binaries-check
   otel-unit-test:
     timeout-minutes: 8
     runs-on: ubuntu-24.04

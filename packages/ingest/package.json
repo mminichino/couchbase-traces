@@ -1,7 +1,7 @@
 {
   "name": "@couchbase-traces/ingest",
   "description": "Couchbase Traces telemetry ingestion service",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "private": true,
   "engines": {

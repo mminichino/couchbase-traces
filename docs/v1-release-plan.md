@@ -470,6 +470,8 @@ pushes to `main` directly.
 | D30   | Defects: all-in-one ingest setup races the admin password                         | Found in R6 (section 9.1); own small PR after R6, before R7 (Q60); fixed                                                                                                                                                                                                                                                                                                  |
 | D31   | Cleanup: dead `all-in-one-noauth` stage and entry scripts                         | Found in R7 (section 9.1); v1.0.1 backlog P14 (user, 2026-11-26)                                                                                                                                                                                                                                                                                                          |
 | D32   | Kubernetes E2E: pod, node and namespace charts miss their 5 s waits under CI load | Q61 recurrence (2026-11-26): Main runs on `main` 4b54ca9 and 6922b3b and PR #50 868e13b failed `kubernetes.spec.ts` (pod details, node and namespace metrics) on all retries; local passes. Per Q61, make the K8s chart and field-value queries cheaper or seed fewer gauge points; do not raise timeouts. Fixed in PR #51 (seed 100 K8s metric pods; timeouts unchanged) | M    | Before R8 step 4              |
+| D33   | Release: multi-platform image build races on the Yarn cache                       | Found in the v1.0.0 publish (Q63); fixed in the v1.0.1 release-fixes PR                                                                                                                                                                                                                                                                                                   | S    | —                             |
+| D34   | Release: compiled CLI binaries crash; version 0.0.0                               | Found in the v1.0.0 publish (Q63); fixed in the v1.0.1 release-fixes PR, with a CI binary check                                                                                                                                                                                                                                                                           | S    | —                             |
 | D14   | Dev tooling: live-test port offset fallback                                       | Found in D7 (section 9.1)                                                                                                                                                                                                                                                                                                                                                 | S    | —                             |
 | R2a   | Port deferred int suites: internal and external API                               | B1 (10 suites: `routers/api/{dashboard,iac,sources,connections}`, `routers/external-api/{charts,search,sources,sources-crud,connections}`, `middleware/queryAttribution`); 9 ported, `queryAttribution` moves to D29                                                                                                                                                      | L    | D1                            |
 | R2b   | Port deferred int suites: alerts                                                  | B1 (5 suites: `checkAlerts`, `multiChannelAlerts`, `renderAlertTemplate`, `singleInvocationAlert`, `providers/default`; 335 tests, 93 failing per R0)                                                                                                                                                                                                                     | L    | R2c, D1, D4, D6               |
@@ -1344,6 +1346,39 @@ builder docs once in their final form.
   "should show pod details", "node metrics", "namespace metrics"). See the D32
   section below.
 
+#### D33: Multi-platform image build races on the Yarn cache (found in the v1.0.0 publish, size S)
+
+Evidence: `make release-images VERSION=1.0.0 LATEST=1` from a clean `v1.0.0`
+checkout failed in the amd64 `node_base` `yarn install` with `ENOENT` while
+linking from `/root/.yarn/berry/cache`. Both platforms shared the
+`id=yarn-cache` BuildKit mount (default `sharing=shared`), and one ran
+`yarn cache clean` while the other was linking from it. The script builds every
+image before pushing any, so nothing was pushed. Upstream has the same lines; it
+builds one architecture per runner.
+
+Fix: `sharing=locked` on both Yarn cache mounts in `docker/hyperdx/Dockerfile`,
+and no `yarn cache clean` in the mount (the cache never lands in a layer).
+`packages/ingest/Dockerfile` has no cache mount. The otel-collector Go caches
+(`ocb-gomod`, `ocb-gobuild`) are safe for concurrent use and never cleaned.
+Verified with `make release-images VERSION=1.0.1 DRY_RUN=1` and a local
+`linux/arm64,linux/amd64` buildx build of every release image without push.
+
+#### D34: Compiled CLI binaries crash on startup; version 0.0.0 (found in the v1.0.0 publish, size S)
+
+Evidence: every `bun build --compile` binary failed on any command, `--help`
+included: `Cannot find module '../package.json'`. `src/sourcemaps.ts` read it at
+module load, and a compiled binary has no such file. `--version` read
+`process.env.npm_package_version`, which tsup inlines but `bun build` did not,
+so it would have printed `0.0.0`. No check ran the binaries before a release.
+
+Fix: `packages/cli/src/version.ts` owns the version; the `compile*` scripts pass
+`--env='npm_package_version*'` so Bun inlines it. `version.test.ts` fails on any
+runtime `package.json` read or a compile script without the flag.
+`scripts/ci/check-cli-binaries.sh` (`make cli-binaries-check`, and the
+`CLI binaries` job in `main.yml`) builds all three with the pinned Bun and runs
+`--version` (must equal the package version) and `--help` on each binary the
+host can execute. It fails against the v1.0.0 sources.
+
 #### D32: Kubernetes E2E chart waits time out under CI load (found on PR #50, size S)
 
 Evidence: `system:completed_requests` from a local four-worker run of
@@ -2076,11 +2111,11 @@ await the user.
   next run failed `kubernetes.spec.ts` on shard 3, the Q61 failure, which also
   failed `main` twice. Opened D32. R8 stops before step 4 until D32 lands and PR
   #50 is green, then K2 is recorded with `--record-ci`. D32 merged as PR #51
-  (all four E2E shards green, no retries) and `main` was merged into PR #50.
-  The next PR #50 run failed shard 1 on `dashboard-adhoc-click-filters` again:
-  the completion popup opened _after_ `dismissSqlAutocomplete` blurred the
-  editor, because CodeMirror starts completion 100 ms after the last key and its
-  blur handler closes only an open popup. The helper now waits up to 1 s for a
+  (all four E2E shards green, no retries) and `main` was merged into PR #50. The
+  next PR #50 run failed shard 1 on `dashboard-adhoc-click-filters` again: the
+  completion popup opened _after_ `dismissSqlAutocomplete` blurred the editor,
+  because CodeMirror starts completion 100 ms after the last key and its blur
+  handler closes only an open popup. The helper now waits up to 1 s for a
   pending popup to appear before blurring (condition wait, no timeout change).
 
 ## 10. Decisions
@@ -2153,6 +2188,7 @@ in that phase.
 | Q60 | Placement of D30, the all-in-one ingest setup race (2026-11-25)                                                         | Its own small PR after R6 and before R7 (user, 2026-11-25), so R7's acceptance run and the R8 image smoke don't hit it. Started only on the user's go-ahead.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Q61 | `kubernetes.spec.ts` chart and autocomplete waits time out under CI load (found on PR #48, 2026-11-25)                  | Accepted (user, 2026-11-25): watch it. If it recurs, open a D-numbered fix that makes the K8s chart and field-value queries cheaper (or seeds fewer gauge points); do not raise timeouts. Recurred on PR #50 and `main` (2026-11-26): fixed as D32 by seeding 100 K8s metric pods instead of 500.                                                                                                                                                                                                                                                                                                                                               |
 | Q62 | C1/C2 need a Capella cluster for R7 acceptance status **pass** (2026-11-25)                                             | Credentials provided (user, 2026-11-26). Cluster lacks the `cbt_meta` bucket; user to create it (Magma, 256 MB or more), then re-run acceptance with `--capella` before the v1.0.0 tag                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Q63 | v1.0.0 tagged but its publish failed (image build race, broken CLI binaries) (2026-11-26)                               | Release as v1.0.1 (user, 2026-11-26). Leave the `v1.0.0` tag (`6acf5af`) untouched: no deletion or move, and no images or GitHub release for it. D33 and D34 are fixed on `mm--v1-d33-d34-release-fixes`; v1.0.1 is the first published release.                                                                                                                                                                                                                                                                                                                                                                                                |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 
