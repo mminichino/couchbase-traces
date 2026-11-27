@@ -1,5 +1,12 @@
 # @couchbase-traces/app
 
+## 1.1.0
+
+### Minor Changes
+
+- Lock-stepped with the product at 1.1.0. End-to-end team settings tests read
+  the saved team name instead of the loading placeholder.
+
 ## 1.0.2
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @couchbase-traces/cli
 
+## 1.1.0
+
+### Minor Changes
+
+- Lock-stepped with the product at 1.1.0; no changes in this package.
+
 ## 1.0.2
 
 ### Patch Changes

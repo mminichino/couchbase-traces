@@ -1,5 +1,13 @@
 # @couchbase-traces/ingest
 
+## 1.1.0
+
+### Minor Changes
+
+- `setup` can apply the cluster-wide completed-requests settings from
+  `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` and `CBT_COUCHBASE_COMPLETED_LIMIT`
+  (opt-in; skipped on Capella).
+
 ## 1.0.2
 
 ### Patch Changes
