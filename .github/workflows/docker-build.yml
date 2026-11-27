@@ -294,3 +294,56 @@ jobs:
           steps.changed-files.outputs.any_changed == 'true'
         timeout-minutes: 25
         run: scripts/ci/smoke-all-in-one.sh couchbase-traces-aio-smoke:pr
+
+  # D33: v1.0.0's release build failed only when both platforms built at once
+  # (a shared yarn cache mount). Run the release build pass for every release
+  # image on amd64 and arm64 (QEMU), pushing nothing. No layer cache: a cached
+  # install layer would skip exactly the step that broke.
+  release-images-multiarch:
+    name: Build Release Images (amd64 + arm64)
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+            /opt/hostedtoolcache/CodeQL /usr/local/share/boost || true
+          docker system prune -af --volumes || true
+          df -h /
+      - name: Get changed files
+        id: changed-files
+        if: github.event_name == 'pull_request'
+        uses: tj-actions/changed-files@v47.0.6
+        with:
+          files: |
+            docker/hyperdx/**
+            docker/otel-collector/**
+            packages/api/**
+            packages/app/**
+            packages/common-utils/**
+            packages/ingest/**
+            packages/otel-collector/**
+            package.json
+            yarn.lock
+            .yarn/**
+            .yarnrc.yml
+            scripts/release/**
+      - name: Setup QEMU
+        if:
+          github.event_name != 'pull_request' ||
+          steps.changed-files.outputs.any_changed == 'true'
+        uses: docker/setup-qemu-action@v3
+        with:
+          platforms: arm64
+      - name: Setup Docker Buildx
+        if:
+          github.event_name != 'pull_request' ||
+          steps.changed-files.outputs.any_changed == 'true'
+        uses: docker/setup-buildx-action@v3
+      - name: Build (cache only, no push)
+        if:
+          github.event_name != 'pull_request' ||
+          steps.changed-files.outputs.any_changed == 'true'
+        run: make release-images-check

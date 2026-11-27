@@ -294,6 +294,13 @@ release-images:
 	scripts/release/release-images.sh "$(VERSION)" --platforms "$(BUILD_PLATFORMS)" \
 		$(if $(filter 1,$(LATEST)),--latest) $(if $(filter 1,$(DRY_RUN)),--dry-run)
 
+# The release build pass for both platforms at once, pushing nothing (D33).
+# Runs from any checkout; CI runs it in docker-build.yml.
+.PHONY: release-images-check
+release-images-check:
+	scripts/release/release-images.sh "$$(node -p "require('./package.json').version")" \
+		--platforms linux/amd64,linux/arm64 --cache-only
+
 # Build targets (local builds only). Each image is tagged with the full version
 # and with ${IMAGE_VERSION}, the tag docker-compose.yml pulls, so a local build
 # is what `docker compose up` runs.

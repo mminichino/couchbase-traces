@@ -6,11 +6,15 @@
 #
 #   scripts/release/release-images.sh <version> [--latest] \
 #     [--platforms linux/amd64,linux/arm64] [--images app,ingest,otel-collector] \
-#     [--dry-run]
+#     [--dry-run | --cache-only]
 #
 # Every image is built for every platform first and pushed only after all
 # builds succeed, so a failed architecture leaves nothing partial on ghcr.io.
 # A re-run is idempotent: same inputs, same tags.
+#
+# --cache-only runs the build pass alone from any checkout and pushes nothing.
+# CI uses it to build every release image for both platforms at once, which is
+# how the D33 yarn-cache race surfaced only at release time.
 set -euo pipefail
 
 REPO_ROOT=$(cd "$(dirname "$0")/../.." && pwd)
@@ -21,7 +25,7 @@ NAMESPACE=mminichino
 SOURCE_URL=https://github.com/mminichino/couchbase-traces
 
 usage() {
-  sed -n '7,10p' "$0" >&2
+  sed -n '7,9p' "$0" >&2
   exit 2
 }
 
@@ -30,18 +34,21 @@ LATEST=0
 PLATFORMS=linux/amd64,linux/arm64
 IMAGES=app,ingest,otel-collector
 DRY_RUN=0
+CACHE_ONLY=0
 while [[ $# -gt 0 ]]; do
   case $1 in
     --latest) LATEST=1 ;;
     --platforms) PLATFORMS=${2:?}; shift ;;
     --images) IMAGES=${2:?}; shift ;;
     --dry-run) DRY_RUN=1 ;;
+    --cache-only) CACHE_ONLY=1 ;;
     -*) usage ;;
     *) [[ -z $VERSION ]] || usage; VERSION=$1 ;;
   esac
   shift
 done
 [[ -n $VERSION ]] || usage
+[[ $DRY_RUN == 1 && $CACHE_ONLY == 1 ]] && usage
 
 latest_flag=$([[ $LATEST == 1 ]] && echo true || echo false)
 TAGS=$(node --input-type=module -e "
@@ -74,7 +81,7 @@ image_spec() {
 IFS=',' read -r -a IMAGE_LIST <<<"$IMAGES"
 for image in "${IMAGE_LIST[@]}"; do image_spec "$image" >/dev/null; done
 
-if [[ $DRY_RUN == 0 ]]; then
+if [[ $DRY_RUN == 0 && $CACHE_ONLY == 0 ]]; then
   [[ -z $(git status --porcelain) ]] || fail "working tree is not clean"
   tag_sha=$(git rev-parse -q --verify "refs/tags/v${VERSION}^{commit}") ||
     fail "tag v${VERSION} does not exist"
@@ -83,6 +90,8 @@ if [[ $DRY_RUN == 0 ]]; then
   git merge-base --is-ancestor HEAD origin/main || fail "v${VERSION} is not on origin/main"
   node scripts/release/set-version.mjs "$VERSION" --check >/dev/null ||
     fail "version locations are not all ${VERSION}; run make version VERSION=${VERSION}"
+fi
+if [[ $DRY_RUN == 0 ]]; then
   docker buildx inspect >/dev/null 2>&1 || fail "docker buildx is not available"
 fi
 REVISION=$(git rev-parse HEAD)
@@ -109,6 +118,10 @@ build() {
 echo "Release images ${IMAGES} at ${VERSION} (tags: ${TAGS}; platforms: ${PLATFORMS})"
 # Build pass: every image and platform into the builder cache, nothing pushed.
 for image in "${IMAGE_LIST[@]}"; do build "$image" --output=type=cacheonly; done
+if [[ $CACHE_ONLY == 1 ]]; then
+  echo "built ${IMAGES} for ${PLATFORMS}; nothing pushed (--cache-only)"
+  exit 0
+fi
 # Push pass: the same builds, served from cache.
 for image in "${IMAGE_LIST[@]}"; do
   build "$image" --push || fail "push of ${image} failed; images reported as pushed above landed, re-run to finish"

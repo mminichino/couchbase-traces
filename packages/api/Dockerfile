@@ -12,8 +12,11 @@ COPY ./packages/api/jest.config.js ./packages/api/tsconfig.json ./packages/api/t
 COPY ./packages/api/bin ./packages/api/bin
 # Use BuildKit cache mount to persist Yarn download cache across builds,
 # so unchanged packages aren't re-downloaded even when yarn.lock changes.
-RUN --mount=type=cache,target=/root/.yarn/berry/cache,id=yarn-cache \
-    yarn install --mode=skip-build && yarn cache clean
+# sharing=locked and no `yarn cache clean`: this mount id is shared with
+# docker/hyperdx/Dockerfile, and concurrent installs on one cache hit ENOENT
+# (D33).
+RUN --mount=type=cache,target=/root/.yarn/berry/cache,id=yarn-cache,sharing=locked \
+    yarn install --mode=skip-build
 
 
 ## dev #############################################################################################
@@ -45,7 +48,7 @@ COPY --from=common-utils-builder /app/packages/common-utils ./packages/common-ut
 
 COPY ./packages/api/src ./packages/api/src
 RUN yarn workspace @couchbase-traces/api run build
-RUN --mount=type=cache,target=/root/.yarn/berry/cache,id=yarn-cache \
+RUN --mount=type=cache,target=/root/.yarn/berry/cache,id=yarn-cache,sharing=locked \
     rm -rf node_modules && yarn workspaces focus @couchbase-traces/api --production
 
 

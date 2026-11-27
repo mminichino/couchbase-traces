@@ -33,7 +33,6 @@ export const FRONTEND_URL = (env.FRONTEND_URL ||
 const CBT_IMAGE = env.CBT_IMAGE;
 export const IS_APP_IMAGE = CBT_IMAGE === 'hyperdx';
 export const IS_ALL_IN_ONE_IMAGE = CBT_IMAGE === 'all-in-one-auth';
-export const IS_LOCAL_IMAGE = CBT_IMAGE === 'all-in-one-noauth';
 // On Vercel preview deployments the API is inlined into the Next.js app and
 // shares its origin, so we emit relative redirects (FRONTEND_URL there points
 // at the production host). Everywhere else the API and app run on separate
