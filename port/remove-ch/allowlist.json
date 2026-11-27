@@ -14,7 +14,7 @@
       "note": "Upstream AGENTS snapshot."
     },
     {
-      "path": "PHASE_*_SPEC.md",
+      "path": "docs/history/PHASE_*_SPEC.md",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Phase specs."
@@ -1938,12 +1938,6 @@
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
-    },
-    {
-      "path": "docker/hyperdx/entry.local.base.sh",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Unused upstream entry script (D31)."
     },
     {
       "path": "docker/otel-collector/custom.config.yaml",

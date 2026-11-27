@@ -13,7 +13,7 @@ COPY ./packages/api/bin ./packages/api/bin
 # Use BuildKit cache mount to persist Yarn download cache across builds,
 # so unchanged packages aren't re-downloaded even when yarn.lock changes.
 # sharing=locked and no `yarn cache clean`: this mount id is shared with
-# docker/hyperdx/Dockerfile, and concurrent installs on one cache hit ENOENT
+# the release Dockerfile, and concurrent installs on one cache hit ENOENT
 # (D33).
 RUN --mount=type=cache,target=/root/.yarn/berry/cache,id=yarn-cache,sharing=locked \
     yarn install --mode=skip-build

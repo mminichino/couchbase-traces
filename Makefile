@@ -297,9 +297,11 @@ release-images:
 # The release build pass for both platforms at once, pushing nothing (D33).
 # Runs from any checkout; CI runs it in docker-build.yml.
 .PHONY: release-images-check
+# CI passes RELEASE_CHECK_PLATFORMS=linux/<arch> on a native runner (P15).
+RELEASE_CHECK_PLATFORMS ?= linux/amd64,linux/arm64
 release-images-check:
 	scripts/release/release-images.sh "$$(node -p "require('./package.json').version")" \
-		--platforms linux/amd64,linux/arm64 --cache-only
+		--platforms "$(RELEASE_CHECK_PLATFORMS)" --cache-only
 
 # Build targets (local builds only). Each image is tagged with the full version
 # and with ${IMAGE_VERSION}, the tag docker-compose.yml pulls, so a local build

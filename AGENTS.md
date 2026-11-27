@@ -1,6 +1,6 @@
 # AGENTS.md
 
-Project context for coding assistants working on Couchbase Traces. Read this file in full before any task. The phased work plan is in `COUCHBASE_PORT_PLAN.md`; run its phases in order and follow the rules here throughout.
+Project context for coding assistants working on Couchbase Traces. Read this file in full before any task. The port phases are complete; their specs are archived in `docs/history/` (`COUCHBASE_PORT_PLAN.md` was never committed, a Phase 0 waiver). Current work is planned in `docs/v1-release-plan.md`; follow the rules here throughout.
 
 ## Goal
 

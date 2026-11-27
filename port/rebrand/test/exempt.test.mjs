@@ -9,7 +9,7 @@ describe('isExempt', () => {
       'LICENSE',
       'NOTICE',
       'docs/port-notes.md',
-      'PHASE_11_SPEC.md',
+      'docs/history/PHASE_11_SPEC.md',
       'docs/upstream/AGENTS.md',
       'docs/mongo-elimination-plan.md',
       'docs/v1-release-plan.md',

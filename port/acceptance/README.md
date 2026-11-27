@@ -1,6 +1,6 @@
 # Acceptance runner (Phase 11)
 
-Proves the finished product meets the acceptance list in `PHASE_11_SPEC.md`.
+Proves the finished product meets the acceptance list in `docs/history/PHASE_11_SPEC.md`.
 
 ## Prerequisites
 

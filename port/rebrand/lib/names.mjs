@@ -146,12 +146,13 @@ export function isExempt(p) {
     p === 'yarn.lock' ||
     p === 'docs/port-notes.md' ||
     p === 'docs/parity.md' ||
-    // Port plans quote upstream names as history, like the PHASE_*_SPEC.md files.
+    // Port plans quote upstream names as history, like the phase specs.
     p === 'docs/mongo-elimination-plan.md' ||
     p === 'docs/v1-release-plan.md'
   )
     return true;
-  if (/^PHASE_[^/]*_SPEC\.md$/.test(p)) return true;
+  // Phase specs, moved from the repo root in v1.1.0 (P10).
+  if (p.startsWith('docs/history/')) return true;
   if (p.startsWith('docs/upstream/')) return true;
   if (p.startsWith('.yarn/releases/')) return true;
   if (p.startsWith('port/')) return true;
