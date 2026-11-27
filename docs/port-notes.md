@@ -4198,23 +4198,54 @@ to run outside the agent sandbox, which blocks `git init` in a temp dir.
   orphan and re-running fixed it. Interrupted runs leave the same orphan; check
   `lsof -iTCP:21047` before re-running.
 
+## R8: Release v1.0.0 (2026-11-26)
+
+- **Capella (Q62).** Credentials are in the ignored, untracked `.env.local` and
+  were loaded only into single subshells. A read-only probe found all three
+  users connect, Query is 8.0.3 Enterprise, and `otel` is fully prepared, but
+  the `cbt_meta` bucket does not exist. Setup does not create Capella buckets,
+  so C1/C2 were not run. No host, user or password is recorded in the repo.
+- **D31** moved to the v1.0.1 backlog as P14 (user, 2026-11-26).
+- **Version bump.** All 16 locations at 1.0.0; `make ci-lint` runs
+  `version-check` and fails on any single reverted location.
+- **`set-version` tests depended on the repo's version.** Two tests expected an
+  edit to 1.0.0 to change files, so they broke at 1.0.0. They now use 9.8.7.
+- **Gates.** Lint, unit, integration, E2E (455 passed, 3 skipped), all-in-one
+  smoke, and the release-images dry run all passed. No tag, image push, or
+  GitHub release.
+- **Capella acceptance (2026-11-26).** With `cbt_meta` created, the first
+  `--capella` run failed C1/C2 because the Capella stack used the example
+  metadata user. The runner now passes `CBT_ACCEPT_CAPELLA_METADATA_*`, falling
+  back to the setup credential. Full run at `606a45e`: 22/23 pass, C1 and C2
+  pass on Capella, K2 open.
+- **D32 (Q61 recurred).** `kubernetes.spec.ts` failed on Main for `main`
+  `4b54ca9` and `6922b3b` and for PR #50 `868e13b` (pod details, node and
+  namespace metrics, all retries). R8 stops before the merge and tag until D32
+  lands.
+- **SQL completion popup, second cause.** After the D32 merge, shard 1 failed
+  `dashboard-adhoc-click-filters` with the popup over Run again. CodeMirror
+  opens completion 100 ms after the last keystroke, and its blur handler only
+  closes a popup that exists, so a blur in that window let the popup open on an
+  unfocused editor. `dismissSqlAutocomplete` (`tests/e2e/utils/locators.ts`)
+  now waits up to 1 s for a pending popup before blurring. Spec 50/50 at
+  `--repeat-each=5`; `make e2e` 455 passed, 3 skipped, no flakes. Fixed in PR #51; see the D32 section below.
+
 ## D32: Kubernetes E2E seed cost (2026-11-26)
 
 - **Root cause.** D15 seeded K8s gauge series for `numDataPoints` (500) pods,
   42,366 gauge points. Each `/kubernetes` load runs the pod-table query (12,065
   fetches), the `k8s.pod.name` field-value query (10,928 fetches), and `INFER`
   on the gauge collection; on the 2-CPU E2E Couchbase node these reached 6-7 s
-  per statement when several workers opened the page at once, past the 5 s
-  chart waits. Plans used the `TimeUnix` / `MetricName` GSI indexes, with no
-  primary scans.
+  per statement when several workers opened the page at once, past the 5 s chart
+  waits. Plans used the `TimeUnix` / `MetricName` GSI indexes, with no primary
+  scans.
 - **Fix.** `K8S_METRIC_PODS = 100` in `packages/app/tests/e2e/seed-couchbase.ts`
   (8,736 gauge points). Timeouts are unchanged (Q61). Upstream also seeds one
-  pod per log row; the reduction is a Couchbase E2E sizing choice, not a
-  product change.
+  pod per log row; the reduction is a Couchbase E2E sizing choice, not a product
+  change.
 - **No production index.** Field-value and key queries are capped by
   `sampleSize` and already use the time index; they read whole
   `ResourceAttributes` objects with dynamic keys, so a covering index would not
   apply. Nothing to add to `docker/couchbase` setup.
 - **Verification.** `kubernetes.spec.ts --repeat-each=10`, four workers, 130/130
   passed; the slowest gauge statement averaged 2.0 s afterwards.
-

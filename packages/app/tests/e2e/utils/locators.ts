@@ -63,13 +63,19 @@ export const blurActiveElement = async (page: Page) => {
  * (default) and dispatches no key event, so the surrounding modal is untouched.
  * Then wait for the tooltip to actually disappear so a following click isn't
  * intercepted by a still-animating popup.
+ *
+ * CodeMirror starts a completion 100ms after the last keystroke, and its blur
+ * handler only closes a popup that already exists. A blur inside that window
+ * (seen on slow CI shards) lets the popup open afterwards on the unfocused
+ * editor, over Run/Save. So first give a pending popup the chance to appear.
  */
 export const dismissSqlAutocomplete = async (page: Page) => {
+  const popup = page.locator('.cm-tooltip-autocomplete');
+  await popup.waitFor({ state: 'visible', timeout: 1000 }).catch(() => {
+    // No completion for the last token; nothing will open.
+  });
   await blurActiveElement(page);
-  await page
-    .locator('.cm-tooltip-autocomplete')
-    .waitFor({ state: 'hidden', timeout: 2000 })
-    .catch(() => {
-      // Nothing was open (or it closed already) — either way it's gone.
-    });
+  await popup.waitFor({ state: 'hidden', timeout: 2000 }).catch(() => {
+    // Nothing was open (or it closed already) — either way it's gone.
+  });
 };

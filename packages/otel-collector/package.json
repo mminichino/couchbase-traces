@@ -1,7 +1,7 @@
 {
   "name": "@couchbase-traces/otel-collector",
   "description": "Couchbase Traces OpenTelemetry Collector configuration and Docker image",
-  "version": "2.44.0",
+  "version": "1.0.0",
   "license": "MIT",
   "private": true
 }

@@ -23,7 +23,7 @@ published; build it yourself:
 make build-all-in-one
 docker run --memory=4g \
   -p 8080:8080 -p 4317:4317 -p 4318:4318 \
-  ghcr.io/mminichino/couchbase-traces-all-in-one:2
+  ghcr.io/mminichino/couchbase-traces-all-in-one:1
 ```
 
 The entrypoint refuses to start with less than 4 GB of container memory.

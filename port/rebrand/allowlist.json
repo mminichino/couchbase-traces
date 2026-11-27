@@ -2604,6 +2604,13 @@
       "snippet": "CBT_E2E_SLOTS_DIR=\"${HOME}/.config/hyperdx/dev-slots\"",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "term": "hyperdx",
+      "snippet": "the full HyperDX observability product",
+      "reason": "upstream_attribution",
+      "note": "1.0.0 release notes name the upstream project the product is derived from"
     }
   ]
 }

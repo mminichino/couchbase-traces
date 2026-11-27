@@ -2652,6 +2652,12 @@
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Explains the upstream ClickHouse behavior the SQL++ code reproduces."
+    },
+    {
+      "path": "CHANGELOG.md",
+      "pattern": "clickhouse",
+      "reason": "upstream_attribution",
+      "note": "1.0.0 release notes describe ClickHouse as the replaced upstream store and its breaking change"
     }
   ]
 }

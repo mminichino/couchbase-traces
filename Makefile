@@ -140,6 +140,7 @@ ci-lint:
 	scripts/ci/check-openapi-sync.sh
 	scripts/ci/check-no-mongo.sh
 	node scripts/ci/check-legacy-store-text.mjs
+	$(MAKE) --no-print-directory version-check
 
 .PHONY: ci-openapi
 ci-openapi:
