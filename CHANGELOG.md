@@ -2,6 +2,43 @@
 
 Release-level highlights. Upstream history is in docs/upstream/CHANGELOG.md.
 
+## v1.1.0 — 2026-11-27
+
+<!-- cbt-release-notes version=1.1.0 inputs=v110-release -->
+
+**Couchbase Traces 1.1.0**
+
+Opt-in completed-requests logging in setup, release-image checks that finish in
+minutes instead of an hour and a half, and repository cleanups.
+
+### ✨ Features
+
+- **Setup**: `ingest setup` can set the cluster-wide completed-requests log
+  settings, so the product's tagged (`hdx-…`) queries show up in
+  `system:completed_requests`. Set `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS`
+  (`0` logs every request) and optionally `CBT_COUCHBASE_COMPLETED_LIMIT`.
+  Unset leaves the cluster as it is. Setup writes only values that differ,
+  `--dry-run` shows what it would change, and it needs Full Admin or Cluster
+  Admin (without it, setup warns and continues). Capella clusters are skipped
+  with a notice. See DEPLOY.md for the Query memory cost of logging every
+  request.
+
+### 🐛 Bug Fixes
+
+- **Team settings tests**: "cancel team name editing" no longer reads the
+  "My team" placeholder shown while the team loads; it was the most frequently
+  retried end-to-end test.
+
+### 🧹 Maintenance
+
+- CI builds the release images for `linux/amd64` and `linux/arm64` on native
+  runners (about 12 minutes each, down from about 95 under emulation). Pull
+  requests run them only when Dockerfiles, release scripts, manifests or the
+  lockfile change. A new check fails on the shared-cache pattern that broke
+  the 1.0.0 image build.
+- The phase specs moved from the repository root to `docs/history/`.
+- The Main workflow no longer triggers on an unused `v1` branch.
+
 ## v1.0.2 — 2026-11-27
 
 <!-- cbt-release-notes version=1.0.2 inputs=v102-release -->
