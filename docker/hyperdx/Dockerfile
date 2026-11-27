@@ -72,8 +72,12 @@ RUN apk add --no-cache libc6-compat
 
 # Use BuildKit cache mount to persist Yarn download cache across builds,
 # so unchanged packages aren't re-downloaded even when yarn.lock changes.
-RUN --mount=type=cache,target=/root/.yarn/berry/cache,id=yarn-cache \
-    yarn install --mode=skip-build && yarn cache clean
+# sharing=locked: a multi-platform release builds this stage for amd64 and
+# arm64 at once, and one install linking from the cache while the other
+# writes it failed with ENOENT (v1.0.0). The cache is Yarn's global cache, so
+# it never lands in the layer and needs no `yarn cache clean`.
+RUN --mount=type=cache,target=/root/.yarn/berry/cache,id=yarn-cache,sharing=locked \
+    yarn install --mode=skip-build
 
 
 ## common-utils builder ############################################################################
@@ -114,7 +118,7 @@ ENV NEXT_OUTPUT_STANDALONE=true
 ENV NEXT_PUBLIC_IS_LOCAL_MODE=false
 RUN yarn workspace @couchbase-traces/api run build && \
     yarn workspace @couchbase-traces/app run build
-RUN --mount=type=cache,target=/root/.yarn/berry/cache,id=yarn-cache \
+RUN --mount=type=cache,target=/root/.yarn/berry/cache,id=yarn-cache,sharing=locked \
     rm -rf node_modules && yarn workspaces focus @couchbase-traces/api --production
 
 
