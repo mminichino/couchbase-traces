@@ -2077,6 +2077,11 @@ await the user.
   failed `main` twice. Opened D32. R8 stops before step 4 until D32 lands and PR
   #50 is green, then K2 is recorded with `--record-ci`. D32 merged as PR #51
   (all four E2E shards green, no retries) and `main` was merged into PR #50.
+  The next PR #50 run failed shard 1 on `dashboard-adhoc-click-filters` again:
+  the completion popup opened _after_ `dismissSqlAutocomplete` blurred the
+  editor, because CodeMirror starts completion 100 ms after the last key and its
+  blur handler closes only an open popup. The helper now waits up to 1 s for a
+  pending popup to appear before blurring (condition wait, no timeout change).
 
 ## 10. Decisions
 

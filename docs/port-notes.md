@@ -4221,7 +4221,14 @@ to run outside the agent sandbox, which blocks `git init` in a temp dir.
 - **D32 (Q61 recurred).** `kubernetes.spec.ts` failed on Main for `main`
   `4b54ca9` and `6922b3b` and for PR #50 `868e13b` (pod details, node and
   namespace metrics, all retries). R8 stops before the merge and tag until D32
-  lands. Fixed in PR #51; see the D32 section below.
+  lands.
+- **SQL completion popup, second cause.** After the D32 merge, shard 1 failed
+  `dashboard-adhoc-click-filters` with the popup over Run again. CodeMirror
+  opens completion 100 ms after the last keystroke, and its blur handler only
+  closes a popup that exists, so a blur in that window let the popup open on an
+  unfocused editor. `dismissSqlAutocomplete` (`tests/e2e/utils/locators.ts`)
+  now waits up to 1 s for a pending popup before blurring. Spec 50/50 at
+  `--repeat-each=5`; `make e2e` 455 passed, 3 skipped, no flakes. Fixed in PR #51; see the D32 section below.
 
 ## D32: Kubernetes E2E seed cost (2026-11-26)
 
