@@ -4376,3 +4376,42 @@ CLI binaries attached to the release (SHA-256 of the downloaded assets):
     `port/couchbase-test` node rather than a compose stack: it sets the
     threshold through the cluster endpoint, issues a fast query with a
     `buildQueryId` context id, and finds it in `system:completed_requests`.
+## v1.1.0: CI and repo cleanups (2026-11-27)
+
+- **P15: release-image check on native runners.** `docker-build.yml` now has
+  `release-images-changes` (always runs), `release-images-build` (matrix:
+  amd64 on `ubuntu-24.04`, arm64 on `ubuntu-24.04-arm`, a free standard runner
+  for public repos per GitHub's hosted-runner reference, verified 2026-11-27),
+  and `release-images-multiarch`, which keeps the old check name, always runs,
+  and succeeds when the builds succeeded or were skipped. Each build runs
+  `make release-images-check RELEASE_CHECK_PLATFORMS=linux/<arch>`; locally
+  the target still builds both platforms at once.
+  - Pull requests build only when a Dockerfile, `.dockerignore`, `docker/`,
+    `scripts/release/`, the Makefile, a package manifest, the collector
+    builder config or `go.mod`, the lockfile or Yarn config, or this workflow
+    changes; pushes to `main` always build. The workflow now also runs on `v*`
+    tag pushes, so each release tag gets both platform builds (the existing
+    image jobs run there too, since their path filters apply only to PRs).
+  - Coverage: per-platform native builds cannot reproduce D33's cross-platform
+    cache race, so `scripts/ci/check-cache-mounts.sh` (run by the `changes`
+    job on every event) fails on its cause: a yarn cache mount without
+    `sharing=locked`/`private`, or `yarn cache clean`. Against the v1.0.0
+    `docker/hyperdx/Dockerfile` it reports all three D33 lines. The release
+    itself (`release-images.sh`) still builds both platforms at once before
+    pushing.
+  - No branch protection on `main` (none configured), so nothing else needed
+    to change for required checks.
+- **P11.** `main.yml` triggers only on `main`; origin has no `v1` branch.
+- **P2.** Already done in R1 (PR #16, `1eafd73`); `packages/api/migrations/`
+  is gone and nothing references it. `port/remove-ch/verify.mjs` reports the
+  knip metric at 0.
+- **P10.** `PHASE_*_SPEC.md` moved to `docs/history/` (with a README).
+  AGENTS.md now points at `docs/v1-release-plan.md` instead of the
+  never-committed `COUCHBASE_PORT_PLAN.md`. The rebrand exemption
+  (`port/rebrand/lib/names.mjs`) and the remove-ch allowlist follow the new
+  path; spec citations in code comments (for example "PHASE_10_SPEC §9") are
+  names, not paths, and stay.
+- **v1.0.2 leftovers.** `port/remove-ch/verify.mjs` failed on `main`: eight
+  rebrand and one remove-ch allowlist entries for the files P14 deleted, and a
+  `docker/hyperdx` path in a `packages/api/Dockerfile` comment that the brand
+  scan flags. Removed the entries and reworded the comment; verify passes.

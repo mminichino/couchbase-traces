@@ -361,39 +361,11 @@
     {
       "path": "docker/hyperdx/Dockerfile",
       "term": "hyperdx",
-      "snippet": "COPY --from=hyperdx ./entry.local.noauth.sh /etc/local/entry.sh",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/hyperdx/Dockerfile",
-      "term": "hyperdx",
       "snippet": "COPY --from=hyperdx ./refresh-env.js /etc/local/refresh-env.js",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
-      "path": "docker/hyperdx/build.sh",
-      "term": "hyperdx",
-      "snippet": "--build-context hyperdx=./docker/hyperdx \\",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/hyperdx/build.sh",
-      "term": "hyperdx",
-      "snippet": "--target all-in-one-noauth -t hyperdx/dev-all-in-one-noauth",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/hyperdx/build.sh",
-      "term": "hyperdx",
-      "snippet": "docker build --squash . -f ./docker/hyperdx/Dockerfile \\",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
       "path": "docker/hyperdx/entry.cbt.sh",
       "term": "hyperdx",
       "snippet": "\"./packages/api/bin/hyperdx task check-alerts\" \\",
@@ -404,27 +376,6 @@
       "path": "docker/hyperdx/entry.cbt.sh",
       "term": "hyperdx",
       "snippet": "\"PORT=${CBT_API_PORT:-8000} CBT_APP_PORT=${CBT_APP_PORT:-8080} ./packages/api/bin/hyperdx api\" \\",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/hyperdx/entry.local.base.sh",
-      "term": "hyperdx",
-      "snippet": "\"./packages/api/bin/hyperdx task check-alerts\" \\",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/hyperdx/entry.local.base.sh",
-      "term": "hyperdx",
-      "snippet": "\"PORT=${CBT_API_PORT:-8000} CBT_APP_PORT=${CBT_APP_PORT:-8080} ./packages/api/bin/hyperdx api\" \\",
-      "reason": "internal_identifier",
-      "note": "Token \"hyperdx\" allowed in the token map"
-    },
-    {
-      "path": "docker/hyperdx/entry.local.base.sh",
-      "term": "hyperdx",
-      "snippet": "export EXPRESS_SESSION_SECRET=\"${EXPRESS_SESSION_SECRET:-hyperdx is cool 👋}\"",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx\" allowed in the token map"
     },
