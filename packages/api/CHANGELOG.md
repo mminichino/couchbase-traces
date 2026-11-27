@@ -1,5 +1,12 @@
 # @couchbase-traces/api
 
+## 1.0.2
+
+### Patch Changes
+
+- Lock-stepped with the product at 1.0.2. The development image locks its
+  shared Yarn cache mount; the unused `IS_LOCAL_IMAGE` flag is removed.
+
 ## 1.0.1
 
 ### Patch Changes
