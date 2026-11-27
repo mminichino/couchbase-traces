@@ -279,6 +279,12 @@ version:
 version-check:
 	node scripts/release/set-version.mjs --check "$$(node -p "require('./package.json').version")"
 
+# D34: build the release CLI binaries and run --version/--help on the ones this
+# host can execute.
+.PHONY: cli-binaries-check
+cli-binaries-check:
+	scripts/ci/check-cli-binaries.sh
+
 # Builds and pushes app, ingest and otel-collector to ghcr.io from a clean
 # checkout of the v$(VERSION) tag. Only on the maintainer's explicit
 # instruction (R8). DRY_RUN=1 prints the buildx commands instead.

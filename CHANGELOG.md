@@ -8,18 +8,20 @@ Release-level highlights. Upstream history is in docs/upstream/CHANGELOG.md.
 
 **Couchbase Traces 1.0.1**
 
-The first published release. It contains everything in 1.0.0, which was tagged
-but never published, plus two fixes to how releases are built.
+The first published release. It contains everything in 1.0.0 (below), which was
+tagged but never published: two release-blocking defects, D33 and D34, stopped
+its images and CLI binaries. v1.0.1 fixes both.
 
 ### 🐛 Bug Fixes
 
-- **Multi-platform image builds**: the UI and API image's `yarn install` shared
-  one BuildKit cache between the amd64 and arm64 builds and cleaned it
+- **Multi-platform image builds (D33)**: the UI and API image's `yarn install`
+  shared one BuildKit cache between the amd64 and arm64 builds and cleaned it
   mid-build, which broke the 1.0.0 publish. The cache is now locked per build
   and no longer cleaned.
-- **CLI binaries**: the compiled `cbt` binaries read `package.json` at startup,
-  which a compiled binary does not contain, so every command failed. The version
-  is now inlined at build time, and `cbt --version` reports it.
+- **CLI binaries (D34)**: the compiled `cbt` binaries read `package.json` at
+  startup, which a compiled binary does not contain, so every command failed.
+  The version is now inlined at build time (it would have shown `0.0.0`), and CI
+  now runs each binary's `--version` and `--help`.
 
 ### 📋 Supported versions and images
 
@@ -37,6 +39,9 @@ but never published, plus two fixes to how releases are built.
 <!-- cbt-release-notes version=1.0.0 inputs=r8-release -->
 
 **Couchbase Traces 1.0.0**
+
+> Tagged (`v1.0.0`) but never published: no images, CLI binaries, or GitHub
+> release exist for it because of D33 and D34. Install 1.0.1 or later.
 
 The first release of Couchbase Traces: the full HyperDX observability product,
 rebranded, running on Couchbase Server Enterprise 8.x and Capella with SQL++ in

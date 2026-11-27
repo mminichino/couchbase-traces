@@ -4251,27 +4251,35 @@ to run outside the agent sandbox, which blocks `git init` in a temp dir.
 - **Verification.** `kubernetes.spec.ts --repeat-each=10`, four workers, 130/130
   passed; the slowest gauge statement averaged 2.0 s afterwards.
 
-## v1.0.0 publish failure and v1.0.1 (2026-11-26)
+## v1.0.0 publish failure (D33, D34) and v1.0.1 (2026-11-26)
 
 - **Tag.** `v1.0.0` (annotated, object `fc8590a`) is pushed on `6acf5af`, the PR
   #50 merge. It is not moved (`docs/release.md`).
-- **Image build.** `make release-images VERSION=1.0.0 LATEST=1` from a clean tag
-  worktree failed in the amd64 `node_base` `yarn install`: `ENOENT` while
-  linking from `/root/.yarn/berry/cache`. Both platforms share the
+- **Image build (D33).** `make release-images VERSION=1.0.0 LATEST=1` from a
+  clean tag worktree failed in the amd64 `node_base` `yarn install`: `ENOENT`
+  while linking from `/root/.yarn/berry/cache`. Both platforms share the
   `id=yarn-cache` mount (default `sharing=shared`), and one ran
   `yarn cache clean` while the other was linking from it. Nothing was pushed.
   Fix: `sharing=locked` on both mounts in `docker/hyperdx/Dockerfile`, and drop
   `yarn cache clean` there (the mount never lands in a layer).
   `packages/api/Dockerfile` and `packages/app/Dockerfile` keep the upstream
   form; they are dev-only single-platform builds.
-- **CLI binaries.** `bun build --compile` binaries crashed on every command:
-  `sourcemaps.ts` ran `require('../package.json')` at module load, and the
-  binary has no such file. `cli.tsx` also read `npm_package_version`, which tsup
-  inlines but `bun build` did not, so `--version` would have been `0.0.0`.
+- **CLI binaries (D34).** `bun build --compile` binaries crashed on every
+  command: `sourcemaps.ts` ran `require('../package.json')` at module load, and
+  the binary has no such file. `cli.tsx` also read `npm_package_version`, which
+  tsup inlines but `bun build` did not, so `--version` would have been `0.0.0`.
   `src/version.ts` now owns the version; the `compile*` scripts pass
   `--env='npm_package_version*'`. `version.test.ts` fails on any runtime
   `package.json` read or a compile script without the flag. Upstream has the
   same `require`.
 - **Release prerequisites.** The compile needs Bun at `engines.bun` (1.3.11) and
   a built `common-utils`; `docs/release.md` step 7 now says so.
-- **Q63** (user, 2026-11-26): ship as v1.0.1.
+- **Binary check (D34).** `scripts/ci/check-cli-binaries.sh` builds the three
+  binaries with the pinned Bun (from `PATH`, else npm into a temp dir) and runs
+  `--version` and `--help` on each one the host can run; the `CLI binaries` job
+  in `main.yml` runs it on Linux. It fails against the v1.0.0 sources.
+- **Other Dockerfiles (D33).** `packages/ingest/Dockerfile` has no cache mount;
+  the otel-collector Go caches are concurrency-safe and never cleaned.
+- **Q63** (user, 2026-11-26): release as v1.0.1. The `v1.0.0` tag stays on
+  `6acf5af`, never published (no images or GitHub release); v1.0.1 is the first
+  published release.
