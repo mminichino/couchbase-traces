@@ -2,6 +2,43 @@
 
 Release-level highlights. Upstream history is in docs/upstream/CHANGELOG.md.
 
+## v1.0.2 — 2026-11-27
+
+<!-- cbt-release-notes version=1.0.2 inputs=v102-release -->
+
+**Couchbase Traces 1.0.2**
+
+A maintenance release: cleanup, two end-to-end test fixes, and a CI check
+that catches the multi-platform image build failure that stopped 1.0.0.
+
+### 🐛 Bug Fixes
+
+- **Dashboards**: the Add menu stays disabled until the dashboard has loaded.
+  A group added right after opening a dashboard could be silently dropped.
+- **Dashboard tests**: two occasionally retried end-to-end tests now wait for
+  the right state instead of racing it: adding a group waits for the save, and
+  table cell actions use the hovered cell's own popover rather than one still
+  closing from the previous cell.
+
+### 🧹 Maintenance
+
+- Removed the unused no-authentication all-in-one image stage, its build script
+  and entry scripts. The published all-in-one image is unchanged.
+- CI builds every release image for `linux/amd64` and `linux/arm64` together
+  (nothing pushed), so the D33 class of failure shows up before a release.
+- The development API and UI Dockerfiles lock their shared Yarn cache too.
+
+### 📋 Supported versions and images
+
+- Couchbase Server Enterprise 8.0 or later (tested on 8.0.3), or Capella on 8.x,
+  with the Data, Query, Index, and Search services. Community Edition and 7.x
+  are not supported.
+- Images: `ghcr.io/mminichino/couchbase-traces`,
+  `ghcr.io/mminichino/couchbase-traces-ingest`, and
+  `ghcr.io/mminichino/couchbase-traces-otel-collector`, tagged `1.0.2`, `1.0`,
+  `1`, and `latest`.
+- The `cbt` CLI is attached to the GitHub release for Linux x64 and macOS.
+
 ## v1.0.1 — 2026-11-26
 
 <!-- cbt-release-notes version=1.0.1 inputs=v101-release -->

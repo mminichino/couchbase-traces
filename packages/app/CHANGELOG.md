@@ -1,5 +1,13 @@
 # @couchbase-traces/app
 
+## 1.0.2
+
+### Patch Changes
+
+- The dashboard Add menu is disabled until the dashboard loads, so a group
+  added right after opening a dashboard is no longer dropped; the development
+  image locks its shared Yarn cache mount.
+
 ## 1.0.1
 
 ### Patch Changes

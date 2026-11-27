@@ -1,5 +1,11 @@
 # @couchbase-traces/ingest
 
+## 1.0.2
+
+### Patch Changes
+
+- Lock-stepped with the product at 1.0.2; no changes in this package.
+
 ## 1.0.1
 
 ### Patch Changes
