@@ -141,7 +141,7 @@ CBT_METADATA_CONNSTR=$CBT_TEST_COUCHBASE_CONNSTR \
 
 log "Running ingest integration tests"
 "${YARN[@]}" workspace @couchbase-traces/ingest jest -c jest.int.config.js \
-  --runInBand --forceExit --testPathPatterns 'ingest\.int\.test' || status=$?
+  --runInBand --forceExit --testPathPatterns '(ingest|querySettings)\.int\.test' || status=$?
 
 if [ "$status" != 0 ]; then diagnose; fi
 log "Integration tests finished with status $status"

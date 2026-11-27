@@ -4344,6 +4344,51 @@ CLI binaries attached to the release (SHA-256 of the downloaded assets):
   uses; both now use `sharing=locked` and no `yarn cache clean`.
 - **P13** moved to v1.1.0 (user, 2026-11-26).
 
+## v1.1.0 (2026-11-27)
+
+- **P13: completed-requests settings in setup.** `packages/ingest/src/setup/querySettings.ts`,
+  run by `ingest setup` after users and before metadata. Checked against the
+  8.0 REST reference (`rest-api/rest-cluster-query-settings.html`):
+  `GET`/`POST /settings/querySettings` on 8091/18091,
+  `queryCompletedThreshold` and `queryCompletedLimit` are int32, and the call
+  needs Full Admin or Cluster Admin. Deviations from plan 2.3:
+  - The write is form-encoded. The reference lists `application/json` too, but
+    a live 8.0.3 node answers a JSON body with `400 {"errors":{"_":"Request
+    should have parameters"}}`; the reference's curl example sends a form.
+    Found by `querySettings.int.test.ts`.
+  - The first PR build crashed the all-in-one smoke: `import http from
+    'node:http'` compiles, under `importHelpers` and `esModuleInterop`, to a
+    `require("tslib")`, and the ingest image ships no tslib. ts-jest and the
+    int suite run from source and could not see it. Named imports fix it;
+    `buildHelpers.test.ts` transpiles every ingest source with the build's
+    options and fails on any tslib import.
+- **E2E `team` "should cancel team name editing" (recurring retry, R4/R5).**
+  The v1.1.0 `make e2e` run failed it on both attempts, and it was flaky with
+  `team.spec.ts` alone, so the race is not the cross-spec rename R4 suspected.
+  `getTeamNameText` read the header before the team query resolved and got
+  the `'My team'` placeholder (`TeamPage.tsx`), then expected it after the
+  cancel. It now reads the name from `GET /team` and waits for the header to
+  show it. Three runs of the spec: 10 passed, none on retry.
+  - The signature takes an injected `http: MgmtHttp` (method, url, credentials,
+    JSON body) instead of `fetchImpl?: typeof fetch`, so the client can trust
+    `CBT_COUCHBASE_CA_CERT_PATH` for `https://` (global `fetch` has no per-call
+    CA), plus `capella` and `log`, like the other setup steps.
+  - `skipped` gains `'unreachable'`: a refused or timed-out management port is
+    a warning, the same as a 403, because the setting is observability only.
+  - The management port is 8091 (18091 for `couchbases://`) on the first
+    connection-string host via `managementBaseUrl` from common-utils, with
+    `CBT_COUCHBASE_MGMT_PORT` as the override (the variable `docker/couchbase/init.sh`
+    already reads). The connection-string port is the KV bootstrap port and is
+    not reused.
+  - Validation follows 2.3: an integer from -1 to 2147483647; `-2` is rejected
+    although the server treats any negative threshold as "none".
+  - The `statement` qualifier in the memory note is node-level
+    (`/admin/settings`, `completed.+statement`, per
+    `n1ql/n1ql-rest-api/admin.html` Logging Parameters); DEPLOY.md says so.
+  - Acceptance 2 runs in `querySettings.int.test.ts` on the
+    `port/couchbase-test` node rather than a compose stack: it sets the
+    threshold through the cluster endpoint, issues a fast query with a
+    `buildQueryId` context id, and finds it in `system:completed_requests`.
 ## v1.1.0: CI and repo cleanups (2026-11-27)
 
 - **P15: release-image check on native runners.** `docker-build.yml` now has

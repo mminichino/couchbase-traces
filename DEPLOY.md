@@ -124,6 +124,41 @@ and the ingest user (`CBT_COUCHBASE_INGEST_USER` /
 | `CBT_INGEST_KV_CONCURRENCY`         | `256`       | Concurrent key-value writes                  |
 | `CBT_INGEST_KV_TIMEOUT_MS`          | `10000`     | Key-value write timeout                      |
 
+### Completed-requests log settings
+
+Every product query carries an `hdx-<surface>-<uuid>` client context id, but
+`system:completed_requests` only keeps requests slower than the cluster's
+threshold (1000 ms by default), so most of them are not recorded. Ingest setup
+can change the two cluster-wide Query settings; leave a variable unset and
+setup does not touch that setting.
+
+| Variable                               | Default | Purpose                                                                                       |
+| -------------------------------------- | ------- | --------------------------------------------------------------------------------------------- |
+| `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` | unset   | `queryCompletedThreshold`: log requests slower than this many ms; `0` logs all, `-1` logs none |
+| `CBT_COUCHBASE_COMPLETED_LIMIT`        | unset   | `queryCompletedLimit`: entries kept per query node; `-1` means no limit, `0` keeps none       |
+| `CBT_COUCHBASE_MGMT_PORT`              | `8091`  | Management REST port setup calls (`18091` for `couchbases://`)                                |
+
+Setup writes them with `POST /settings/querySettings`, which needs the Full
+Admin or Cluster Admin role. Without it setup logs a warning and continues. A
+re-run with the same values writes nothing, `--dry-run` prints what it would
+set, and a value that is not an integer from -1 up exits 1 before setup
+contacts the cluster. On Capella setup skips this step; see
+[docs/capella.md](docs/capella.md).
+
+Logging every request costs Query memory on every query node: each entry holds
+the statement and its plan, up to the limit. On a busy production cluster keep
+the threshold above 0 and the default limit, and log the queries you need with
+a `statement` qualifier instead. Qualifiers are node-level (`/admin/settings`
+on port 8093 of each query node), so a node added later needs them too. For
+example, alert queries only:
+
+```bash
+curl -u "$CBT_COUCHBASE_ADMIN_USER:$CBT_COUCHBASE_ADMIN_PASSWORD" \
+  -H 'Content-Type: application/json' \
+  -X POST http://query-node.example:8093/admin/settings \
+  -d '{"completed": {"+statement": "%\"surface\":\"alert\"%"}}'
+```
+
 ## All-in-one Docker Compose Stack
 
 The easiest way to get started from scratch is the product Docker Compose stack
