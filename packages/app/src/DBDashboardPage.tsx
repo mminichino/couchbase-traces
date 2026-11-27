@@ -3428,6 +3428,9 @@ function DBDashboardPage({
               <Menu.Target>
                 <Button
                   data-testid="add-dropdown-button"
+                  // Until the dashboard loads, the add handlers return early
+                  // and the click would be lost.
+                  disabled={!dashboard}
                   variant={
                     dashboard?.tiles.length === 0 ? 'primary' : 'secondary'
                   }

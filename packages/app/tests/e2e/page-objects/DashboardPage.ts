@@ -296,8 +296,16 @@ export class DashboardPage {
    * Add a new group (container) to the dashboard via the "+ Add" dropdown.
    */
   async addGroup() {
+    // The new group renders only after the PATCH and the dashboards refetch
+    // it triggers; tests read the group ids right after this returns.
+    const saved = this.page.waitForResponse(
+      r =>
+        r.url().includes('/api/dashboards/') &&
+        r.request().method() === 'PATCH',
+    );
     await this.addDropdownButton.click();
     await this.addGroupMenuItem.click();
+    expect((await saved).ok()).toBe(true);
   }
 
   /**
@@ -1674,14 +1682,46 @@ export class DashboardPage {
     return tile.getByRole('button', { name }).last();
   }
 
+  /**
+   * Hover a table cell's text and return the action popover opened for that
+   * cell. Found through the target's `aria-controls`, not by position: the
+   * previously hovered cell's popover lingers while it closes, and clicking
+   * its "toggle filter" removed that cell's filter instead of adding this one.
+   */
+  async hoverTableCell(cellText: Locator): Promise<Locator> {
+    const target = cellText.locator(
+      'xpath=ancestor-or-self::*[@aria-haspopup][1]',
+    );
+    await cellText.hover();
+    await expect(target).toHaveAttribute('aria-expanded', 'true');
+    const id = await target.getAttribute('aria-controls');
+    if (!id) throw new Error('Hovered cell has no action popover');
+    return this.page.locator(`[id="${id}"]`);
+  }
+
+  /** An action button inside a popover returned by `hoverTableCell`. */
+  getCellPopoverAction(
+    popover: Locator,
+    action: 'include' | 'exclude' | 'copy',
+  ): Locator {
+    const name = {
+      include: 'Toggle filter for this value',
+      exclude: 'Exclude this value',
+      copy: 'Copy field value',
+    }[action];
+    return popover.getByRole('button', { name });
+  }
+
   /** Hover a tile cell showing `value` and return one of its actions. */
   async getTileCellAction(
     tile: Locator,
     value: string | RegExp,
     action: 'include' | 'exclude' | 'copy',
   ): Promise<Locator> {
-    await tile.getByText(value, { exact: true }).first().hover();
-    return this.getTileCellActionButton(tile, action);
+    const popover = await this.hoverTableCell(
+      tile.getByText(value, { exact: true }).first(),
+    );
+    return this.getCellPopoverAction(popover, action);
   }
 
   /** Hover a tile cell showing `value` and click its include / exclude action. */

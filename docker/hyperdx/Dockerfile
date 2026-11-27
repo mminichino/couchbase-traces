@@ -222,29 +222,6 @@ WORKDIR /app
 
 EXPOSE 8080 4317 4318 13133 4320 8091-8097 11210
 
-# all-in-one no auth ############################################################################################
-FROM all-in-one-base AS all-in-one-noauth
-
-LABEL org.opencontainers.image.vendor="Couchbase Traces" \
-      org.opencontainers.image.title="Couchbase Traces All-in-One (No Auth)" \
-      org.opencontainers.image.description="Couchbase Traces all-in-one image with Couchbase and OTel Collector (no authentication)" \
-      org.opencontainers.image.source="https://github.com/mminichino/couchbase-traces" \
-      org.opencontainers.image.licenses="MIT"
-
-# Release version and commit (set by make build-* and
-# scripts/release/release-images.sh; empty for ad hoc builds).
-ARG CODE_VERSION
-ARG GIT_SHA
-LABEL org.opencontainers.image.version="$CODE_VERSION" \
-      org.opencontainers.image.revision="$GIT_SHA"
-
-COPY --from=hyperdx ./entry.local.noauth.sh /etc/local/entry.sh
-
-HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
-    CMD curl -f http://localhost:8080/api/health || exit 1
-
-ENTRYPOINT ["sh", "/etc/local/entry.sh"]
-
 # all-in-one with auth ############################################################################################
 FROM all-in-one-base AS all-in-one-auth
 

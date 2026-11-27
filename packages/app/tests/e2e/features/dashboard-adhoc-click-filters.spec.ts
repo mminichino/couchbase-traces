@@ -280,8 +280,15 @@ test.describe(
       });
 
       await test.step('A numeric group-by column filters too', async () => {
-        expect(await hoverFirstRowCell(1)).toBe('8');
-        await dashboardPage.getTileCellActionButton(tile, 'include').click();
+        const lengthCell = dashboardPage
+          .getFirstTableRow()
+          .locator('td')
+          .nth(1);
+        await expect(lengthCell).toHaveAttribute('title', '8');
+        const popover = await dashboardPage.hoverTableCell(
+          lengthCell.getByText('8', { exact: true }),
+        );
+        await dashboardPage.getCellPopoverAction(popover, 'include').click();
         await expectFiltersParam(page, [
           {
             type: 'adhoc',

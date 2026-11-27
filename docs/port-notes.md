@@ -3772,7 +3772,7 @@ v1.0.0 leaves the cluster's completed-requests settings alone (Q52):
 the operator changes them, so `system:completed_requests` shows only slow
 attributed queries. Setting them is a cluster-wide write (Full Admin or Cluster
 Admin on `POST /settings/querySettings`) that Capella database credentials
-cannot make. v1.0.1 backlog item P13 (`docs/v1-release-plan.md` 2.3) adds opt-in
+cannot make. Backlog item P13 (`docs/v1-release-plan.md` 2.3, now v1.1.0) adds opt-in
 `CBT_COUCHBASE_COMPLETED_THRESHOLD_MS` / `CBT_COUCHBASE_COMPLETED_LIMIT` to the
 ingest setup CLI; unset means unchanged.
 
@@ -4283,3 +4283,63 @@ to run outside the agent sandbox, which blocks `git init` in a temp dir.
 - **Q63** (user, 2026-11-26): release as v1.0.1. The `v1.0.0` tag stays on
   `6acf5af`, never published (no images or GitHub release); v1.0.1 is the first
   published release.
+
+## v1.0.1 published artifacts (2026-11-27)
+
+Release <https://github.com/mminichino/couchbase-traces/releases/tag/v1.0.1>,
+tag `v1.0.1` on `1a6e0d8`. Image tags `1.0.1`, `1.0`, `1`, `latest`; index
+digests from `docker buildx imagetools inspect`:
+
+| Image | Index digest |
+|---|---|
+| `ghcr.io/mminichino/couchbase-traces` | `sha256:0d4c21c68c4ee04a4ba87292fc808a8862fb35cb3a7c123ba1e536c81f88c7fb` |
+| `ghcr.io/mminichino/couchbase-traces-ingest` | `sha256:1e63b3420a2258d0e70936bb27877611fc846973804d66c4139704456931ade8` |
+| `ghcr.io/mminichino/couchbase-traces-otel-collector` | `sha256:c155925fdb61035445bf4c57a0b4c645b94cc212ed3ba15a7bd17b64392dd9bc` |
+
+CLI binaries attached to the release (SHA-256 of the downloaded assets):
+
+| Binary | SHA-256 |
+|---|---|
+| `cbt-darwin-arm64` | `9d59453e081b07858a5942f836d05807629ada9c95420958362f499777130d01` |
+| `cbt-darwin-x64` | `24aede2b21ecb48afe42da615b72f5514cc980af666660ce03a026138c6ce30f` |
+| `cbt-linux-x64` | `3c736886a093c498db90615329e5184047dff4fb741be3cdb4363204de0cb0f6` |
+
+## v1.0.2 (2026-11-27)
+
+- **P14 / D31.** Deleted the `all-in-one-noauth` stage of
+  `docker/hyperdx/Dockerfile` (it copied the Phase 10-deleted
+  `entry.local.noauth.sh`), `docker/hyperdx/build.sh` (built that stage from the
+  missing `docker/evalstore` context), the unused `entry.local.base.sh` and
+  `entry.local.auth.sh` (`all-in-one-auth` runs `entry.cbt.sh`), and the
+  never-imported `IS_LOCAL_IMAGE` in `packages/api/src/config.ts`. No make
+  target, workflow, script or user doc referenced them. The `_local_user_`
+  guards in the app stay: they are harmless and upstream-shaped. Historical
+  specs, `port/` inventories and allowlists keep their mentions.
+- **Q61 watch: `dashboard-container.spec.ts` `?activeTabs` test.** Its retried
+  failure was in `addGroupAndGetId`, not on reload: no group appeared within
+  5 s. `createNewDashboard` returns on the URL change, before the dashboard
+  query resolves, and `handleAddContainer` returns early while `dashboard` is
+  undefined, so the click was dropped. That is a product bug too (a fast user
+  loses the click). Fix: the Add menu button is disabled until the dashboard
+  has loaded (Playwright waits for enabled), and `addGroup` waits for the
+  dashboard PATCH, after which the group renders from the refetch. No timeout
+  changed.
+- **Q61 watch: `raw SQL table cells` test.** The numeric group-by step ended
+  with `filters` empty, not two conditions: the click hit the ServiceName
+  cell's popover, still closing after the previous include, and its "toggle
+  filter" removed `frontend`. `getTileCellActionButton` picked `.last()` of all
+  action buttons in the tile. `DashboardPage.hoverTableCell` now returns the
+  hovered cell's own popover through Mantine's `aria-controls`, and
+  `getTileCellAction` and the numeric step use it; the step also waits for the
+  first row's length cell to read `8` instead of reading it once. No timeout
+  changed.
+- **Multi-arch check (D33 guard).** `scripts/release/release-images.sh
+  --cache-only` runs the release build pass (both platforms, every release
+  image) from any checkout and pushes nothing; `make release-images-check`
+  wraps it, and `docker-build.yml` job `release-images-multiarch` runs it on
+  amd64 with QEMU for arm64. The job uses no layer cache on purpose: a cached
+  `yarn install` layer would skip the step D33 broke.
+- **Dev Dockerfiles.** `packages/api/Dockerfile` and `packages/app/Dockerfile`
+  had the D33 pattern on the same `id=yarn-cache` mount the release Dockerfile
+  uses; both now use `sharing=locked` and no `yarn cache clean`.
+- **P13** moved to v1.1.0 (user, 2026-11-26).
