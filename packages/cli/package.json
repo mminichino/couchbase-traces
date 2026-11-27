@@ -1,6 +1,6 @@
 {
   "name": "@couchbase-traces/cli",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "license": "MIT",
   "type": "module",
   "repository": {
@@ -29,10 +29,10 @@
     "dev": "tsx src/cli.tsx",
     "build": "tsup",
     "prepublishOnly": "yarn build",
-    "compile": "bun build src/cli.tsx --compile --outfile dist/cbt",
-    "compile:linux": "bun build src/cli.tsx --compile --target=bun-linux-x64 --outfile dist/cbt-linux-x64",
-    "compile:macos": "bun build src/cli.tsx --compile --target=bun-darwin-arm64 --outfile dist/cbt-darwin-arm64",
-    "compile:macos-x64": "bun build src/cli.tsx --compile --target=bun-darwin-x64 --outfile dist/cbt-darwin-x64",
+    "compile": "bun build src/cli.tsx --compile --env='npm_package_version*' --outfile dist/cbt",
+    "compile:linux": "bun build src/cli.tsx --compile --env='npm_package_version*' --target=bun-linux-x64 --outfile dist/cbt-linux-x64",
+    "compile:macos": "bun build src/cli.tsx --compile --env='npm_package_version*' --target=bun-darwin-arm64 --outfile dist/cbt-darwin-arm64",
+    "compile:macos-x64": "bun build src/cli.tsx --compile --env='npm_package_version*' --target=bun-darwin-x64 --outfile dist/cbt-darwin-x64",
     "lint": "npx eslint . --ext .ts,.tsx --max-warnings 0",
     "ci:build": "tsup",
     "ci:lint": "yarn lint && yarn tsc --noEmit",

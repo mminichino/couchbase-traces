@@ -2,6 +2,36 @@
 
 Release-level highlights. Upstream history is in docs/upstream/CHANGELOG.md.
 
+## v1.0.1 — 2026-11-26
+
+<!-- cbt-release-notes version=1.0.1 inputs=v101-release -->
+
+**Couchbase Traces 1.0.1**
+
+The first published release. It contains everything in 1.0.0, which was tagged
+but never published, plus two fixes to how releases are built.
+
+### 🐛 Bug Fixes
+
+- **Multi-platform image builds**: the UI and API image's `yarn install` shared
+  one BuildKit cache between the amd64 and arm64 builds and cleaned it
+  mid-build, which broke the 1.0.0 publish. The cache is now locked per build
+  and no longer cleaned.
+- **CLI binaries**: the compiled `cbt` binaries read `package.json` at startup,
+  which a compiled binary does not contain, so every command failed. The version
+  is now inlined at build time, and `cbt --version` reports it.
+
+### 📋 Supported versions and images
+
+- Couchbase Server Enterprise 8.0 or later (tested on 8.0.3), or Capella on 8.x,
+  with the Data, Query, Index, and Search services. Community Edition and 7.x
+  are not supported.
+- Images: `ghcr.io/mminichino/couchbase-traces`,
+  `ghcr.io/mminichino/couchbase-traces-ingest`, and
+  `ghcr.io/mminichino/couchbase-traces-otel-collector`, tagged `1.0.1`, `1.0`,
+  `1`, and `latest`. No `1.0.0` images were published.
+- The `cbt` CLI is attached to the GitHub release for Linux x64 and macOS.
+
 ## v1.0.0 — 2026-11-26
 
 <!-- cbt-release-notes version=1.0.0 inputs=r8-release -->

@@ -83,7 +83,7 @@ Server Enterprise, so it is built locally and never published (v1 plan Q1):
 
 ```bash
 make build-all-in-one
-scripts/ci/smoke-all-in-one.sh ghcr.io/mminichino/couchbase-traces-all-in-one:1.0.0
+scripts/ci/smoke-all-in-one.sh ghcr.io/mminichino/couchbase-traces-all-in-one:1.0.1
 ```
 
 `make build-all-in-one` tags the image with the full version (`CODE_VERSION` in

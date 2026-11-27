@@ -2076,11 +2076,11 @@ await the user.
   next run failed `kubernetes.spec.ts` on shard 3, the Q61 failure, which also
   failed `main` twice. Opened D32. R8 stops before step 4 until D32 lands and PR
   #50 is green, then K2 is recorded with `--record-ci`. D32 merged as PR #51
-  (all four E2E shards green, no retries) and `main` was merged into PR #50.
-  The next PR #50 run failed shard 1 on `dashboard-adhoc-click-filters` again:
-  the completion popup opened _after_ `dismissSqlAutocomplete` blurred the
-  editor, because CodeMirror starts completion 100 ms after the last key and its
-  blur handler closes only an open popup. The helper now waits up to 1 s for a
+  (all four E2E shards green, no retries) and `main` was merged into PR #50. The
+  next PR #50 run failed shard 1 on `dashboard-adhoc-click-filters` again: the
+  completion popup opened _after_ `dismissSqlAutocomplete` blurred the editor,
+  because CodeMirror starts completion 100 ms after the last key and its blur
+  handler closes only an open popup. The helper now waits up to 1 s for a
   pending popup to appear before blurring (condition wait, no timeout change).
 
 ## 10. Decisions
@@ -2153,6 +2153,7 @@ in that phase.
 | Q60 | Placement of D30, the all-in-one ingest setup race (2026-11-25)                                                         | Its own small PR after R6 and before R7 (user, 2026-11-25), so R7's acceptance run and the R8 image smoke don't hit it. Started only on the user's go-ahead.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    |
 | Q61 | `kubernetes.spec.ts` chart and autocomplete waits time out under CI load (found on PR #48, 2026-11-25)                  | Accepted (user, 2026-11-25): watch it. If it recurs, open a D-numbered fix that makes the K8s chart and field-value queries cheaper (or seeds fewer gauge points); do not raise timeouts. Recurred on PR #50 and `main` (2026-11-26): fixed as D32 by seeding 100 K8s metric pods instead of 500.                                                                                                                                                                                                                                                                                                                                               |
 | Q62 | C1/C2 need a Capella cluster for R7 acceptance status **pass** (2026-11-25)                                             | Credentials provided (user, 2026-11-26). Cluster lacks the `cbt_meta` bucket; user to create it (Magma, 256 MB or more), then re-run acceptance with `--capella` before the v1.0.0 tag                                                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| Q63 | v1.0.0 tagged but its publish failed (image build race, broken CLI binaries) (2026-11-26)                               | Ship as v1.0.1 (user, 2026-11-26). The pushed `v1.0.0` tag stays at `6acf5af`; no 1.0.0 images or GitHub release exist. Fixes on `mm--release-v1-0-1`: locked Yarn cache mount in `docker/hyperdx/Dockerfile`, CLI version inlined at build time.                                                                                                                                                                                                                                                                                                                                                                                               |
 
 ## 11. Acceptance criteria (v1.0.0 is done when)
 

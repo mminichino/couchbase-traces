@@ -33,6 +33,7 @@ import { clearSession, loadSession, setActiveTeam } from '@/utils/config';
 import { parseTimeValue } from '@/utils/editor';
 import { isValidUrl } from '@/utils/url';
 import { uploadSourcemaps } from '@/sourcemaps';
+import { CLI_VERSION } from '@/version';
 import { mcpClients } from '@/mcp/install';
 import McpInstallPrompt, { type InstallResult } from '@/mcp/McpInstallPrompt';
 
@@ -388,7 +389,7 @@ program
   .description(
     'Couchbase Traces CLI — search and tail events from the terminal',
   )
-  .version(process.env.npm_package_version ?? '0.0.0')
+  .version(CLI_VERSION)
   .enablePositionalOptions();
 
 // ---- Interactive mode (default) ------------------------------------
