@@ -4306,6 +4306,10 @@ CLI binaries attached to the release (SHA-256 of the downloaded assets):
   `telemetry.distro.name` is `couchbase-traces-otel-node`. The package is in
   every Dockerfile build stage and the runtime images, and in
   `version-locations.mjs` (17 locations).
+  `packages/ingest/Dockerfile` copies every workspace manifest before
+  `yarn install`, so it lists `packages/otel-node/package.json` too; without
+  it the install fails with "Workspace not found" (found by
+  `make release-images-check`).
 - **Next.js server build.** `serverExternalPackages` does not match a
   workspace package (it resolves through its symlink outside `node_modules`),
   so `next.config.mjs` adds a webpack `externals` entry for

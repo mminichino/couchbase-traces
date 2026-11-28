@@ -13,6 +13,7 @@ COPY packages/common-utils/package.json packages/common-utils/package.json
 COPY packages/hdx-eval/package.json packages/hdx-eval/package.json
 COPY packages/ingest/package.json packages/ingest/package.json
 COPY packages/otel-collector/package.json packages/otel-collector/package.json
+COPY packages/otel-node/package.json packages/otel-node/package.json
 
 RUN corepack enable && yarn install --mode=skip-build
 
