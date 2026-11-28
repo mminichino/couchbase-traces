@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
-import { Badge } from '@clickhouse/click-ui';
 
+import { Badge } from '@/components/Badge/Badge';
 import { INSTANCE_LABEL } from '@/config';
 
 // Styled to match the sidebar's UTC badge. `fallback` lets AppNav render the

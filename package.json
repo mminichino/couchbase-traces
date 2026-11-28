@@ -34,7 +34,7 @@
   },
   "scripts": {
     "setup": "yarn install && husky install",
-    "build:common-utils": "nx run @couchbase-traces/common-utils:dev:build",
+    "build:common-utils": "nx run-many -t dev:build -p @couchbase-traces/common-utils @couchbase-traces/otel-node",
     "app:dev": "concurrently -k -n 'API,APP,ALERTS-TASK,COMMON-UTILS' -c 'green.bold,blue.bold,yellow.bold,magenta' 'nx run @couchbase-traces/api:dev 2>&1 | tee ${CBT_DEV_LOGS_DIR:+\"$CBT_DEV_LOGS_DIR/api.log\"}' 'nx run @couchbase-traces/app:dev 2>&1 | tee ${CBT_DEV_LOGS_DIR:+\"$CBT_DEV_LOGS_DIR/app.log\"}' 'nx run @couchbase-traces/api:dev-task check-alerts 2>&1 | tee ${CBT_DEV_LOGS_DIR:+\"$CBT_DEV_LOGS_DIR/alerts.log\"}' 'nx run @couchbase-traces/common-utils:dev 2>&1 | tee ${CBT_DEV_LOGS_DIR:+\"$CBT_DEV_LOGS_DIR/common-utils.log\"}'",
     "app:dev:local": "sh -c '. ./scripts/dev-env.sh && yarn build:common-utils && concurrently -k -n \"APP,COMMON-UTILS\" -c \"blue.bold,magenta\" \"nx run @couchbase-traces/app:dev:local 2>&1 | tee ${CBT_DEV_LOGS_DIR:+\\\"$CBT_DEV_LOGS_DIR/app.log\\\"}\" \"nx run @couchbase-traces/common-utils:dev 2>&1 | tee ${CBT_DEV_LOGS_DIR:+\\\"$CBT_DEV_LOGS_DIR/common-utils.log\\\"}\"'",
     "app:lint": "nx run @couchbase-traces/app:ci:lint",

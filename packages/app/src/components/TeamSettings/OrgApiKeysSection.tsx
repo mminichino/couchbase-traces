@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Badge, Separator } from '@clickhouse/click-ui';
 import type { OrgApiKeyApiResponse } from '@couchbase-traces/common-utils/dist/types';
 import { Box, Button, Card, Group, Table, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 
 import api from '@/api';
+import { Badge } from '@/components/Badge/Badge';
 import EmptyState from '@/components/EmptyState';
 import { InlineNameInput } from '@/components/InlineNameInput/InlineNameInput';
+import { Separator } from '@/components/Separator/Separator';
 import { currentDate } from '@/timeZone';
 import { useConfirm } from '@/useConfirm';
 import { useFormatTime } from '@/useFormatTime';

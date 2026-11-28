@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { HTTPError } from 'ky';
 import CopyToClipboard from 'react-copy-to-clipboard';
-import { Badge, Separator } from '@clickhouse/click-ui';
 import {
   Box,
   Button,
@@ -18,6 +17,8 @@ import { IconLock, IconUserPlus } from '@tabler/icons-react';
 
 import api from '@/api';
 import { useBrandDisplayName } from '@/brand';
+import { Badge } from '@/components/Badge/Badge';
+import { Separator } from '@/components/Separator/Separator';
 
 export default function TeamMembersSection() {
   const brandName = useBrandDisplayName();

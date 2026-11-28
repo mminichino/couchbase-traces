@@ -1,9 +1,9 @@
 import { Controller, useWatch } from 'react-hook-form';
-import { Separator } from '@clickhouse/click-ui';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { Box, Slider, Stack } from '@mantine/core';
 
 import { useBrandDisplayName } from '@/brand';
+import { Separator } from '@/components/Separator/Separator';
 import { SourceSelectControlled } from '@/components/SourceSelect';
 import { SQLInlineEditorControlled } from '@/components/SQLEditor/SQLInlineEditor';
 import { useColumns } from '@/hooks/useMetadata';

@@ -1,7 +1,7 @@
-import { Badge } from '@clickhouse/click-ui';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { Group, Stack, Text } from '@mantine/core';
 
+import { Badge } from '@/components/Badge/Badge';
 import { useSource } from '@/source';
 
 import ServiceMap from './ServiceMap';

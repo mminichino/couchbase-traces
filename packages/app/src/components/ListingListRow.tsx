@@ -1,9 +1,9 @@
 import Router from 'next/router';
 import { formatDistanceToNow } from 'date-fns';
-import { Badge } from '@clickhouse/click-ui';
 import { ActionIcon, Group, Menu, Table, Text, Tooltip } from '@mantine/core';
 import { IconDots, IconTrash } from '@tabler/icons-react';
 
+import { Badge } from '@/components/Badge/Badge';
 import { FormatTime } from '@/useFormatTime';
 
 export function ListingRow({

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import Link from 'next/link';
 import ReactMarkdown from 'react-markdown';
-import { Badge } from '@clickhouse/click-ui';
 import { AlertSource } from '@couchbase-traces/common-utils/dist/types';
 import {
   Collapse,
@@ -27,6 +26,7 @@ import { AlertHistoryCardList } from '@/components/alerts/AlertHistoryCards';
 import { AlertPropertiesSummary } from '@/components/alerts/AlertPropertiesSummary';
 import { AlertRowMenu } from '@/components/alerts/AlertRowMenu';
 import { AlertStateBadge } from '@/components/alerts/AlertStateBadge';
+import { Badge } from '@/components/Badge/Badge';
 import { IS_ALERT_DETAILS_ENABLED } from '@/config';
 import type { AlertsPageItem } from '@/types';
 import { getAlertSourceLabel, getAlertSourceUrl } from '@/utils/alerts';

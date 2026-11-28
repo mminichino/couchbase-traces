@@ -27,6 +27,7 @@ const MANIFESTS = [
   ['pkg:common-utils', 'packages/common-utils/package.json'],
   ['pkg:ingest', 'packages/ingest/package.json'],
   ['pkg:otel-collector', 'packages/otel-collector/package.json'],
+  ['pkg:otel-node', 'packages/otel-node/package.json'],
 ];
 
 // A tag is everything up to whitespace or a closing quote/backtick.

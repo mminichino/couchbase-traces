@@ -1,8 +1,8 @@
 {
   "api": {
-    "as-any": 74,
+    "as-any": 73,
     "ts-ignore": 0,
-    "eslint-disable": 32,
+    "eslint-disable": 30,
     "@source": 0
   },
   "app": {
@@ -36,6 +36,12 @@
     "@source": 0
   },
   "otel-collector": {
+    "as-any": 0,
+    "ts-ignore": 0,
+    "eslint-disable": 0,
+    "@source": 0
+  },
+  "otel-node": {
     "as-any": 0,
     "ts-ignore": 0,
     "eslint-disable": 0,

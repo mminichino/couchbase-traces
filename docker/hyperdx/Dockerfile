@@ -64,6 +64,7 @@ COPY .yarnrc.yml yarn.lock package.json nx.json .prettierrc .prettierignore ./ts
 # Only copy package.json for workspace resolution during yarn install;
 # full source is copied in the build stages that need it.
 COPY ./packages/common-utils/package.json ./packages/common-utils/package.json
+COPY ./packages/otel-node/package.json ./packages/otel-node/package.json
 COPY ./packages/api/jest.config.js ./packages/api/tsconfig.json ./packages/api/tsconfig.build.json ./packages/api/package.json ./packages/api/
 COPY ./packages/app/jest.config.js ./packages/app/tsconfig.json ./packages/app/tsconfig.build.json ./packages/app/package.json ./packages/app/next.config.mjs ./packages/app/mdx.d.ts ./packages/app/css.d.ts ./packages/app/eslint.config.mjs ./packages/app/
 
@@ -86,6 +87,8 @@ FROM node_base AS common-utils-builder
 
 COPY ./packages/common-utils ./packages/common-utils
 RUN yarn workspace @couchbase-traces/common-utils run build
+COPY ./packages/otel-node ./packages/otel-node
+RUN yarn workspace @couchbase-traces/otel-node run build
 
 
 ## API/APP Builder Image ##########################################################################
@@ -95,6 +98,7 @@ WORKDIR /app
 
 # Copy pre-built common-utils from its dedicated build stage
 COPY --from=common-utils-builder /app/packages/common-utils ./packages/common-utils
+COPY --from=common-utils-builder /app/packages/otel-node ./packages/otel-node
 
 COPY --from=api ./src ./packages/api/src
 COPY --from=api ./bin ./packages/api/bin
@@ -159,6 +163,8 @@ COPY --chown=node:node --from=builder /app/node_modules ./node_modules
 COPY --chown=node:node --from=builder /app/packages/api/build ./packages/api/build
 COPY --chown=node:node --from=builder /app/packages/api/bin ./packages/api/bin
 COPY --chown=node:node --from=builder /app/packages/common-utils/dist ./packages/common-utils/dist
+COPY --chown=node:node --from=builder /app/packages/otel-node/package.json ./packages/otel-node/package.json
+COPY --chown=node:node --from=builder /app/packages/otel-node/dist ./packages/otel-node/dist
 COPY --chown=node:node --from=node_base /app/packages/common-utils/node_modules ./packages/common-utils/node_modules
 COPY --chown=node:node --from=builder /app/packages/app/.next/standalone ./packages/app
 COPY --chown=node:node --from=builder /app/packages/app/.next/static ./packages/app/packages/app/.next/static

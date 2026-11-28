@@ -139,6 +139,7 @@ ci-lint:
 	-yarn dupes
 	scripts/ci/check-openapi-sync.sh
 	scripts/ci/check-no-mongo.sh
+	scripts/ci/check-no-clickhouse-packages.sh
 	node scripts/ci/check-legacy-store-text.mjs
 	$(MAKE) --no-print-directory version-check
 

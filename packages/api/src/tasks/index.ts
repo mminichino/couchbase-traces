@@ -1,7 +1,7 @@
 import '@/dataLayerSetup';
 
-import { shutdown } from '@clickhouse/clickstack-node';
 import { clusterCache } from '@couchbase-traces/common-utils/dist/couchbase/node';
+import { shutdown } from '@couchbase-traces/otel-node';
 import { CronJob } from 'cron';
 import minimist from 'minimist';
 import { serializeError } from 'serialize-error';

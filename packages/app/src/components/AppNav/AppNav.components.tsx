@@ -1,12 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
 import cx from 'classnames';
-import { Badge } from '@clickhouse/click-ui';
-import {
-  setAttributes,
-  setUser,
-  startNewSession,
-} from '@clickhouse/clickstack-browser';
 import {
   Avatar,
   Group,
@@ -31,7 +25,9 @@ import {
   IconUserCog,
 } from '@tabler/icons-react';
 
+import { Badge } from '@/components/Badge/Badge';
 import { IS_LOCAL_MODE } from '@/config';
+import { setAttributes, setUser, startNewSession } from '@/telemetry/browser';
 import { copyTextToClipboard } from '@/utils/clipboard';
 
 import { HelpSparkle } from './HelpSparkle';

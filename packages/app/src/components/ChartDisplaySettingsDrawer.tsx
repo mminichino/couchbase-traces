@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useMemo } from 'react';
 import { Controller, useForm, useWatch } from 'react-hook-form';
-import { Separator } from '@clickhouse/click-ui';
 import {
   UnknownTemplateHelperError,
   validateTemplate,
@@ -33,6 +32,7 @@ import {
 import { IconHelpCircle } from '@tabler/icons-react';
 
 import { shouldFillNullsWithZero } from '@/ChartUtils';
+import { Separator } from '@/components/Separator/Separator';
 import { MAX_RENDERED_TIME_CHART_SERIES } from '@/defaults';
 import { FormatTime } from '@/useFormatTime';
 

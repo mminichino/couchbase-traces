@@ -1,7 +1,7 @@
 import { ReactNode } from 'react';
-import { Badge } from '@clickhouse/click-ui';
 import { Group, Stack } from '@mantine/core';
 
+import { Badge } from '@/components/Badge/Badge';
 import { CurlGenerator } from '@/utils/curlGenerator';
 import {
   getReplayableHeaders,

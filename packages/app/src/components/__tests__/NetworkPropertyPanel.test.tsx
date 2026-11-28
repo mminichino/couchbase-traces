@@ -16,9 +16,9 @@ jest.mock('@mantine/notifications', () => ({
   notifications: { show: jest.fn() },
 }));
 
-// click-ui encodes the badge state only in hashed CSS module class names.
-jest.mock('@clickhouse/click-ui', () => ({
-  ...jest.requireActual('@clickhouse/click-ui'),
+// A flat stand-in for Badge, so text and props are read from one element.
+jest.mock('@/components/Badge/Badge', () => ({
+  ...jest.requireActual('@/components/Badge/Badge'),
   Badge: ({ text, state }: { text: React.ReactNode; state?: string }) => (
     <span data-testid="badge" data-state={state}>
       {text}

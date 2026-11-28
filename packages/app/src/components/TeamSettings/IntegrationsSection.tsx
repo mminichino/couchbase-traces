@@ -1,5 +1,6 @@
-import { Separator } from '@clickhouse/click-ui';
 import { Box, Card, Stack, Text } from '@mantine/core';
+
+import { Separator } from '@/components/Separator/Separator';
 
 import WebhooksSection from './WebhooksSection';
 

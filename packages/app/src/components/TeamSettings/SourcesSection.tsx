@@ -1,6 +1,6 @@
-import { Separator } from '@clickhouse/click-ui';
 import { Box, Text } from '@mantine/core';
 
+import { Separator } from '@/components/Separator/Separator';
 import { SourcesList } from '@/components/Sources/SourcesList';
 
 export default function SourcesSection() {

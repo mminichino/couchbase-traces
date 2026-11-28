@@ -7,7 +7,6 @@ import cx from 'classnames';
 import sub from 'date-fns/sub';
 import { useQueryState } from 'nuqs';
 import { useForm, useWatch } from 'react-hook-form';
-import { Badge } from '@clickhouse/click-ui';
 import { convertDateRangeToGranularityString } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
   isLogSource,
@@ -41,6 +40,7 @@ import {
 } from '@tabler/icons-react';
 import { useVirtualizer } from '@tanstack/react-virtual';
 
+import { Badge } from '@/components/Badge/Badge';
 import { PageLayout } from '@/components/PageLayout';
 import { TimePicker } from '@/components/TimePicker';
 import { useConnectionKind } from '@/couchbase/connection';

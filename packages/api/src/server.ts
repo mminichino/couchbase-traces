@@ -1,7 +1,7 @@
 import '@/dataLayerSetup'; // registers Couchbase connection loader (MockServer + prod)
 
-import { shutdown as shutdownTelemetry } from '@clickhouse/clickstack-node';
 import { clusterCache } from '@couchbase-traces/common-utils/dist/couchbase/node';
+import { shutdown as shutdownTelemetry } from '@couchbase-traces/otel-node';
 import http from 'http';
 import gracefulShutdown from 'http-graceful-shutdown';
 import { serializeError } from 'serialize-error';

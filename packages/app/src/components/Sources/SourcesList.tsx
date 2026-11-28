@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/router';
-import { Badge, Separator } from '@clickhouse/click-ui';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import {
   ActionIcon,
@@ -26,6 +25,8 @@ import {
   IconStack,
 } from '@tabler/icons-react';
 
+import { Badge } from '@/components/Badge/Badge';
+import { Separator } from '@/components/Separator/Separator';
 import { IS_LOCAL_MODE } from '@/config';
 import { useConnections } from '@/connection';
 import { useSources } from '@/source';

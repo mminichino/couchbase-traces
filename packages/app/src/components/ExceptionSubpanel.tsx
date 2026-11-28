@@ -2,7 +2,6 @@
 import React, { useMemo } from 'react';
 import cx from 'classnames';
 import { ErrorBoundary } from 'react-error-boundary';
-import { Badge } from '@clickhouse/click-ui';
 import { Button, Text, Tooltip, UnstyledButton } from '@mantine/core';
 import { Group, Loader } from '@mantine/core';
 import {
@@ -13,6 +12,7 @@ import {
 } from '@tabler/icons-react';
 import { ColumnDef, Row, Table as TanstackTable } from '@tanstack/react-table';
 
+import { Badge } from '@/components/Badge/Badge';
 import { CopySnippet } from '@/components/CollectorOnboarding/CopySnippet';
 import type {
   StacktraceBreadcrumb,

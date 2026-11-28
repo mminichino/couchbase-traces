@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { parseAsString, useQueryState } from 'nuqs';
-import { Badge } from '@clickhouse/click-ui';
 import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { convertDateRangeToGranularityString } from '@couchbase-traces/common-utils/dist/core/utils';
 import {
@@ -22,6 +21,7 @@ import {
   K8S_CPU_PERCENTAGE_NUMBER_FORMAT,
   K8S_MEM_NUMBER_FORMAT,
 } from '@/ChartUtils';
+import { Badge } from '@/components/Badge/Badge';
 import { DBTimeChart } from '@/components/DBTimeChart';
 import { DrawerBody, DrawerHeader } from '@/components/DrawerUtils';
 import { useQueriedChartConfig } from '@/hooks/useChartConfig';

@@ -1,6 +1,5 @@
 import { useCallback } from 'react';
 import SqlString from 'sqlstring';
-import { Separator } from '@clickhouse/click-ui';
 import { TTraceSource } from '@couchbase-traces/common-utils/dist/types';
 import { Button, Group, Stack, Text } from '@mantine/core';
 import {
@@ -11,6 +10,7 @@ import {
   IconTargetOff,
 } from '@tabler/icons-react';
 
+import { Separator } from '@/components/Separator/Separator';
 import { formatDurationMs } from '@/utils';
 
 import {

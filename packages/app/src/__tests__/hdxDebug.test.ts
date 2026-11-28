@@ -20,7 +20,7 @@ function loadHdxDebug(
 ) {
   jest.resetModules();
   jest.doMock('@/config', () => ({ ...baseConfig, ...configOverrides }));
-  jest.doMock('@clickhouse/clickstack-browser', () => ({
+  jest.doMock('@/telemetry/browser', () => ({
     getSessionId: () => sessionId,
   }));
   jest.doMock('@/utils/clipboard', () => ({

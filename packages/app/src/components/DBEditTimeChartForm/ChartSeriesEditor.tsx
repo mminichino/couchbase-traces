@@ -6,7 +6,6 @@ import {
   UseFormSetValue,
   useWatch,
 } from 'react-hook-form';
-import { Badge } from '@clickhouse/click-ui';
 import { indexToSeriesRef } from '@couchbase-traces/common-utils/dist/core/formula';
 import {
   DateRange,
@@ -25,6 +24,7 @@ import {
   defaultAggFnForMetricType,
   HISTOGRAM_SUPPORTED_AGG_FNS,
 } from '@/components/AggFnSelect';
+import { Badge } from '@/components/Badge/Badge';
 import { ChartSeriesControls } from '@/components/ChartEditor/ChartSeriesControls';
 import {
   ChartEditorFormState,

@@ -13,7 +13,6 @@ import { useQueryState } from 'nuqs';
 import { ErrorBoundary, FallbackProps } from 'react-error-boundary';
 import { useHotkeys } from 'react-hotkeys-hook';
 import SqlString from 'sqlstring';
-import { Badge } from '@clickhouse/click-ui';
 import {
   isLogSource,
   isTraceSource,
@@ -37,6 +36,7 @@ import {
 } from '@mantine/core';
 import { IconCopy, IconKeyboard, IconShare, IconX } from '@tabler/icons-react';
 
+import { Badge } from '@/components/Badge/Badge';
 import { useCloseOnClickOutside } from '@/hooks/useCloseOnClickOutside';
 import { useOpenedRowSpanSelection } from '@/hooks/useOpenedRowSpanSelection';
 import useResizable from '@/hooks/useResizable';

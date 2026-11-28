@@ -126,8 +126,8 @@ yarn dev:down
 To enable self-instrumentation and demo logs, you can set the `CBT_API_KEY`
 to your ingestion key (visit the Team settings page after creating your account).
 The API and the Next.js server pass it to the OpenTelemetry SDK
-(`@clickhouse/clickstack-node`) as `apiKey`, and the browser SDK
-(`@clickhouse/clickstack-browser`) gets it from `/api/config`. The API and the
+(`@couchbase-traces/otel-node`) as `apiKey`, and the browser telemetry
+(`packages/app/src/telemetry`) gets it from `/api/config`. The API and the
 alert task report as `hdx-oss-dev-api`, the Next.js server as
 `hdx-oss-dev-app-next`, and the browser as `hdx-oss-dev-app`.
 

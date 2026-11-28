@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "types": ["jest", "node"],
+    "lib": ["ES2023"],
+    "rootDir": "./src",
+    "outDir": "dist",
+    "declaration": true,
+    // Helpers inline, so the runtime needs no tslib next to the API image.
+    "importHelpers": false,
+    "isolatedModules": true,
+    "skipLibCheck": true,
+    "strict": true,
+    "target": "ES2022"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules"]
+}

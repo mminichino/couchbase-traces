@@ -1,0 +1,49 @@
+{
+  "name": "@couchbase-traces/otel-node",
+  "description": "OpenTelemetry setup for the Couchbase Traces API and Next.js server's own telemetry",
+  "version": "1.1.0",
+  "license": "MIT",
+  "private": true,
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist/*"
+  ],
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "dependencies": {
+    "@opentelemetry/api-logs": "^0.223.0",
+    "@opentelemetry/auto-instrumentations-node": "^0.81.0",
+    "@opentelemetry/core": "^2.12.0",
+    "@opentelemetry/instrumentation": "^0.223.0",
+    "@opentelemetry/instrumentation-console": "^0.5.0",
+    "@opentelemetry/resources": "^2.12.0",
+    "@opentelemetry/sdk-node": "^0.223.0",
+    "@opentelemetry/semantic-conventions": "^1.43.0",
+    "import-in-the-middle": "^3.5.2"
+  },
+  "peerDependencies": {
+    "@opentelemetry/api": ">=1.9.1 <1.10.0"
+  },
+  "devDependencies": {
+    "@opentelemetry/api": "~1.9.1",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.15.18",
+    "eslint": "^9.39.1",
+    "jest": "^30.2.0",
+    "rimraf": "^4.4.1",
+    "ts-jest": "^29.4.11",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.46.0"
+  },
+  "scripts": {
+    "build": "rimraf ./dist && tsc -p tsconfig.build.json",
+    "ci:build": "yarn build",
+    "dev:build": "yarn build",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "ci:lint": "yarn lint && tsc -p tsconfig.json --noEmit",
+    "ci:unit": "yarn build && jest --ci --coverage"
+  }
+}

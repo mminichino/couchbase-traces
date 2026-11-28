@@ -1,5 +1,4 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Badge } from '@clickhouse/click-ui';
 import { TMetricSource } from '@couchbase-traces/common-utils/dist/types';
 import {
   Box,
@@ -25,6 +24,7 @@ import {
   IconSearch,
 } from '@tabler/icons-react';
 
+import { Badge } from '@/components/Badge/Badge';
 import { useFetchMetricAttributeValues } from '@/hooks/useFetchMetricAttributeValues';
 import { MetricMetadata } from '@/hooks/useFetchMetricMetadata';
 import {

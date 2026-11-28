@@ -6,3 +6,17 @@ commit f172a489c81888099d70c799478c9a9cfbed25b6, which is distributed under the 
   Copyright (c) 2023 DeploySentinel, Inc.
 
 The full license text is in the LICENSE file.
+
+The self-telemetry code in packages/otel-node/src and packages/app/src/telemetry
+is ported, with modifications, from @clickhouse/clickstack-node 1.0.2
+(https://github.com/ClickHouse/clickstack-node) and
+@clickhouse/clickstack-browser 1.2.1
+(https://github.com/ClickHouse/clickstack-browser), which are distributed under
+the Apache License, Version 2.0:
+
+  Copyright 2016-2026 ClickHouse, Inc.
+
+The full license text is in licenses/Apache-2.0-ClickHouse.txt. Changes: the
+code is rewritten in TypeScript inside this repository, renamed for Couchbase
+Traces (the CBT_CAPTURE_HTTP_BODY variable, the telemetry.distro.name value),
+and the AWS Lambda support and the zero-code register entries are left out.

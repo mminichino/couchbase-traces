@@ -5,7 +5,6 @@ import {
   UseFormTrigger,
   useWatch,
 } from 'react-hook-form';
-import { Separator } from '@clickhouse/click-ui';
 import { TableConnection } from '@couchbase-traces/common-utils/dist/core/metadata';
 import {
   hasFilterEffect,
@@ -22,6 +21,7 @@ import { IconAlertTriangle } from '@tabler/icons-react';
 
 import { CheckBoxControlled } from '@/components/InputControlled';
 import SearchWhereInput from '@/components/SearchInput/SearchWhereInput';
+import { Separator } from '@/components/Separator/Separator';
 import { SourceMultiSelectControlled } from '@/components/SourceMultiSelect';
 import SourceSchemaPreview, {
   isSourceSchemaPreviewEnabled,

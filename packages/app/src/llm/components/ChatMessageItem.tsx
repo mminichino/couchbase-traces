@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { Badge, BadgeProps } from '@clickhouse/click-ui';
 import { Box, Code, Group, Paper, Text } from '@mantine/core';
 import {
   IconChevronDown,
@@ -9,9 +8,10 @@ import {
   IconTool,
 } from '@tabler/icons-react';
 
+import { Badge, type BadgeProps } from '@/components/Badge/Badge';
 import { ChatToolCall, ConversationMessage } from '@/llm/lib/types';
 
-// Chat roles are categories, not statuses. click-ui only has semantic badge
+// Chat roles are categories, not statuses. Badge only has semantic
 // states, so these states are for color only and do not signal a problem.
 const ROLE_BADGE_STATES: Record<string, BadgeProps['state']> = {
   system: 'neutral',

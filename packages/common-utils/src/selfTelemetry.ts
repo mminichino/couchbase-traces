@@ -1,6 +1,6 @@
 /**
  * Shared by the API's self-telemetry preload and the Next.js server
- * instrumentation, which both wrap the ClickStack SDK's init().
+ * instrumentation, which both call @couchbase-traces/otel-node's init().
  *
  * It has no imports so the API preload can load it before init() without
  * loading anything the SDK would then fail to instrument.
@@ -42,8 +42,8 @@ export function decideSelfTelemetry(
   const apiKey = env.CBT_API_KEY?.trim() || undefined;
   const otlpHeaders = env.OTEL_EXPORTER_OTLP_HEADERS?.trim() || undefined;
 
-  // The old HyperDX SDK skipped init without a key or OTLP headers, and the
-  // ClickStack SDK always starts. Without this gate, deployments that never
+  // The old HyperDX SDK skipped init without a key or OTLP headers, and
+  // otel-node's init() always starts. Without this gate, deployments that never
   // exported HyperDX's own telemetry would start sending it to localhost:4318,
   // which is the bundled collector in the all-in-one image.
   if (!apiKey && !otlpHeaders) {

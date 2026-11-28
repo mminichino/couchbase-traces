@@ -8,6 +8,7 @@ COPY .yarnrc.yml yarn.lock package.json nx.json .prettierrc .prettierignore ./ts
 # Only copy package.json for workspace resolution during yarn install;
 # full source is copied in the build stages that need it.
 COPY ./packages/common-utils/package.json ./packages/common-utils/package.json
+COPY ./packages/otel-node/package.json ./packages/otel-node/package.json
 COPY ./packages/api/jest.config.js ./packages/api/tsconfig.json ./packages/api/tsconfig.build.json ./packages/api/package.json ./packages/api/
 COPY ./packages/api/bin ./packages/api/bin
 # Use BuildKit cache mount to persist Yarn download cache across builds,
@@ -24,6 +25,8 @@ RUN --mount=type=cache,target=/root/.yarn/berry/cache,id=yarn-cache,sharing=lock
 FROM base AS dev
 
 COPY ./packages/common-utils ./packages/common-utils
+COPY ./packages/otel-node ./packages/otel-node
+RUN yarn workspace @couchbase-traces/otel-node run build
 
 EXPOSE 8000
 
@@ -37,6 +40,8 @@ FROM base AS common-utils-builder
 
 COPY ./packages/common-utils ./packages/common-utils
 RUN yarn workspace @couchbase-traces/common-utils run build
+COPY ./packages/otel-node ./packages/otel-node
+RUN yarn workspace @couchbase-traces/otel-node run build
 
 
 ## builder #########################################################################################
@@ -45,6 +50,7 @@ FROM base AS builder
 
 # Copy pre-built common-utils from its dedicated build stage
 COPY --from=common-utils-builder /app/packages/common-utils ./packages/common-utils
+COPY --from=common-utils-builder /app/packages/otel-node ./packages/otel-node
 
 COPY ./packages/api/src ./packages/api/src
 RUN yarn workspace @couchbase-traces/api run build
@@ -82,6 +88,8 @@ COPY --chown=node:node --from=builder /app/node_modules ./node_modules
 COPY --chown=node:node --from=builder /app/packages/api/build ./packages/api/build
 COPY --chown=node:node --from=builder /app/packages/api/bin ./packages/api/bin
 COPY --chown=node:node --from=builder /app/packages/common-utils/dist ./packages/common-utils/dist
+COPY --chown=node:node --from=builder /app/packages/otel-node/package.json ./packages/otel-node/package.json
+COPY --chown=node:node --from=builder /app/packages/otel-node/dist ./packages/otel-node/dist
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
     CMD node -e "require('http').get('http://localhost:'+(process.env.PORT||8000)+'/health',r=>r.statusCode===200?process.exit(0):process.exit(1)).on('error',()=>process.exit(1))"

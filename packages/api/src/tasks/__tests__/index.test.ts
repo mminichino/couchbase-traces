@@ -6,7 +6,7 @@ const mockConfig = {
   RUN_SCHEDULED_TASKS_EXTERNALLY: false,
 };
 
-jest.mock('@clickhouse/clickstack-node', () => ({
+jest.mock('@couchbase-traces/otel-node', () => ({
   shutdown: () => mockShutdown(),
 }));
 jest.mock('cron', () => ({
