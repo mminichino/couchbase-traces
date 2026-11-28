@@ -11,7 +11,7 @@ golden_compose_build_ingest() {
   cp -R "$root/.yarn/releases/." "$stage/.yarn/releases/"
   cp -R "$root/.yarn/patches/." "$stage/.yarn/patches/"
   local name
-  for name in api app cli common-utils hdx-eval ingest otel-collector; do
+  for name in api app cli common-utils hdx-eval ingest otel-collector otel-node; do
     mkdir -p "$stage/packages/$name"
     cp "$root/packages/$name/package.json" "$stage/packages/$name/package.json"
   done

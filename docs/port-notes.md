@@ -4310,6 +4310,9 @@ CLI binaries attached to the release (SHA-256 of the downloaded assets):
   `yarn install`, so it lists `packages/otel-node/package.json` too; without
   it the install fails with "Workspace not found" (found by
   `make release-images-check`).
+  `port/golden/lib/compose-images.sh` stages the same manifests for the parity
+  golden ingest image and lists `otel-node` as well (found by the PR's Parity
+  goldens job).
 - **Next.js server build.** `serverExternalPackages` does not match a
   workspace package (it resolves through its symlink outside `node_modules`),
   so `next.config.mjs` adds a webpack `externals` entry for
