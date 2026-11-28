@@ -4376,3 +4376,44 @@ suite that resolves that `dist`. `ci:unit` is now `jest` alone, with an nx
 `dependsOn` on its own `ci:build` (plus `^ci:build`), so `dist` is built once
 before any test reads it. Two uncached `make ci-unit` runs passed afterwards.
 
+## v1.1.1 published artifacts (2026-11-27)
+
+Release <https://github.com/mminichino/couchbase-traces/releases/tag/v1.1.1>,
+tag `v1.1.1` (annotated, object `39db318`) on `e3013c8`. Image tags `1.1.1`,
+`1.1`, `1`, `latest` (all four resolve to the same index), platforms
+`linux/amd64` and `linux/arm64`; index digests from
+`docker buildx imagetools inspect`:
+
+| Image | Index digest |
+|---|---|
+| `ghcr.io/mminichino/couchbase-traces` | `sha256:27556542debe8648c79cb01a9bb1612b1b09f8ca2696f1b98f604ac841b0316f` |
+| `ghcr.io/mminichino/couchbase-traces-ingest` | `sha256:f5e86b684a6c0fc3bde69f78ce9a8b62ad3fd41f6536d34531779e2fcf06fca3` |
+| `ghcr.io/mminichino/couchbase-traces-otel-collector` | `sha256:3e81d558fdff2ba6bd9b0afbe033b37eb2942b090edff5a09eb5a78b314a87e3` |
+
+CLI binaries attached to the release (SHA-256 of the downloaded assets, Bun
+1.3.11):
+
+| Binary | SHA-256 |
+|---|---|
+| `cbt-darwin-arm64` | `1d24f3ee05b02f874d0493df69729f95ba1fdfe1a3c699dcf8f6896b61a30e41` |
+| `cbt-darwin-x64` | `d725b966e429cfd75def0c253589b12cde426fe4c2d630893b5086f92a780666` |
+| `cbt-linux-x64` | `310ccdb7b4667762fef52b93d591ac2ab3866f6790380310c434962ebde2258b` |
+
+Checks: `cbt-linux-x64` printed `1.1.1` and passed `--help` in an amd64
+`debian:bookworm-slim` container; `cbt-darwin-arm64` passed both locally;
+`cbt-darwin-x64` is Mach-O x86_64 and was not run (no Rosetta). A Compose stack
+pulled from a clean directory (`IMAGE_VERSION=1`) ran the three digests above,
+`/api/health` reported `1.1.1`, and the app image labels read version `1.1.1`,
+revision `e3013c8`.
+
+The first `make release-images` run failed with `ENOSPC` in the arm64
+`yarn install` step: the Docker VM disk was full, and nothing was pushed
+because the build pass precedes the push pass. After the maintainer freed space
+(23.4 GB free in the VM), the re-run from the same clean tag checkout passed.
+A multi-arch release build of the three images used about 15 GB of VM disk.
+
+In the fresh stack, the app's self-telemetry logged `ECONNREFUSED` to
+`otel-collector:4318`. That is expected before the first team exists:
+`buildOtelCollectorConfig` adds the `otlp/cbt` receiver to pipelines only when
+a team API key exists, so the collector does not listen on 4317/4318 yet.
+
