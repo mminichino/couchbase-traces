@@ -2,6 +2,36 @@
 
 Release-level highlights. Upstream history is in docs/upstream/CHANGELOG.md.
 
+## v1.1.1 — 2026-11-27
+
+<!-- cbt-release-notes version=1.1.1 inputs=v111-release -->
+
+**Couchbase Traces 1.1.1**
+
+A maintenance release: the last `@clickhouse/*` packages are gone, replaced
+by Couchbase Traces' own UI components and self-telemetry. The browser bundle
+is about 300 KB (gzip) smaller on first load.
+
+### ⚠️ Upgrade notes
+
+- **Renamed setting:** `CLICKSTACK_CAPTURE_HTTP_BODY` is now
+  `CBT_CAPTURE_HTTP_BODY`. The old name is no longer read: if you set it,
+  rename it, or the API and Next.js server stop recording HTTP bodies on their
+  self-telemetry spans. Nothing else changes; see DEPLOY.md.
+
+### 🧹 Maintenance
+
+- **UI**: badges and separators are local components with the same look; the
+  ClickHouse UI kit is no longer installed.
+- **Self-telemetry**: the API, task runner and Next.js server use the new
+  `@couchbase-traces/otel-node` package, and the browser RUM and session
+  replay code lives in the app. Session replay records keep the same format,
+  so existing recordings still play.
+- **Licenses**: the ported Apache-2.0 code is credited in `NOTICE`; the
+  dependency license report is regenerated.
+- **CI**: a new check fails on any `@clickhouse/*` dependency or import.
+- **Docs**: open and proposed work is tracked in `docs/backlog.md`.
+
 ## v1.1.0 — 2026-11-27
 
 <!-- cbt-release-notes version=1.1.0 inputs=v110-release -->

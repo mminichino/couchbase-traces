@@ -4273,6 +4273,28 @@ CLI binaries attached to the release (SHA-256 of the downloaded assets):
   `docker/hyperdx` path in a `packages/api/Dockerfile` comment that the brand
   scan flags. Removed the entries and reworded the comment; verify passes.
 
+## v1.1.0 published artifacts (2026-11-27)
+
+Release <https://github.com/mminichino/couchbase-traces/releases/tag/v1.1.0>,
+tag `v1.1.0` (annotated, object `cc51094`) on `8c5ae9d`. Image tags `1.1.0`,
+`1.1`, `1`, `latest`; index digests from `docker buildx imagetools inspect`
+(re-checked 2026-11-27 for this record):
+
+| Image | Index digest |
+|---|---|
+| `ghcr.io/mminichino/couchbase-traces` | `sha256:d7944dc54b0e516f816628f0f20cbbaaace165d0b42f0c336f2ff3c7a3883e73` |
+| `ghcr.io/mminichino/couchbase-traces-ingest` | `sha256:7e4813c5f1e1c1ee163d9f030b6dae82b95e40d4e5a41a57046a59ae63377d30` |
+| `ghcr.io/mminichino/couchbase-traces-otel-collector` | `sha256:6bd36a13d42ca93bdeeb6d750dc575dc3a5ffdc018539fce1d9758c70b5dd1fd` |
+
+CLI binaries attached to the release (SHA-256 of the downloaded assets, Bun
+1.3.11):
+
+| Binary | SHA-256 |
+|---|---|
+| `cbt-darwin-arm64` | `0f450db439f1cc66a3f2af0d0bdf4aec2feb9a698f72061984f05c12fd96821f` |
+| `cbt-darwin-x64` | `86d15cf61e9397f5c2766dabf3be90976efdaa966fe4cbe9517d6ebcf3b5942d` |
+| `cbt-linux-x64` | `cc4705b4c117cc99983baeae99eade43a4612e74f0fdf8507eb0439e54386e48` |
+
 ## P3: `@clickhouse/*` packages removed (2026-11-27, `mm--p3-remove-clickhouse-packages`)
 
 - **Inventory (before).** Three packages, no others: `@clickhouse/click-ui`
@@ -4343,3 +4365,14 @@ CLI binaries attached to the release (SHA-256 of the downloaded assets):
   `NamespaceDetailsSidePanel.tsx` and `NodeDetailsSidePanel.tsx`, which was
   already there (P3 changed one import line in each); backlog P6a.
 - **Backlog.** Open and proposed items now live in `docs/backlog.md`.
+
+## v1.1.1: otel-node unit tests rebuilt `dist` under a parallel api run
+
+`make ci-unit` failed once locally on the release branch: 14 api tests
+(`sessionSecretStartup`, `tasks/index`) could not resolve
+`@couchbase-traces/otel-node`. Its `ci:unit` script ran `yarn build` first,
+and that script deletes `dist` (`rimraf`) before `tsc` writes it, while nx was already running the api
+suite that resolves that `dist`. `ci:unit` is now `jest` alone, with an nx
+`dependsOn` on its own `ci:build` (plus `^ci:build`), so `dist` is built once
+before any test reads it. Two uncached `make ci-unit` runs passed afterwards.
+

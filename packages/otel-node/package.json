@@ -1,7 +1,7 @@
 {
   "name": "@couchbase-traces/otel-node",
   "description": "OpenTelemetry setup for the Couchbase Traces API and Next.js server's own telemetry",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "license": "MIT",
   "private": true,
   "main": "dist/index.js",
@@ -44,6 +44,16 @@
     "lint": "eslint . --max-warnings 0",
     "lint:fix": "eslint . --fix",
     "ci:lint": "yarn lint && tsc -p tsconfig.json --noEmit",
-    "ci:unit": "yarn build && jest --ci --coverage"
+    "ci:unit": "jest --ci --coverage"
+  },
+  "nx": {
+    "targets": {
+      "ci:unit": {
+        "dependsOn": [
+          "ci:build",
+          "^ci:build"
+        ]
+      }
+    }
   }
 }

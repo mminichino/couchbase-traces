@@ -6,7 +6,8 @@ original post-1.0 list, section 9.1 for defects) and
 [`port-notes.md`](./port-notes.md). An item moves out of this file when its PR
 merges; record the outcome in `port-notes.md` under the release that ships it.
 
-Target releases are proposals until the user assigns them. Patch releases
+Targets were accepted by the user on 2026-11-27; 1.1.1 shipped P3 only, so
+the former 1.1.1 items moved to 1.1.2. Patch releases
 (`1.1.x`) take fixes and CI or tooling work with no user-visible change; minor
 releases (`1.x.0`) take anything users or API clients can see.
 
@@ -14,17 +15,16 @@ releases (`1.x.0`) take anything users or API clients can see.
 
 | ID | Title | Proposed target | Size | Blocked on |
 | --- | --- | --- | --- | --- |
-| R-1.1.0 | Record v1.1.0 digests and checksums | next PR (1.1.1) | XS | — |
-| P9 | Harness: wait for rebalance before metadata provisioning | 1.1.1 | S | — |
-| P5 | Lower lint warning caps to measured counts | 1.1.1 | S | — |
-| P7 | Raise common-utils coverage floors to measured values | 1.1.1 | S | — |
+| P9 | Harness: wait for rebalance before metadata provisioning | 1.1.2 | S | — |
+| P5 | Lower lint warning caps to measured counts | 1.1.2 | S | — |
+| P7 | Raise common-utils coverage floors to measured values | 1.1.2 | S | — |
 | P6 | Make the jscpd clone check blocking | 1.2.0 | M | P6a |
 | P6a | Fold the existing duplicate-code clones | 1.2.0 | M | — |
 | P12 | Upstream TODOs (webhook signing first) | 1.2.0 (signing), later (rest) | M | design decision for signing |
 | P1 | ClickHouse-named identifiers and legacy connection UI | 1.2.0 | M | — |
 | P4 | Internal `hdx` / `HyperDX` naming | 1.2.0 (internal), 2.0.0 (header) | L | `x-hdx-team` transition decision |
 | P16 | Browser telemetry on experimental OTel packages | watch | S | upstream releases |
-| P17 | app lint headroom is one warning | 1.1.1 (with P5) | XS | — |
+| P17 | app lint headroom is one warning | 1.1.2 (with P5) | XS | — |
 | F1 | Couchbase Node SDK 4.8 | when listed | S | Couchbase compatibility list |
 | P8 | Rollup collections for value lists | only on regression | L | latency evidence |
 | W1 | Q61 watch: E2E waits under CI load | watch | — | — |
@@ -32,20 +32,6 @@ releases (`1.x.0`) take anything users or API clients can see.
 | W3 | Integration shard 2 balance | watch | — | a shard timeout |
 
 ## Items
-
-### R-1.1.0: Record v1.1.0 digests and checksums
-
-- **Description:** add the v1.1.0 image digests (`couchbase-traces`
-  `sha256:d7944dc5…`, `-ingest` `sha256:7e4813c5…`, `-otel-collector`
-  `sha256:6bd36a13…`) and the CLI SHA-256 sums to `docs/port-notes.md`, as was
-  done for v1.0.1.
-- **Rationale:** the release notes are the only other record; port-notes is
-  where earlier releases keep them.
-- **Target:** the next PR after P3 (it is not part of P3's scope).
-- **Dependencies:** none.
-- **Acceptance:** `docs/port-notes.md` has a v1.1.0 published-artifacts entry
-  whose digests match `docker buildx imagetools inspect` for tag `1.1.0` and
-  whose checksums match the release assets.
 
 ### P9: Harness waits for rebalance before metadata provisioning
 
@@ -56,7 +42,7 @@ releases (`1.x.0`) take anything users or API clients can see.
   (`GET /pools/default/rebalanceProgress` reports `none`) before provisioning.
 - **Rationale:** a CI flake in the live-cluster suite costs a re-run and masks
   real failures.
-- **Target:** 1.1.1.
+- **Target:** 1.1.2.
 - **Dependencies:** none.
 - **Acceptance:** `init.sh` polls rebalance status with a bounded timeout and
   fails with a clear message when it expires; ten consecutive
@@ -69,7 +55,7 @@ releases (`1.x.0`) take anything users or API clients can see.
   its measured count and make `scripts/ci/ratchet.mjs` (or a sibling) fail when
   a cap is above the measured count, so caps only go down.
 - **Rationale:** a cap above the count lets new warnings in silently.
-- **Target:** 1.1.1.
+- **Target:** 1.1.2.
 - **Dependencies:** none (P17 is the app-specific note).
 - **Acceptance:** each package's cap equals its measured warning count;
   `make ci-lint` green; a cap above the count fails CI.
@@ -81,7 +67,7 @@ releases (`1.x.0`) take anything users or API clients can see.
   `yarn ci:unit --coverage` and raise each floor to the measured value rounded
   down to the integer.
 - **Rationale:** floors far below the real coverage do not catch a drop.
-- **Target:** 1.1.1.
+- **Target:** 1.1.2.
 - **Dependencies:** none.
 - **Acceptance:** floors are within 1 point of measured coverage;
   `make ci-unit` green.
@@ -181,7 +167,7 @@ releases (`1.x.0`) take anything users or API clients can see.
   warning anyone adds fails CI.
 - **Rationale:** that is the intended ratchet behaviour, but it surprises
   contributors; P5 makes it explicit.
-- **Target:** 1.1.1, folded into P5.
+- **Target:** 1.1.2, folded into P5.
 - **Dependencies:** P5.
 - **Acceptance:** covered by P5.
 

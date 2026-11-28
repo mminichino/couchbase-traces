@@ -1,5 +1,12 @@
 # @couchbase-traces/ingest
 
+## 1.1.1
+
+### Patch Changes
+
+- Lock-stepped with the product at 1.1.1; the image build copies the new
+  `otel-node` workspace manifest.
+
 ## 1.1.0
 
 ### Minor Changes
