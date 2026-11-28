@@ -1,6 +1,5 @@
 import { useMemo } from 'react';
 import { UseFormSetValue, useWatch } from 'react-hook-form';
-import { Separator } from '@clickhouse/click-ui';
 import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { getAdhocFilterSourceKinds } from '@couchbase-traces/common-utils/dist/filters';
 import { DashboardFilter } from '@couchbase-traces/common-utils/dist/types';
@@ -8,6 +7,7 @@ import { Box } from '@mantine/core';
 
 import { CheckBoxControlled } from '@/components/InputControlled';
 import SearchWhereInput from '@/components/SearchInput/SearchWhereInput';
+import { Separator } from '@/components/Separator/Separator';
 import { SourceMultiSelectControlled } from '@/components/SourceMultiSelect';
 import { useSources } from '@/source';
 

@@ -1,7 +1,7 @@
-import type { ClickStackBrowserOptions } from '@clickhouse/clickstack-browser';
 import { type Attributes, trace } from '@opentelemetry/api';
 
 import { parseResourceAttributes } from '@/config';
+import type { BrowserTelemetryOptions } from '@/telemetry/browser';
 import type { NextApiConfigResponseData } from '@/types';
 
 /**
@@ -33,7 +33,7 @@ export function getBrowserInitOptions({
   /** The raw NEXT_PUBLIC_OTEL_RESOURCE_ATTRIBUTES value. */
   resourceAttributes: string;
   serviceVersion: string | undefined;
-}): ClickStackBrowserOptions {
+}): BrowserTelemetryOptions {
   return {
     endpoint: config.collectorUrl,
     // An empty per-signal URL, as from a variable set to '', makes the SDK

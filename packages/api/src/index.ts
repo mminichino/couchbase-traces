@@ -1,6 +1,6 @@
 import '@/dataLayerSetup';
 
-import { flush } from '@clickhouse/clickstack-node';
+import { flush } from '@couchbase-traces/otel-node';
 import { serializeError } from 'serialize-error';
 
 import * as config from '@/config';

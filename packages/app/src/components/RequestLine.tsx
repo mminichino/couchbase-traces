@@ -1,9 +1,9 @@
 import type { CSSProperties } from 'react';
-import { Badge, type BadgeProps } from '@clickhouse/click-ui';
 import { Button, Group, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 import { IconTerminal } from '@tabler/icons-react';
 
+import { Badge, type BadgeProps } from '@/components/Badge/Badge';
 import {
   CLIPBOARD_ERROR_MESSAGE,
   copyTextToClipboard,

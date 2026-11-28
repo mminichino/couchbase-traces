@@ -4,10 +4,9 @@ import userEvent from '@testing-library/user-event';
 
 import { ExceptionSubpanel } from '@/components/ExceptionSubpanel';
 
-// click-ui encodes state only in hashed CSS module class names, so the mock
-// exposes the props as attributes to assert on.
-jest.mock('@clickhouse/click-ui', () => ({
-  ...jest.requireActual('@clickhouse/click-ui'),
+// A flat stand-in for Badge, so text and props are read from one element.
+jest.mock('@/components/Badge/Badge', () => ({
+  ...jest.requireActual('@/components/Badge/Badge'),
   Badge: ({ text, state }: { text: React.ReactNode; state?: string }) => (
     <span data-testid="badge" data-state={state}>
       {text}

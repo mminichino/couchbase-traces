@@ -2,18 +2,17 @@
  * Self-telemetry preload, loaded with `-r` ahead of the API and the task
  * runner (bin/hyperdx, the dev scripts, the e2e web server).
  *
- * This wraps the ClickStack SDK instead of preloading its `register` entry
- * because the SDK never reads CBT_API_KEY, and it would start without a
- * key and send to localhost:4318. decideSelfTelemetry keeps the old HyperDX
- * SDK's key handling and start condition, shared with the Next.js server.
+ * It calls @couchbase-traces/otel-node's init() with the key from CBT_API_KEY.
+ * decideSelfTelemetry keeps the old HyperDX SDK's key handling and start
+ * condition, shared with the Next.js server.
  *
  * It imports nothing from the app, and from common-utils only a module without
  * dependencies: modules loaded before init() are not instrumented.
  */
 import { isMainThread } from 'node:worker_threads';
 
-import { init } from '@clickhouse/clickstack-node';
 import { decideSelfTelemetry } from '@couchbase-traces/common-utils/dist/selfTelemetry';
+import { init } from '@couchbase-traces/otel-node';
 
 const telemetry = decideSelfTelemetry(process.env);
 

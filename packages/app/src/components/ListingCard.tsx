@@ -1,9 +1,9 @@
 import Link from 'next/link';
 import { formatDistanceToNow } from 'date-fns';
-import { Badge } from '@clickhouse/click-ui';
 import { ActionIcon, Card, Group, Menu, Text, Tooltip } from '@mantine/core';
 import { IconDots, IconTrash } from '@tabler/icons-react';
 
+import { Badge } from '@/components/Badge/Badge';
 import { FavoriteButton } from '@/components/FavoriteButton';
 import { Favorite } from '@/favorites';
 import { FormatTime } from '@/useFormatTime';

@@ -1,9 +1,9 @@
-import { Separator } from '@clickhouse/click-ui';
 import { Box, Button, Card, Group, Text } from '@mantine/core';
 import { notifications } from '@mantine/notifications';
 
 import api from '@/api';
 import { RevealSnippet } from '@/components/RevealSnippet/RevealSnippet';
+import { Separator } from '@/components/Separator/Separator';
 import { useConfirm } from '@/useConfirm';
 
 // The reveal Input fills its container, so cap its width here at the parent.

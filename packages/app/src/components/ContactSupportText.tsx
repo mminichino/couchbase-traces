@@ -1,8 +1,6 @@
-import { Link } from '@clickhouse/click-ui';
+import { Anchor } from '@mantine/core';
 
 import { IS_OSS } from '@/config';
-
-import styles from './ContactSupportText.module.scss';
 
 const GH_LINK = 'https://github.com/mminichino/couchbase-traces/issues';
 
@@ -11,14 +9,14 @@ export const ContactSupportText = () => {
     return (
       <span>
         Please open an issue on{' '}
-        <Link
-          className={styles.inlineLink}
+        <Anchor
+          inherit
           href={GH_LINK}
           target="_blank"
           rel="noopener noreferrer"
         >
           GitHub
-        </Link>
+        </Anchor>
         .
       </span>
     );

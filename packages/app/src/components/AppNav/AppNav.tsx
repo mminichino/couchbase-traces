@@ -2,8 +2,6 @@ import { useCallback, useEffect, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import Router, { useRouter } from 'next/router';
 import cx from 'classnames';
-import { Badge } from '@clickhouse/click-ui';
-import { setAttributes, setUser } from '@clickhouse/clickstack-browser';
 import { SavedSearchListApiResponse } from '@couchbase-traces/common-utils/dist/types';
 import { Anchor, Collapse, Flex, Group, ScrollArea, Text } from '@mantine/core';
 import { useDisclosure, useFocusTrap, useLocalStorage } from '@mantine/hooks';
@@ -24,6 +22,7 @@ import { useLogomark, useWordmark } from '@/brand';
 import { AlertStatusIcon } from '@/components/AlertStatusIcon';
 import { InstanceLabel } from '@/components/AppNav/InstanceLabel';
 import { useMobileNavOverlay } from '@/components/AppNav/useMobileNavOverlay';
+import { Badge } from '@/components/Badge/Badge';
 import { useCompactViewport } from '@/components/CompactViewport/useCompactViewport';
 import { APP_VERSION, IS_LOCAL_MODE } from '@/config';
 import { dataStoreLinks, useConnections } from '@/connection';
@@ -33,6 +32,7 @@ import { setHdxIdentity } from '@/hdxDebug';
 import InstallInstructionModal from '@/InstallInstructionsModal';
 import OnboardingChecklist from '@/OnboardingChecklist';
 import { useSavedSearches } from '@/savedSearch';
+import { setAttributes, setUser } from '@/telemetry/browser';
 import { getTimeZoneShortName } from '@/timeZone';
 import { useDisplayTimeZone } from '@/useDisplayTimeZone';
 import { UserPreferencesModal } from '@/UserPreferencesModal';
@@ -402,8 +402,8 @@ export default function AppNav({ fixed = false }: { fixed?: boolean }) {
                 </Group>
               )}
             </Link>
-            {/* click-ui 0.12 has no sidebar-left icon, so the glyph is
-                inlined. Chrome matches IconButton type="primary" size="sm". */}
+            {/* The sidebar-left glyph is inlined to keep the original
+                collapse button's look. */}
             <button
               ref={collapseButtonRef}
               type="button"

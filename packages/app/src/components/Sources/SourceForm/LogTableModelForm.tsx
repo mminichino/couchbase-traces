@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import { useWatch } from 'react-hook-form';
-import { Separator } from '@clickhouse/click-ui';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import { Anchor, Box, Button, Group, Stack } from '@mantine/core';
 import { IconSettings } from '@tabler/icons-react';
 
 import { useBrandDisplayName } from '@/brand';
+import { Separator } from '@/components/Separator/Separator';
 import { SourceSelectControlled } from '@/components/SourceSelect';
 import { SQLInlineEditorControlled } from '@/components/SQLEditor/SQLInlineEditor';
 import { useColumns } from '@/hooks/useMetadata';

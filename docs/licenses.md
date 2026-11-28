@@ -1,19 +1,19 @@
 # Dependency license report
 
-Generated: 2026-11-19 (`node port/remove-ch/licenses.mjs`).
+Generated: 2026-11-28 (`node port/remove-ch/licenses.mjs`).
 
 ## Summary
 
-- npm production packages (external): **977** (via `yarn dlx license-checker-rseidelsohn@5.0.1` at repo root; production closure from workspace `dependencies`).
+- npm production packages (external): **910** (via `yarn dlx license-checker-rseidelsohn@5.0.1` at repo root; production closure from workspace `dependencies`).
 - Go modules: **485** (via `go run github.com/google/go-licenses@v1.6.0 report` on `packages/otel-collector` and the OCB `builder-config.yaml` module list).
-- Review-list entries: **15** (copyleft / network copyleft / unknown — informational only).
+- Review-list entries: **14** (copyleft / network copyleft / unknown — informational only).
 
 ### License counts (npm + Go)
 
 | License | Count |
 | --- | --- |
-| MIT | 786 |
-| Apache-2.0 | 444 |
+| MIT | 725 |
+| Apache-2.0 | 440 |
 | ISC | 88 |
 | BSD-3-Clause | 84 |
 | MPL-2.0 | 14 |
@@ -22,14 +22,13 @@ Generated: 2026-11-19 (`node port/remove-ch/licenses.mjs`).
 | BSD-2-Clause | 9 |
 | 0BSD | 4 |
 | CC-BY-4.0 | 2 |
-| CC0-1.0 | 2 |
 | (AFL-2.1 OR BSD-3-Clause) | 1 |
 | (BSD-2-Clause OR MIT OR Apache-2.0) | 1 |
 | (MIT AND Zlib) | 1 |
+| CC0-1.0 | 1 |
 | MIT AND ISC | 1 |
 | MIT* | 1 |
 | Python-2.0 | 1 |
-| UNKNOWN | 1 |
 | Unlicense | 1 |
 
 ## npm (production)
@@ -48,11 +47,7 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @babel/runtime | 7.22.15 | MIT | https://github.com/babel/babel | @couchbase-traces/app |
 | @babel/runtime | 7.24.0 | MIT | https://github.com/babel/babel | @couchbase-traces/app |
 | @babel/runtime | 7.24.6 | MIT | https://github.com/babel/babel | @couchbase-traces/app |
-| @babel/runtime | 7.29.7 | MIT | https://github.com/babel/babel | @couchbase-traces/app |
 | @braintree/sanitize-url | 7.1.2 | MIT | https://github.com/braintree/sanitize-url | @couchbase-traces/api |
-| @clickhouse/click-ui | 0.12.0 | Apache-2.0 | https://github.com/ClickHouse/click-ui | @couchbase-traces/app |
-| @clickhouse/clickstack-browser | 1.2.1 | Apache-2.0 | https://github.com/ClickHouse/clickstack-browser | @couchbase-traces/app |
-| @clickhouse/clickstack-node | 1.0.2 | Apache-2.0 | https://github.com/ClickHouse/clickstack-node | @couchbase-traces/api, @couchbase-traces/app |
 | @codemirror/autocomplete | 6.13.0 | MIT | https://github.com/codemirror/autocomplete | @couchbase-traces/app |
 | @codemirror/commands | 6.3.3 | MIT | https://github.com/codemirror/commands | @couchbase-traces/app |
 | @codemirror/lang-json | 6.0.1 | MIT | https://github.com/codemirror/lang-json | @couchbase-traces/app |
@@ -72,21 +67,16 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @esm2cjs/p-queue | 7.3.0 | MIT | https://github.com/esm2cjs/p-queue | @couchbase-traces/api |
 | @esm2cjs/p-timeout | 5.1.0 | MIT | https://github.com/esm2cjs/p-timeout | @couchbase-traces/api |
 | @floating-ui/core | 1.7.5 | MIT | https://github.com/floating-ui/floating-ui | @couchbase-traces/app |
-| @floating-ui/core | 1.8.0 | MIT | https://github.com/floating-ui/floating-ui | @couchbase-traces/app |
 | @floating-ui/dom | 1.7.6 | MIT | https://github.com/floating-ui/floating-ui | @couchbase-traces/app |
-| @floating-ui/dom | 1.8.0 | MIT | https://github.com/floating-ui/floating-ui | @couchbase-traces/app |
 | @floating-ui/react | 0.27.19 | MIT | https://github.com/floating-ui/floating-ui | @couchbase-traces/app |
 | @floating-ui/react-dom | 2.1.8 | MIT | https://github.com/floating-ui/floating-ui | @couchbase-traces/app |
-| @floating-ui/react-dom | 2.1.9 | MIT | https://github.com/floating-ui/floating-ui | @couchbase-traces/app |
 | @floating-ui/utils | 0.2.11 | MIT | https://github.com/floating-ui/floating-ui | @couchbase-traces/app |
-| @floating-ui/utils | 0.2.12 | MIT | https://github.com/floating-ui/floating-ui | @couchbase-traces/app |
-| @grpc/grpc-js | 1.14.7 | Apache-2.0 | https://github.com/grpc/grpc-node.git#master | @couchbase-traces/api |
-| @grpc/proto-loader | 0.8.1 | Apache-2.0 | https://github.com/grpc/grpc-node | @couchbase-traces/api |
-| @h6s/calendar | 2.2.0 | UNKNOWN | https://github.com/toss/h6s | @couchbase-traces/app |
+| @grpc/grpc-js | 1.14.7 | Apache-2.0 | https://github.com/grpc/grpc-node.git#master | @couchbase-traces/otel-node |
+| @grpc/proto-loader | 0.8.1 | Apache-2.0 | https://github.com/grpc/grpc-node | @couchbase-traces/otel-node |
 | @hono/node-server | 1.19.17 | MIT | https://github.com/honojs/node-server | @couchbase-traces/api |
 | @hookform/resolvers | 3.9.0 | MIT | https://github.com/react-hook-form/resolvers | @couchbase-traces/app |
 | @hyperdx/lucene | 3.1.1 | MIT | https://github.com/bripkens/lucene | @couchbase-traces/common-utils |
-| @js-sdsl/ordered-map | 4.4.2 | MIT | https://github.com/js-sdsl/js-sdsl | @couchbase-traces/api |
+| @js-sdsl/ordered-map | 4.4.2 | MIT | https://github.com/js-sdsl/js-sdsl | @couchbase-traces/otel-node |
 | @lezer/common | 1.5.3 | MIT | git+https://code.haverbeke.berlin/lezer/common | @couchbase-traces/app |
 | @lezer/highlight | 1.2.5 | MIT | git+https://code.haverbeke.berlin/lezer/highlight | @couchbase-traces/app |
 | @lezer/json | 1.0.2 | MIT | https://github.com/lezer-parser/json | @couchbase-traces/app |
@@ -103,93 +93,93 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @next/env | 16.4.3 | MIT | https://github.com/vercel/next.js | @couchbase-traces/app |
 | @opentelemetry/api | 1.9.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app |
 | @opentelemetry/api | 1.9.1 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app |
-| @opentelemetry/api-logs | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app |
-| @opentelemetry/auto-instrumentations-node | 0.81.2 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
+| @opentelemetry/api-logs | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/otel-node |
+| @opentelemetry/auto-instrumentations-node | 0.81.2 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
 | @opentelemetry/browser-instrumentation | 0.9.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-browser | @couchbase-traces/app |
 | @opentelemetry/browser-sdk | 0.6.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-browser | @couchbase-traces/app |
-| @opentelemetry/configuration | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/context-async-hooks | 2.12.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/core | 1.30.1 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app |
-| @opentelemetry/core | 2.12.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app |
-| @opentelemetry/exporter-logs-otlp-grpc | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/exporter-logs-otlp-http | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app |
-| @opentelemetry/exporter-logs-otlp-proto | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/exporter-metrics-otlp-grpc | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/exporter-metrics-otlp-http | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/exporter-metrics-otlp-proto | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/exporter-prometheus | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/exporter-trace-otlp-grpc | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/exporter-trace-otlp-http | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app |
-| @opentelemetry/exporter-trace-otlp-proto | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/exporter-zipkin | 2.12.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/instrumentation | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app |
-| @opentelemetry/instrumentation-amqplib | 0.70.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-aws-lambda | 0.75.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-aws-sdk | 0.78.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-bunyan | 0.68.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-cassandra-driver | 0.68.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-connect | 0.66.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-console | 0.5.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-cucumber | 0.39.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-dataloader | 0.40.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-dns | 0.66.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-express | 0.71.1 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-fs | 0.42.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-generic-pool | 0.66.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-graphql | 0.71.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-grpc | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/instrumentation-hapi | 0.69.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-host-metrics | 0.6.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-http | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/instrumentation-ioredis | 0.71.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-kafkajs | 0.32.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-knex | 0.67.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-koa | 0.71.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
+| @opentelemetry/configuration | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/otel-node |
+| @opentelemetry/context-async-hooks | 2.12.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/otel-node |
+| @opentelemetry/core | 1.30.1 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/otel-node |
+| @opentelemetry/core | 2.12.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/otel-node |
+| @opentelemetry/exporter-logs-otlp-grpc | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/otel-node |
+| @opentelemetry/exporter-logs-otlp-http | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/app, @couchbase-traces/otel-node |
+| @opentelemetry/exporter-logs-otlp-proto | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/otel-node |
+| @opentelemetry/exporter-metrics-otlp-grpc | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/otel-node |
+| @opentelemetry/exporter-metrics-otlp-http | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/otel-node |
+| @opentelemetry/exporter-metrics-otlp-proto | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/otel-node |
+| @opentelemetry/exporter-prometheus | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/otel-node |
+| @opentelemetry/exporter-trace-otlp-grpc | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/otel-node |
+| @opentelemetry/exporter-trace-otlp-http | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/app, @couchbase-traces/otel-node |
+| @opentelemetry/exporter-trace-otlp-proto | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/otel-node |
+| @opentelemetry/exporter-zipkin | 2.12.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/app, @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-amqplib | 0.70.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-aws-lambda | 0.75.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-aws-sdk | 0.78.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-bunyan | 0.68.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-cassandra-driver | 0.68.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-connect | 0.66.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-console | 0.5.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-cucumber | 0.39.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-dataloader | 0.40.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-dns | 0.66.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-express | 0.71.1 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-fs | 0.42.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-generic-pool | 0.66.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-graphql | 0.71.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-grpc | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-hapi | 0.69.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-host-metrics | 0.6.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-http | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-ioredis | 0.71.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-kafkajs | 0.32.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-knex | 0.67.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-koa | 0.71.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
 | @opentelemetry/instrumentation-long-task | 0.67.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/app |
-| @opentelemetry/instrumentation-lru-memoizer | 0.67.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-memcached | 0.66.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-mongodb | 0.76.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-mongoose | 0.69.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-mysql | 0.69.1 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-mysql2 | 0.69.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-nestjs-core | 0.70.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-net | 0.67.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-openai | 0.21.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-oracledb | 0.48.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-pg | 0.76.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-pino | 0.69.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-redis | 0.71.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-restify | 0.68.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-router | 0.67.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-runtime-node | 0.36.1 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-socket.io | 0.70.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-tedious | 0.42.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-undici | 0.33.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/instrumentation-winston | 0.68.1 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/otlp-exporter-base | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app |
-| @opentelemetry/otlp-grpc-exporter-base | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/otlp-transformer | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app |
-| @opentelemetry/propagator-aws-xray | 2.2.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/propagator-b3 | 2.12.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/propagator-jaeger | 2.12.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/redis-common | 0.38.3 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/resource-detector-alibaba-cloud | 0.38.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/resource-detector-aws | 2.23.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/resource-detector-azure | 0.31.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/resource-detector-container | 0.8.14 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/resource-detector-gcp | 0.58.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
-| @opentelemetry/resources | 1.30.1 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app |
-| @opentelemetry/resources | 2.12.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app |
-| @opentelemetry/sdk-logs | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app |
-| @opentelemetry/sdk-metrics | 2.12.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/sdk-node | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/sdk-trace | 2.12.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app |
-| @opentelemetry/sdk-trace-base | 1.30.1 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/sdk-trace-base | 2.12.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/sdk-trace-node | 2.12.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api |
-| @opentelemetry/semantic-conventions | 1.28.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app |
-| @opentelemetry/semantic-conventions | 1.44.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app |
-| @opentelemetry/sql-common | 0.42.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/api |
+| @opentelemetry/instrumentation-lru-memoizer | 0.67.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-memcached | 0.66.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-mongodb | 0.76.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-mongoose | 0.69.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-mysql | 0.69.1 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-mysql2 | 0.69.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-nestjs-core | 0.70.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-net | 0.67.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-openai | 0.21.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-oracledb | 0.48.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-pg | 0.76.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-pino | 0.69.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-redis | 0.71.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-restify | 0.68.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-router | 0.67.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-runtime-node | 0.36.1 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-socket.io | 0.70.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-tedious | 0.42.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-undici | 0.33.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/instrumentation-winston | 0.68.1 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/otlp-exporter-base | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/app, @couchbase-traces/otel-node |
+| @opentelemetry/otlp-grpc-exporter-base | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/otel-node |
+| @opentelemetry/otlp-transformer | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/otel-node |
+| @opentelemetry/propagator-aws-xray | 2.2.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/propagator-b3 | 2.12.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/otel-node |
+| @opentelemetry/propagator-jaeger | 2.12.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/otel-node |
+| @opentelemetry/redis-common | 0.38.3 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/resource-detector-alibaba-cloud | 0.38.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/resource-detector-aws | 2.23.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/resource-detector-azure | 0.31.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/resource-detector-container | 0.8.14 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/resource-detector-gcp | 0.58.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
+| @opentelemetry/resources | 1.30.1 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/otel-node |
+| @opentelemetry/resources | 2.12.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/otel-node |
+| @opentelemetry/sdk-logs | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/otel-node |
+| @opentelemetry/sdk-metrics | 2.12.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/otel-node |
+| @opentelemetry/sdk-node | 0.223.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/otel-node |
+| @opentelemetry/sdk-trace | 2.12.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/otel-node |
+| @opentelemetry/sdk-trace-base | 1.30.1 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/otel-node |
+| @opentelemetry/sdk-trace-base | 2.12.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/otel-node |
+| @opentelemetry/sdk-trace-node | 2.12.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/otel-node |
+| @opentelemetry/semantic-conventions | 1.28.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/otel-node |
+| @opentelemetry/semantic-conventions | 1.44.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/otel-node |
+| @opentelemetry/sql-common | 0.42.0 | Apache-2.0 | https://github.com/open-telemetry/opentelemetry-js-contrib | @couchbase-traces/otel-node |
 | @protobufjs/aspromise | 1.1.2 | BSD-3-Clause | https://github.com/dcodeIO/protobuf.js | @couchbase-traces/api |
 | @protobufjs/base64 | 1.1.2 | BSD-3-Clause | https://github.com/dcodeIO/protobuf.js | @couchbase-traces/api |
 | @protobufjs/codegen | 2.0.5 | BSD-3-Clause | https://github.com/dcodeIO/protobuf.js | @couchbase-traces/api |
@@ -199,54 +189,13 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @protobufjs/path | 1.1.2 | BSD-3-Clause | https://github.com/dcodeIO/protobuf.js | @couchbase-traces/api |
 | @protobufjs/pool | 1.1.0 | BSD-3-Clause | https://github.com/dcodeIO/protobuf.js | @couchbase-traces/api |
 | @protobufjs/utf8 | 1.1.1 | BSD-3-Clause | https://github.com/dcodeIO/protobuf.js | @couchbase-traces/api |
-| @radix-ui/primitive | 1.1.7 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-accordion | 1.2.20 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-arrow | 1.1.15 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-avatar | 1.2.6 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-checkbox | 1.3.11 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-collapsible | 1.1.20 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-collection | 1.1.15 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-compose-refs | 1.1.5 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-context | 1.2.2 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-context-menu | 2.3.7 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-dialog | 1.1.23 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-direction | 1.1.4 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-dismissable-layer | 1.1.19 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-dropdown-menu | 2.1.24 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-focus-guards | 1.1.6 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-focus-scope | 1.1.16 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-hover-card | 1.1.23 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-id | 1.1.4 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-menu | 2.1.24 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-popover | 1.1.23 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-popper | 1.3.7 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-portal | 1.1.17 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-presence | 1.1.10 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-primitive | 2.1.10 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-radio-group | 1.4.7 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-roving-focus | 1.1.19 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-separator | 1.1.15 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-slot | 1.3.3 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-switch | 1.3.7 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-tabs | 1.1.21 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-toast | 1.2.23 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-tooltip | 1.2.16 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-use-callback-ref | 1.1.4 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-use-controllable-state | 1.2.6 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-use-effect-event | 0.0.5 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-use-is-hydrated | 0.1.3 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-use-layout-effect | 1.1.4 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-use-rect | 1.1.4 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-use-size | 1.1.4 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/react-visually-hidden | 1.2.11 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
-| @radix-ui/rect | 1.1.3 | MIT | https://github.com/radix-ui/primitives | @couchbase-traces/app |
 | @reduxjs/toolkit | 2.12.0 | MIT | https://github.com/reduxjs/redux-toolkit | @couchbase-traces/app |
-| @rrweb/record | 2.2.0 | MIT | https://github.com/rrweb-io/rrweb | @couchbase-traces/app |
+| @rrweb/record | 2.2.2 | MIT | https://github.com/rrweb-io/rrweb | @couchbase-traces/app |
 | @rrweb/replay | 2.1.1 | MIT | https://github.com/rrweb-io/rrweb | @couchbase-traces/app |
 | @rrweb/types | 2.1.1 | MIT | https://github.com/rrweb-io/rrweb | @couchbase-traces/app |
-| @rrweb/types | 2.2.0 | MIT | https://github.com/rrweb-io/rrweb | @couchbase-traces/app |
+| @rrweb/types | 2.2.2 | MIT | https://github.com/rrweb-io/rrweb | @couchbase-traces/app |
 | @rrweb/utils | 2.1.1 | MIT | https://github.com/rrweb-io/rrweb | @couchbase-traces/app |
-| @rrweb/utils | 2.2.0 | MIT | https://github.com/rrweb-io/rrweb | @couchbase-traces/app |
+| @rrweb/utils | 2.2.2 | MIT | https://github.com/rrweb-io/rrweb | @couchbase-traces/app |
 | @slack/types | 2.20.0 | MIT | https://github.com/slackapi/node-slack-sdk | @couchbase-traces/api |
 | @slack/webhook | 7.0.7 | MIT | https://github.com/slackapi/node-slack-sdk | @couchbase-traces/api |
 | @standard-schema/spec | 1.1.0 | MIT | https://github.com/standard-schema/standard-schema | @couchbase-traces/api, @couchbase-traces/app |
@@ -262,8 +211,8 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @tanstack/react-virtual | 3.0.1 | MIT | https://github.com/tanstack/virtual | @couchbase-traces/app |
 | @tanstack/table-core | 8.7.9 | MIT | https://github.com/tanstack/table | @couchbase-traces/app |
 | @tanstack/virtual-core | 3.0.0 | MIT | https://github.com/tanstack/virtual | @couchbase-traces/app |
-| @types/aws-lambda | 8.10.164 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/api |
-| @types/connect | 3.4.38 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/api |
+| @types/aws-lambda | 8.10.164 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/otel-node |
+| @types/connect | 3.4.38 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/otel-node |
 | @types/css-font-loading-module | 0.0.7 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/app |
 | @types/d3-array | 3.0.4 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/app |
 | @types/d3-color | 3.1.0 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/app |
@@ -289,18 +238,17 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @types/lodash | 4.17.21 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/app |
 | @types/luxon | 3.7.1 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/api |
 | @types/mdast | 4.0.4 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/app |
-| @types/memcached | 2.2.7 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/api |
+| @types/memcached | 2.2.7 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/otel-node |
 | @types/ms | 0.7.31 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/app |
-| @types/node | 12.20.55 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/api |
-| @types/node | 18.16.0 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/api |
-| @types/node | 20.13.0 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/api |
-| @types/node | 22.15.18 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/api |
-| @types/node | 25.2.3 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/api |
+| @types/node | 12.20.55 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/api, @couchbase-traces/otel-node |
+| @types/node | 18.16.0 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/api, @couchbase-traces/otel-node |
+| @types/node | 20.13.0 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/api, @couchbase-traces/otel-node |
+| @types/node | 22.15.18 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/api, @couchbase-traces/otel-node |
+| @types/node | 25.2.3 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/api, @couchbase-traces/otel-node |
 | @types/pegjs | 0.10.6 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/common-utils |
-| @types/pg | 8.15.6 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/api |
-| @types/pg | 8.6.6 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/api |
-| @types/pg-pool | 2.0.7 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/api |
-| @types/prismjs | 1.26.6 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/app |
+| @types/pg | 8.15.6 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/otel-node |
+| @types/pg | 8.6.6 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/otel-node |
+| @types/pg-pool | 2.0.7 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/otel-node |
 | @types/unist | 2.0.6 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/app |
 | @types/unist | 3.0.2 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/app |
 | @types/use-sync-external-store | 0.0.6 | MIT | https://github.com/DefinitelyTyped/DefinitelyTyped | @couchbase-traces/app |
@@ -333,7 +281,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | anymatch | 3.1.3 | ISC | https://github.com/micromatch/anymatch | @couchbase-traces/app |
 | argparse | 1.0.10 | MIT | https://github.com/nodeca/argparse | @couchbase-traces/app |
 | argparse | 2.0.1 | Python-2.0 | https://github.com/nodeca/argparse | @couchbase-traces/app |
-| aria-hidden | 1.2.6 | MIT | https://github.com/theKashey/aria-hidden | @couchbase-traces/app |
 | array-flatten | 1.1.1 | MIT | https://github.com/blakeembrey/array-flatten | @couchbase-traces/api |
 | asynckit | 0.4.0 | MIT | https://github.com/alexindigo/asynckit | @couchbase-traces/api |
 | atomic-sleep | 1.0.0 | MIT | https://github.com/davidmarkclements/atomic-sleep | @couchbase-traces/api |
@@ -341,25 +288,25 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | aws4 | 1.13.2 | MIT | https://github.com/mhart/aws4 | @couchbase-traces/api |
 | axios | 1.18.1 | MIT | https://github.com/axios/axios | @couchbase-traces/api |
 | bail | 2.0.2 | MIT | https://github.com/wooorm/bail | @couchbase-traces/app |
-| balanced-match | 1.0.2 | MIT | https://github.com/juliangruber/balanced-match | @couchbase-traces/api |
-| balanced-match | 2.0.0 | MIT | https://github.com/juliangruber/balanced-match | @couchbase-traces/api |
-| balanced-match | 4.0.3 | MIT | https://github.com/juliangruber/balanced-match | @couchbase-traces/api |
-| balanced-match | 4.0.4 | MIT | https://github.com/juliangruber/balanced-match | @couchbase-traces/api |
+| balanced-match | 1.0.2 | MIT | https://github.com/juliangruber/balanced-match | @couchbase-traces/otel-node |
+| balanced-match | 2.0.0 | MIT | https://github.com/juliangruber/balanced-match | @couchbase-traces/otel-node |
+| balanced-match | 4.0.3 | MIT | https://github.com/juliangruber/balanced-match | @couchbase-traces/otel-node |
+| balanced-match | 4.0.4 | MIT | https://github.com/juliangruber/balanced-match | @couchbase-traces/otel-node |
 | base64-arraybuffer | 1.0.2 | MIT | https://github.com/niklasvh/base64-arraybuffer | @couchbase-traces/app |
 | base64-js | 1.5.1 | MIT | https://github.com/beatgammit/base64-js | @couchbase-traces/api |
 | baseline-browser-mapping | 2.10.0 | Apache-2.0 | https://github.com/web-platform-dx/baseline-browser-mapping | @couchbase-traces/app |
 | baseline-browser-mapping | 2.10.8 | Apache-2.0 | https://github.com/web-platform-dx/baseline-browser-mapping | @couchbase-traces/app |
 | baseline-browser-mapping | 2.8.30 | Apache-2.0 | https://github.com/web-platform-dx/baseline-browser-mapping | @couchbase-traces/app |
 | big-integer | 1.6.52 | Unlicense | https://github.com/peterolson/BigInteger.js | @couchbase-traces/common-utils |
-| bignumber.js | 9.1.1 | MIT | https://github.com/MikeMcl/bignumber.js | @couchbase-traces/api, @couchbase-traces/app |
-| bignumber.js | 9.1.2 | MIT | https://github.com/MikeMcl/bignumber.js | @couchbase-traces/api, @couchbase-traces/app |
+| bignumber.js | 9.1.1 | MIT | https://github.com/MikeMcl/bignumber.js | @couchbase-traces/app, @couchbase-traces/otel-node |
+| bignumber.js | 9.1.2 | MIT | https://github.com/MikeMcl/bignumber.js | @couchbase-traces/app, @couchbase-traces/otel-node |
 | binary-extensions | 2.2.0 | MIT | https://github.com/sindresorhus/binary-extensions | @couchbase-traces/app |
 | body-parser | 1.20.6 | MIT | https://github.com/expressjs/body-parser | @couchbase-traces/api |
-| brace-expansion | 1.1.17 | MIT | https://github.com/juliangruber/brace-expansion | @couchbase-traces/api |
-| brace-expansion | 2.1.3 | MIT | https://github.com/juliangruber/brace-expansion | @couchbase-traces/api |
-| brace-expansion | 2.1.4 | MIT | https://github.com/juliangruber/brace-expansion | @couchbase-traces/api |
-| brace-expansion | 5.0.12 | MIT | https://github.com/juliangruber/brace-expansion | @couchbase-traces/api |
-| brace-expansion | 5.0.8 | MIT | https://github.com/juliangruber/brace-expansion | @couchbase-traces/api |
+| brace-expansion | 1.1.17 | MIT | https://github.com/juliangruber/brace-expansion | @couchbase-traces/otel-node |
+| brace-expansion | 2.1.3 | MIT | https://github.com/juliangruber/brace-expansion | @couchbase-traces/otel-node |
+| brace-expansion | 2.1.4 | MIT | https://github.com/juliangruber/brace-expansion | @couchbase-traces/otel-node |
+| brace-expansion | 5.0.12 | MIT | https://github.com/juliangruber/brace-expansion | @couchbase-traces/otel-node |
+| brace-expansion | 5.0.8 | MIT | https://github.com/juliangruber/brace-expansion | @couchbase-traces/otel-node |
 | braces | 3.0.3 | MIT | https://github.com/micromatch/braces | @couchbase-traces/api, @couchbase-traces/app |
 | bytes | 3.0.0 | MIT | https://github.com/visionmedia/bytes.js | @couchbase-traces/api |
 | bytes | 3.1.2 | MIT | https://github.com/visionmedia/bytes.js | @couchbase-traces/api |
@@ -381,12 +328,10 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | chownr | 2.0.0 | ISC | https://github.com/isaacs/chownr | @couchbase-traces/api |
 | chownr | 3.0.0 | BlueOak-1.0.0 | https://github.com/isaacs/chownr | @couchbase-traces/api |
 | chrono-node | 2.9.0 | MIT | https://github.com/wanasit/chrono | @couchbase-traces/api, @couchbase-traces/app |
-| cjs-module-lexer | 1.3.1 | MIT | https://github.com/nodejs/cjs-module-lexer | @couchbase-traces/api |
-| cjs-module-lexer | 2.1.1 | MIT | https://github.com/nodejs/cjs-module-lexer | @couchbase-traces/api |
-| cjs-module-lexer | 2.3.0 | MIT | https://github.com/nodejs/cjs-module-lexer | @couchbase-traces/api |
-| class-variance-authority | 0.7.1 | Apache-2.0 | https://github.com/joe-bell/cva | @couchbase-traces/app |
+| cjs-module-lexer | 1.3.1 | MIT | https://github.com/nodejs/cjs-module-lexer | @couchbase-traces/otel-node |
+| cjs-module-lexer | 2.1.1 | MIT | https://github.com/nodejs/cjs-module-lexer | @couchbase-traces/otel-node |
+| cjs-module-lexer | 2.3.0 | MIT | https://github.com/nodejs/cjs-module-lexer | @couchbase-traces/otel-node |
 | classcat | 5.0.5 | MIT | https://github.com/jorgebucaran/classcat | @couchbase-traces/app |
-| classnames | 2.3.1 | MIT | https://github.com/JedWatson/classnames | @couchbase-traces/app |
 | classnames | 2.3.2 | MIT | https://github.com/JedWatson/classnames | @couchbase-traces/app |
 | client-only | 0.0.1 | MIT |  | @couchbase-traces/app |
 | cliui | 6.0.0 | ISC | https://github.com/yargs/cliui | @couchbase-traces/api |
@@ -451,10 +396,10 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | date-fns | 2.29.3 | MIT | https://github.com/date-fns/date-fns | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/common-utils |
 | date-fns-tz | 2.0.0 | MIT | https://github.com/marnusw/date-fns-tz | @couchbase-traces/common-utils |
 | dayjs | 1.11.19 | MIT | https://github.com/iamkun/dayjs | @couchbase-traces/app |
-| debug | 2.6.9 | MIT | https://github.com/visionmedia/debug | @couchbase-traces/api, @couchbase-traces/app |
-| debug | 3.2.7 | MIT | https://github.com/visionmedia/debug | @couchbase-traces/api, @couchbase-traces/app |
-| debug | 4.4.0 | MIT | https://github.com/debug-js/debug | @couchbase-traces/api, @couchbase-traces/app |
-| debug | 4.4.3 | MIT | https://github.com/debug-js/debug | @couchbase-traces/api, @couchbase-traces/app |
+| debug | 2.6.9 | MIT | https://github.com/visionmedia/debug | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/otel-node |
+| debug | 3.2.7 | MIT | https://github.com/visionmedia/debug | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/otel-node |
+| debug | 4.4.0 | MIT | https://github.com/debug-js/debug | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/otel-node |
+| debug | 4.4.3 | MIT | https://github.com/debug-js/debug | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/otel-node |
 | decimal.js-light | 2.5.1 | MIT | https://github.com/MikeMcl/decimal.js-light | @couchbase-traces/app |
 | decode-named-character-reference | 1.0.2 | MIT | https://github.com/wooorm/decode-named-character-reference | @couchbase-traces/app |
 | deep-aplus | 1.0.4 | MIT | https://github.com/nknapp/deep-aplus | @couchbase-traces/api |
@@ -476,9 +421,9 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | encodeurl | 2.0.0 | MIT | https://github.com/pillarjs/encodeurl | @couchbase-traces/api |
 | es-define-property | 1.0.1 | MIT | https://github.com/ljharb/es-define-property | @couchbase-traces/api |
 | es-errors | 1.3.0 | MIT | https://github.com/ljharb/es-errors | @couchbase-traces/api |
-| es-module-lexer | 1.5.3 | MIT | https://github.com/guybedford/es-module-lexer | @couchbase-traces/api |
-| es-module-lexer | 2.0.0 | MIT | https://github.com/guybedford/es-module-lexer | @couchbase-traces/api |
-| es-module-lexer | 3.0.4 | MIT | https://github.com/guybedford/es-module-lexer | @couchbase-traces/api |
+| es-module-lexer | 1.5.3 | MIT | https://github.com/guybedford/es-module-lexer | @couchbase-traces/otel-node |
+| es-module-lexer | 2.0.0 | MIT | https://github.com/guybedford/es-module-lexer | @couchbase-traces/otel-node |
+| es-module-lexer | 3.0.4 | MIT | https://github.com/guybedford/es-module-lexer | @couchbase-traces/otel-node |
 | es-object-atoms | 1.1.1 | MIT | https://github.com/ljharb/es-object-atoms | @couchbase-traces/api |
 | es-set-tostringtag | 2.0.1 | MIT | https://github.com/es-shims/es-set-tostringtag | @couchbase-traces/api |
 | es-set-tostringtag | 2.1.0 | MIT | https://github.com/es-shims/es-set-tostringtag | @couchbase-traces/api |
@@ -502,19 +447,17 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | express-rate-limit | 6.7.1 | MIT | https://github.com/express-rate-limit/express-rate-limit | @couchbase-traces/api |
 | express-rate-limit | 8.3.2 | MIT | https://github.com/express-rate-limit/express-rate-limit | @couchbase-traces/api |
 | express-session | 1.17.3 | MIT | https://github.com/expressjs/session | @couchbase-traces/api |
-| extend | 3.0.2 | MIT | https://github.com/justmoon/node-extend | @couchbase-traces/api, @couchbase-traces/app |
+| extend | 3.0.2 | MIT | https://github.com/justmoon/node-extend | @couchbase-traces/app, @couchbase-traces/otel-node |
 | fast-deep-equal | 3.1.3 | MIT | https://github.com/epoberezkin/fast-deep-equal | @couchbase-traces/api, @couchbase-traces/app |
 | fast-uri | 3.1.9 | BSD-3-Clause | https://github.com/fastify/fast-uri | @couchbase-traces/api |
-| fault | 1.0.4 | MIT | https://github.com/wooorm/fault | @couchbase-traces/app |
 | file-selector | 2.1.2 | MIT | https://github.com/react-dropzone/file-selector | @couchbase-traces/app |
 | fill-range | 7.1.1 | MIT | https://github.com/jonschlinkert/fill-range | @couchbase-traces/api |
 | finalhandler | 1.3.2 | MIT | https://github.com/pillarjs/finalhandler | @couchbase-traces/api |
 | flat | 5.0.2 | BSD-3-Clause | https://github.com/hughsk/flat | @couchbase-traces/app |
 | follow-redirects | 1.16.0 | MIT | https://github.com/follow-redirects/follow-redirects | @couchbase-traces/api |
 | form-data | 4.0.6 | MIT | https://github.com/form-data/form-data | @couchbase-traces/api |
-| format | 0.2.2 | MIT | https://github.com/samsonjs/format | @couchbase-traces/app |
 | forwarded | 0.2.0 | MIT | https://github.com/jshttp/forwarded | @couchbase-traces/api |
-| forwarded-parse | 2.1.2 | MIT | https://github.com/lpinca/forwarded-parse | @couchbase-traces/api |
+| forwarded-parse | 2.1.2 | MIT | https://github.com/lpinca/forwarded-parse | @couchbase-traces/otel-node |
 | fresh | 0.5.2 | MIT | https://github.com/jshttp/fresh | @couchbase-traces/api |
 | fs-extra | 10.1.0 | MIT | https://github.com/jprichardson/node-fs-extra | @couchbase-traces/api |
 | fs-extra | 11.4.1 | MIT | https://github.com/jprichardson/node-fs-extra | @couchbase-traces/api |
@@ -525,22 +468,22 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | function-bind | 1.1.1 | MIT | https://github.com/Raynos/function-bind | @couchbase-traces/api |
 | function-bind | 1.1.2 | MIT | https://github.com/Raynos/function-bind | @couchbase-traces/api |
 | fuse.js | 6.6.2 | Apache-2.0 | https://github.com/krisk/Fuse | @couchbase-traces/app |
-| gaxios | 7.1.3 | Apache-2.0 | https://github.com/googleapis/google-cloud-node-core | @couchbase-traces/api |
-| gcp-metadata | 8.1.4 | Apache-2.0 | https://github.com/googleapis/google-cloud-node | @couchbase-traces/api |
+| gaxios | 7.1.3 | Apache-2.0 | https://github.com/googleapis/google-cloud-node-core | @couchbase-traces/otel-node |
+| gcp-metadata | 8.1.4 | Apache-2.0 | https://github.com/googleapis/google-cloud-node | @couchbase-traces/otel-node |
 | get-caller-file | 2.0.5 | ISC | https://github.com/stefanpenner/get-caller-file | @couchbase-traces/api |
 | get-intrinsic | 1.2.0 | MIT | https://github.com/ljharb/get-intrinsic | @couchbase-traces/api |
 | get-intrinsic | 1.3.0 | MIT | https://github.com/ljharb/get-intrinsic | @couchbase-traces/api |
 | get-intrinsic | 1.3.1 | MIT | https://github.com/ljharb/get-intrinsic | @couchbase-traces/api |
 | get-nonce | 1.0.1 | MIT | https://github.com/theKashey/get-nonce | @couchbase-traces/app |
 | get-proto | 1.0.1 | MIT | https://github.com/ljharb/get-proto | @couchbase-traces/api |
-| glob | 10.5.0 | ISC | https://github.com/isaacs/node-glob | @couchbase-traces/api |
-| glob | 14.0.2 | BlueOak-1.0.0 | https://github.com/isaacs/node-glob | @couchbase-traces/api |
-| glob | 7.1.6 | ISC | https://github.com/isaacs/node-glob | @couchbase-traces/api |
-| glob | 7.2.3 | ISC | https://github.com/isaacs/node-glob | @couchbase-traces/api |
-| glob | 9.3.5 | ISC | https://github.com/isaacs/node-glob | @couchbase-traces/api |
+| glob | 10.5.0 | ISC | https://github.com/isaacs/node-glob | @couchbase-traces/otel-node |
+| glob | 14.0.2 | BlueOak-1.0.0 | https://github.com/isaacs/node-glob | @couchbase-traces/otel-node |
+| glob | 7.1.6 | ISC | https://github.com/isaacs/node-glob | @couchbase-traces/otel-node |
+| glob | 7.2.3 | ISC | https://github.com/isaacs/node-glob | @couchbase-traces/otel-node |
+| glob | 9.3.5 | ISC | https://github.com/isaacs/node-glob | @couchbase-traces/otel-node |
 | glob-parent | 5.1.2 | ISC | https://github.com/gulpjs/glob-parent | @couchbase-traces/app |
 | glob-parent | 6.0.2 | ISC | https://github.com/gulpjs/glob-parent | @couchbase-traces/app |
-| google-logging-utils | 1.1.3 | Apache-2.0 | https://github.com/googleapis/google-cloud-node-core | @couchbase-traces/api |
+| google-logging-utils | 1.1.3 | Apache-2.0 | https://github.com/googleapis/google-cloud-node-core | @couchbase-traces/otel-node |
 | gopd | 1.2.0 | MIT | https://github.com/ljharb/gopd | @couchbase-traces/api |
 | graceful-fs | 4.2.10 | ISC | https://github.com/isaacs/node-graceful-fs | @couchbase-traces/api |
 | graceful-fs | 4.2.11 | ISC | https://github.com/isaacs/node-graceful-fs | @couchbase-traces/api |
@@ -553,20 +496,16 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | hasown | 2.0.0 | MIT | https://github.com/inspect-js/hasOwn | @couchbase-traces/api |
 | hasown | 2.0.2 | MIT | https://github.com/inspect-js/hasOwn | @couchbase-traces/api |
 | hasown | 2.0.4 | MIT | https://github.com/inspect-js/hasOwn | @couchbase-traces/api |
-| hast-util-parse-selector | 4.0.0 | MIT | https://github.com/syntax-tree/hast-util-parse-selector | @couchbase-traces/app |
 | hast-util-to-jsx-runtime | 2.3.6 | MIT | https://github.com/syntax-tree/hast-util-to-jsx-runtime | @couchbase-traces/app |
 | hast-util-whitespace | 3.0.0 | MIT | https://github.com/syntax-tree/hast-util-whitespace | @couchbase-traces/app |
-| hastscript | 9.0.1 | MIT | https://github.com/syntax-tree/hastscript | @couchbase-traces/app |
 | hdr-histogram-js | 3.0.1 | BSD-2-Clause | https://github.com/HdrHistogram/HdrHistogramJS | @couchbase-traces/api |
-| highlight.js | 10.7.3 | BSD-3-Clause | https://github.com/highlightjs/highlight.js | @couchbase-traces/app |
-| highlightjs-vue | 1.0.0 | CC0-1.0 | https://github.com/highlightjs/highlightjs-vue | @couchbase-traces/app |
 | hono | 4.13.13 | MIT | https://github.com/honojs/hono | @couchbase-traces/api |
 | html-url-attributes | 3.0.1 | MIT | https://github.com/rehypejs/rehype-minify.git#main | @couchbase-traces/app |
 | http-errors | 2.0.1 | MIT | https://github.com/jshttp/http-errors | @couchbase-traces/api |
 | http-graceful-shutdown | 3.1.13 | MIT | https://github.com/sebhildebrandt/http-graceful-shutdown | @couchbase-traces/api |
 | http-proxy-middleware | 4.1.1 | MIT | https://github.com/chimurai/http-proxy-middleware | @couchbase-traces/api, @couchbase-traces/app |
-| https-proxy-agent | 5.0.1 | MIT | https://github.com/TooTallNate/node-https-proxy-agent | @couchbase-traces/api |
-| https-proxy-agent | 7.0.6 | MIT | https://github.com/TooTallNate/proxy-agents | @couchbase-traces/api |
+| https-proxy-agent | 5.0.1 | MIT | https://github.com/TooTallNate/node-https-proxy-agent | @couchbase-traces/api, @couchbase-traces/otel-node |
+| https-proxy-agent | 7.0.6 | MIT | https://github.com/TooTallNate/proxy-agents | @couchbase-traces/api, @couchbase-traces/otel-node |
 | httpxy | 0.5.3 | MIT | https://github.com/unjs/httpxy | @couchbase-traces/api |
 | iconv-lite | 0.4.24 | MIT | https://github.com/ashtuchkin/iconv-lite | @couchbase-traces/api |
 | iconv-lite | 0.6.3 | MIT | https://github.com/ashtuchkin/iconv-lite | @couchbase-traces/api |
@@ -575,7 +514,7 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | immer | 11.1.9 | MIT | https://github.com/immerjs/immer | @couchbase-traces/app |
 | immer | 9.0.21 | MIT | https://github.com/immerjs/immer | @couchbase-traces/app |
 | immutable | 4.3.9 | MIT | https://github.com/immutable-js/immutable-js | @couchbase-traces/app |
-| import-in-the-middle | 3.5.3 | Apache-2.0 | https://github.com/nodejs/import-in-the-middle | @couchbase-traces/api |
+| import-in-the-middle | 3.5.3 | Apache-2.0 | https://github.com/nodejs/import-in-the-middle | @couchbase-traces/otel-node |
 | inherits | 2.0.4 | ISC | https://github.com/isaacs/inherits | @couchbase-traces/api |
 | ini | 1.3.8 | ISC | https://github.com/isaacs/ini | @couchbase-traces/api |
 | inline-style-parser | 0.2.7 | MIT | https://github.com/remarkablemark/inline-style-parser | @couchbase-traces/app |
@@ -605,7 +544,7 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | jose | 6.2.2 | MIT | https://github.com/panva/jose | @couchbase-traces/api |
 | jotai | 2.5.1 | MIT | https://github.com/pmndrs/jotai | @couchbase-traces/app |
 | js-tokens | 4.0.0 | MIT | https://github.com/lydell/js-tokens | @couchbase-traces/app |
-| json-bigint | 1.0.0 | MIT | https://github.com/sidorares/json-bigint | @couchbase-traces/api |
+| json-bigint | 1.0.0 | MIT | https://github.com/sidorares/json-bigint | @couchbase-traces/otel-node |
 | json-schema | 0.4.0 | (AFL-2.1 OR BSD-3-Clause) | https://github.com/kriszyp/json-schema | @couchbase-traces/api |
 | json-schema-traverse | 0.4.1 | MIT | https://github.com/epoberezkin/json-schema-traverse | @couchbase-traces/api |
 | json-schema-traverse | 1.0.0 | MIT | https://github.com/epoberezkin/json-schema-traverse | @couchbase-traces/api |
@@ -618,20 +557,19 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | lodash | 4.17.23 | MIT | https://github.com/lodash/lodash | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/common-utils |
 | lodash | 4.18.1 | MIT | https://github.com/lodash/lodash | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/common-utils |
 | lodash-es | 4.18.1 | MIT | https://github.com/lodash/lodash | @couchbase-traces/app |
-| lodash.camelcase | 4.3.0 | MIT | https://github.com/lodash/lodash | @couchbase-traces/api |
+| lodash.camelcase | 4.3.0 | MIT | https://github.com/lodash/lodash | @couchbase-traces/otel-node |
 | lodash.isequal | 4.5.0 | MIT | https://github.com/lodash/lodash | @couchbase-traces/app |
 | lodash.isplainobject | 4.0.6 | MIT | https://github.com/lodash/lodash | @couchbase-traces/api |
-| long | 5.2.3 | Apache-2.0 | https://github.com/dcodeIO/long.js | @couchbase-traces/api |
-| long | 5.3.2 | Apache-2.0 | https://github.com/dcodeIO/long.js | @couchbase-traces/api |
+| long | 5.2.3 | Apache-2.0 | https://github.com/dcodeIO/long.js | @couchbase-traces/api, @couchbase-traces/otel-node |
+| long | 5.3.2 | Apache-2.0 | https://github.com/dcodeIO/long.js | @couchbase-traces/api, @couchbase-traces/otel-node |
 | longest-streak | 3.1.0 | MIT | https://github.com/wooorm/longest-streak | @couchbase-traces/app |
 | loose-envify | 1.4.0 | MIT | https://github.com/zertosh/loose-envify | @couchbase-traces/app |
-| lowlight | 1.20.0 | MIT | https://github.com/wooorm/lowlight | @couchbase-traces/app |
-| lru-cache | 10.2.2 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api |
-| lru-cache | 10.4.3 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api |
-| lru-cache | 11.2.7 | BlueOak-1.0.0 | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api |
-| lru-cache | 4.1.5 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api |
-| lru-cache | 5.1.1 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api |
-| lru-cache | 6.0.0 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/api |
+| lru-cache | 10.2.2 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/otel-node |
+| lru-cache | 10.4.3 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/otel-node |
+| lru-cache | 11.2.7 | BlueOak-1.0.0 | https://github.com/isaacs/node-lru-cache | @couchbase-traces/otel-node |
+| lru-cache | 4.1.5 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/otel-node |
+| lru-cache | 5.1.1 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/otel-node |
+| lru-cache | 6.0.0 | ISC | https://github.com/isaacs/node-lru-cache | @couchbase-traces/otel-node |
 | luxon | 3.7.2 | MIT | https://github.com/moment/luxon | @couchbase-traces/api |
 | markdown-table | 3.0.4 | MIT | https://github.com/wooorm/markdown-table | @couchbase-traces/app |
 | math-intrinsics | 1.1.0 | MIT | https://github.com/es-shims/math-intrinsics | @couchbase-traces/api |
@@ -651,7 +589,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | mdast-util-to-markdown | 2.1.2 | MIT | https://github.com/syntax-tree/mdast-util-to-markdown | @couchbase-traces/app |
 | mdast-util-to-string | 4.0.0 | MIT | https://github.com/syntax-tree/mdast-util-to-string | @couchbase-traces/app |
 | media-typer | 0.3.0 | MIT | https://github.com/jshttp/media-typer | @couchbase-traces/api |
-| memoize-one | 5.2.1 | MIT | https://github.com/alexreardon/memoize-one | @couchbase-traces/app |
 | merge-descriptors | 1.0.3 | MIT | https://github.com/sindresorhus/merge-descriptors | @couchbase-traces/api |
 | methods | 1.1.2 | MIT | https://github.com/jshttp/methods | @couchbase-traces/api |
 | micromark | 4.0.2 | MIT | https://github.com/micromark/micromark.git#main | @couchbase-traces/app |
@@ -689,30 +626,31 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | mime-db | 1.52.0 | MIT | https://github.com/jshttp/mime-db | @couchbase-traces/api |
 | mime-types | 2.1.18 | MIT | https://github.com/jshttp/mime-types | @couchbase-traces/api |
 | mime-types | 2.1.35 | MIT | https://github.com/jshttp/mime-types | @couchbase-traces/api |
-| minimatch | 10.2.4 | BlueOak-1.0.0 | https://github.com/isaacs/minimatch | @couchbase-traces/api |
-| minimatch | 10.2.5 | BlueOak-1.0.0 | https://github.com/isaacs/minimatch | @couchbase-traces/api |
-| minimatch | 11.0.3 | BlueOak-1.0.0 | https://github.com/isaacs/minimatch | @couchbase-traces/api |
-| minimatch | 3.1.2 | ISC | https://github.com/isaacs/minimatch | @couchbase-traces/api |
-| minimatch | 3.1.5 | ISC | https://github.com/isaacs/minimatch | @couchbase-traces/api |
-| minimatch | 8.0.4 | ISC | https://github.com/isaacs/minimatch | @couchbase-traces/api |
-| minimatch | 9.0.4 | ISC | https://github.com/isaacs/minimatch | @couchbase-traces/api |
-| minimatch | 9.0.9 | ISC | https://github.com/isaacs/minimatch | @couchbase-traces/api |
+| minimatch | 10.2.4 | BlueOak-1.0.0 | https://github.com/isaacs/minimatch | @couchbase-traces/otel-node |
+| minimatch | 10.2.5 | BlueOak-1.0.0 | https://github.com/isaacs/minimatch | @couchbase-traces/otel-node |
+| minimatch | 11.0.3 | BlueOak-1.0.0 | https://github.com/isaacs/minimatch | @couchbase-traces/otel-node |
+| minimatch | 3.1.2 | ISC | https://github.com/isaacs/minimatch | @couchbase-traces/otel-node |
+| minimatch | 3.1.5 | ISC | https://github.com/isaacs/minimatch | @couchbase-traces/otel-node |
+| minimatch | 8.0.4 | ISC | https://github.com/isaacs/minimatch | @couchbase-traces/otel-node |
+| minimatch | 9.0.4 | ISC | https://github.com/isaacs/minimatch | @couchbase-traces/otel-node |
+| minimatch | 9.0.9 | ISC | https://github.com/isaacs/minimatch | @couchbase-traces/otel-node |
 | minimist | 1.2.8 | MIT | https://github.com/minimistjs/minimist | @couchbase-traces/api |
-| minipass | 3.3.6 | ISC | https://github.com/isaacs/minipass | @couchbase-traces/api |
-| minipass | 4.2.8 | ISC | https://github.com/isaacs/minipass | @couchbase-traces/api |
-| minipass | 5.0.0 | ISC | https://github.com/isaacs/minipass | @couchbase-traces/api |
-| minipass | 7.1.2 | ISC | https://github.com/isaacs/minipass | @couchbase-traces/api |
-| minipass | 7.1.3 | BlueOak-1.0.0 | https://github.com/isaacs/minipass | @couchbase-traces/api |
+| minipass | 3.3.6 | ISC | https://github.com/isaacs/minipass | @couchbase-traces/api, @couchbase-traces/otel-node |
+| minipass | 4.2.8 | ISC | https://github.com/isaacs/minipass | @couchbase-traces/api, @couchbase-traces/otel-node |
+| minipass | 5.0.0 | ISC | https://github.com/isaacs/minipass | @couchbase-traces/api, @couchbase-traces/otel-node |
+| minipass | 7.1.2 | ISC | https://github.com/isaacs/minipass | @couchbase-traces/api, @couchbase-traces/otel-node |
+| minipass | 7.1.3 | BlueOak-1.0.0 | https://github.com/isaacs/minipass | @couchbase-traces/api, @couchbase-traces/otel-node |
 | minizlib | 2.1.2 | MIT | https://github.com/isaacs/minizlib | @couchbase-traces/api |
 | minizlib | 3.1.0 | MIT | https://github.com/isaacs/minizlib | @couchbase-traces/api |
 | mitt | 3.0.1 | MIT | https://github.com/developit/mitt | @couchbase-traces/app |
 | mkdirp | 1.0.4 | MIT | https://github.com/isaacs/node-mkdirp | @couchbase-traces/api |
-| module-details-from-path | 1.0.3 | MIT | https://github.com/watson/module-details-from-path | @couchbase-traces/api |
-| module-details-from-path | 1.0.4 | MIT | https://github.com/watson/module-details-from-path | @couchbase-traces/api |
+| module-details-from-path | 1.0.3 | MIT | https://github.com/watson/module-details-from-path | @couchbase-traces/otel-node |
+| module-details-from-path | 1.0.4 | MIT | https://github.com/watson/module-details-from-path | @couchbase-traces/otel-node |
 | moo | 0.5.2 | BSD-3-Clause | https://github.com/tjvr/moo | @couchbase-traces/app |
 | ms | 2.0.0 | MIT | https://github.com/zeit/ms | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/hdx-eval |
 | ms | 2.1.3 | MIT | https://github.com/vercel/ms | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/hdx-eval |
 | nanoid | 3.3.17 | MIT | https://github.com/ai/nanoid | @couchbase-traces/app |
+| nanoid | 3.3.20 | MIT | https://github.com/ai/nanoid | @couchbase-traces/app |
 | nearley | 2.20.1 | MIT | https://github.com/hardmath123/nearley | @couchbase-traces/app |
 | negotiator | 0.6.3 | MIT | https://github.com/jshttp/negotiator | @couchbase-traces/api |
 | negotiator | 0.6.4 | MIT | https://github.com/jshttp/negotiator | @couchbase-traces/api |
@@ -722,9 +660,9 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | next-seo | 4.29.0 | MIT | https://github.com/garmeeh/next-seo | @couchbase-traces/app |
 | node-addon-api | 8.9.2 | MIT | https://github.com/nodejs/node-addon-api | @couchbase-traces/api |
 | node-api-headers | 1.9.0 | MIT | https://github.com/nodejs/node-api-headers | @couchbase-traces/api |
-| node-fetch | 2.7.0 | MIT | https://github.com/bitinn/node-fetch | @couchbase-traces/api, @couchbase-traces/app |
-| node-fetch | 3.3.0 | MIT | https://github.com/node-fetch/node-fetch | @couchbase-traces/api, @couchbase-traces/app |
-| node-fetch | 3.3.2 | MIT | https://github.com/node-fetch/node-fetch | @couchbase-traces/api, @couchbase-traces/app |
+| node-fetch | 2.7.0 | MIT | https://github.com/bitinn/node-fetch | @couchbase-traces/app, @couchbase-traces/otel-node |
+| node-fetch | 3.3.0 | MIT | https://github.com/node-fetch/node-fetch | @couchbase-traces/app, @couchbase-traces/otel-node |
+| node-fetch | 3.3.2 | MIT | https://github.com/node-fetch/node-fetch | @couchbase-traces/app, @couchbase-traces/otel-node |
 | node-sql-parser | 5.3.5 | Apache-2.0 | https://github.com/taozhi8833998/node-sql-parser | @couchbase-traces/common-utils |
 | normalize-path | 3.0.0 | MIT | https://github.com/jonschlinkert/normalize-path | @couchbase-traces/app |
 | numbro | 2.4.0 | MIT | https://github.com/BenjaminVanRyseghem/numbro | @couchbase-traces/app |
@@ -745,15 +683,15 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | passport-strategy | 1.0.0 | MIT | https://github.com/jaredhanson/passport-strategy | @couchbase-traces/api |
 | path-key | 3.1.1 | MIT | https://github.com/sindresorhus/path-key | @couchbase-traces/api |
 | path-key | 4.0.0 | MIT | https://github.com/sindresorhus/path-key | @couchbase-traces/api |
-| path-scurry | 1.11.1 | BlueOak-1.0.0 | https://github.com/isaacs/path-scurry | @couchbase-traces/api |
-| path-scurry | 3.0.0 | BlueOak-1.0.0 | https://github.com/isaacs/path-scurry | @couchbase-traces/api |
+| path-scurry | 1.11.1 | BlueOak-1.0.0 | https://github.com/isaacs/path-scurry | @couchbase-traces/otel-node |
+| path-scurry | 3.0.0 | BlueOak-1.0.0 | https://github.com/isaacs/path-scurry | @couchbase-traces/otel-node |
 | path-to-regexp | 0.1.12 | MIT | https://github.com/pillarjs/path-to-regexp | @couchbase-traces/api |
 | path-to-regexp | 3.3.0 | MIT | https://github.com/pillarjs/path-to-regexp | @couchbase-traces/api |
 | path-to-regexp | 6.2.2 | MIT | https://github.com/pillarjs/path-to-regexp | @couchbase-traces/api |
 | pause | 0.0.1 | MIT* |  | @couchbase-traces/api |
-| pg-int8 | 1.0.1 | ISC | https://github.com/charmander/pg-int8 | @couchbase-traces/api |
-| pg-protocol | 1.6.0 | MIT | https://github.com/brianc/node-postgres | @couchbase-traces/api |
-| pg-types | 2.2.0 | MIT | https://github.com/brianc/node-pg-types | @couchbase-traces/api |
+| pg-int8 | 1.0.1 | ISC | https://github.com/charmander/pg-int8 | @couchbase-traces/otel-node |
+| pg-protocol | 1.6.0 | MIT | https://github.com/brianc/node-postgres | @couchbase-traces/otel-node |
+| pg-types | 2.2.0 | MIT | https://github.com/brianc/node-pg-types | @couchbase-traces/otel-node |
 | picocolors | 1.0.0 | ISC | https://github.com/alexeyraspopov/picocolors | @couchbase-traces/app |
 | picocolors | 1.1.1 | ISC | https://github.com/alexeyraspopov/picocolors | @couchbase-traces/app |
 | picomatch | 2.3.2 | MIT | https://github.com/micromatch/picomatch | @couchbase-traces/api, @couchbase-traces/app |
@@ -766,18 +704,18 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | pkce-challenge | 5.0.1 | MIT | https://github.com/crouchcd/pkce-challenge | @couchbase-traces/api |
 | postcss | 8.4.38 | MIT | https://github.com/postcss/postcss | @couchbase-traces/app |
 | postcss | 8.5.23 | MIT | https://github.com/postcss/postcss | @couchbase-traces/app |
+| postcss | 8.5.33 | MIT | https://github.com/postcss/postcss | @couchbase-traces/app |
 | postcss | 8.5.6 | MIT | https://github.com/postcss/postcss | @couchbase-traces/app |
-| postgres-array | 2.0.0 | MIT | https://github.com/bendrucker/postgres-array | @couchbase-traces/api |
-| postgres-bytea | 1.0.0 | MIT | https://github.com/bendrucker/postgres-bytea | @couchbase-traces/api |
-| postgres-date | 1.0.7 | MIT | https://github.com/bendrucker/postgres-date | @couchbase-traces/api |
-| postgres-interval | 1.2.0 | MIT | https://github.com/bendrucker/postgres-interval | @couchbase-traces/api |
-| prismjs | 1.30.0 | MIT | https://github.com/PrismJS/prism | @couchbase-traces/app |
+| postgres-array | 2.0.0 | MIT | https://github.com/bendrucker/postgres-array | @couchbase-traces/otel-node |
+| postgres-bytea | 1.0.0 | MIT | https://github.com/bendrucker/postgres-bytea | @couchbase-traces/otel-node |
+| postgres-date | 1.0.7 | MIT | https://github.com/bendrucker/postgres-date | @couchbase-traces/otel-node |
+| postgres-interval | 1.2.0 | MIT | https://github.com/bendrucker/postgres-interval | @couchbase-traces/otel-node |
 | process-warning | 5.0.0 | MIT | https://github.com/fastify/process-warning | @couchbase-traces/api |
 | promised-handlebars | 2.0.1 | MIT | https://github.com/nknapp/promised-handlebars | @couchbase-traces/api |
 | prop-types | 15.8.1 | MIT | https://github.com/facebook/prop-types | @couchbase-traces/app |
 | property-information | 7.1.0 | MIT | https://github.com/wooorm/property-information | @couchbase-traces/app |
-| protobufjs | 7.6.2 | BSD-3-Clause | https://github.com/protobufjs/protobuf.js | @couchbase-traces/api |
-| protobufjs | 7.6.5 | BSD-3-Clause | https://github.com/protobufjs/protobuf.js | @couchbase-traces/api |
+| protobufjs | 7.6.2 | BSD-3-Clause | https://github.com/protobufjs/protobuf.js | @couchbase-traces/api, @couchbase-traces/otel-node |
+| protobufjs | 7.6.5 | BSD-3-Clause | https://github.com/protobufjs/protobuf.js | @couchbase-traces/api, @couchbase-traces/otel-node |
 | proxy-addr | 2.0.8 | MIT | https://github.com/jshttp/proxy-addr | @couchbase-traces/api |
 | proxy-from-env | 2.1.0 | MIT | https://github.com/Rob--W/proxy-from-env | @couchbase-traces/api |
 | qs | 6.14.2 | BSD-3-Clause | https://github.com/ljharb/qs | @couchbase-traces/api |
@@ -817,19 +755,14 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | react-remove-scroll | 2.7.2 | MIT | https://github.com/theKashey/react-remove-scroll | @couchbase-traces/app |
 | react-remove-scroll-bar | 2.3.8 | MIT | https://github.com/theKashey/react-remove-scroll-bar | @couchbase-traces/app |
 | react-resizable | 3.0.5 | MIT | https://github.com/react-grid-layout/react-resizable | @couchbase-traces/app |
-| react-sortablejs | 6.1.4 | MIT | https://github.com/SortableJS/react-sortablejs | @couchbase-traces/app |
 | react-style-singleton | 2.2.3 | MIT | https://github.com/theKashey/react-style-singleton | @couchbase-traces/app |
-| react-syntax-highlighter | 16.1.1 | MIT | https://github.com/react-syntax-highlighter/react-syntax-highlighter | @couchbase-traces/app |
 | react-transition-group | 4.4.5 | BSD-3-Clause | https://github.com/reactjs/react-transition-group | @couchbase-traces/app |
-| react-virtualized-auto-sizer | 1.0.26 | MIT | https://github.com/bvaughn/react-virtualized-auto-sizer | @couchbase-traces/app |
-| react-window | 1.8.11 | MIT | https://github.com/bvaughn/react-window | @couchbase-traces/app |
 | readdirp | 3.6.0 | MIT | https://github.com/paulmillr/readdirp | @couchbase-traces/app |
 | readdirp | 4.1.1 | MIT | https://github.com/paulmillr/readdirp | @couchbase-traces/app |
 | real-require | 0.2.0 | MIT | https://github.com/pinojs/real-require | @couchbase-traces/api |
 | recharts | 3.9.1 | MIT | https://github.com/recharts/recharts | @couchbase-traces/app |
 | redux | 5.0.1 | MIT | https://github.com/reduxjs/redux | @couchbase-traces/app |
 | redux-thunk | 3.1.0 | MIT | https://github.com/reduxjs/redux-thunk | @couchbase-traces/app |
-| refractor | 5.0.0 | MIT | https://github.com/wooorm/refractor | @couchbase-traces/app |
 | regenerator-runtime | 0.14.0 | MIT | https://github.com/facebook/regenerator.git#main | @couchbase-traces/app |
 | remark-gfm | 4.0.1 | MIT | https://github.com/remarkjs/remark-gfm | @couchbase-traces/app |
 | remark-parse | 11.0.0 | MIT | https://github.com/remarkjs/remark.git#main | @couchbase-traces/app |
@@ -837,18 +770,18 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | remark-stringify | 11.0.0 | MIT | https://github.com/remarkjs/remark.git#main | @couchbase-traces/app |
 | require-directory | 2.1.1 | MIT | https://github.com/troygoode/node-require-directory | @couchbase-traces/api |
 | require-from-string | 2.0.2 | MIT | https://github.com/floatdrop/require-from-string | @couchbase-traces/api |
-| require-in-the-middle | 8.0.1 | MIT | https://github.com/nodejs/require-in-the-middle | @couchbase-traces/api |
+| require-in-the-middle | 8.0.1 | MIT | https://github.com/nodejs/require-in-the-middle | @couchbase-traces/otel-node |
 | reselect | 5.2.0 | MIT | https://github.com/reduxjs/reselect | @couchbase-traces/app |
 | ret | 0.1.15 | MIT | https://github.com/fent/ret.js | @couchbase-traces/app |
-| rimraf | 3.0.2 | ISC | https://github.com/isaacs/rimraf | @couchbase-traces/api |
-| rimraf | 4.4.1 | ISC | https://github.com/isaacs/rimraf | @couchbase-traces/api |
-| rimraf | 5.0.10 | ISC | https://github.com/isaacs/rimraf | @couchbase-traces/api |
+| rimraf | 3.0.2 | ISC | https://github.com/isaacs/rimraf | @couchbase-traces/otel-node |
+| rimraf | 4.4.1 | ISC | https://github.com/isaacs/rimraf | @couchbase-traces/otel-node |
+| rimraf | 5.0.10 | ISC | https://github.com/isaacs/rimraf | @couchbase-traces/otel-node |
 | rrdom | 2.1.1 | MIT | https://github.com/rrweb-io/rrweb | @couchbase-traces/app |
-| rrdom | 2.2.0 | MIT | https://github.com/rrweb-io/rrweb | @couchbase-traces/app |
+| rrdom | 2.2.2 | MIT | https://github.com/rrweb-io/rrweb | @couchbase-traces/app |
 | rrweb | 2.1.1 | MIT | https://github.com/rrweb-io/rrweb | @couchbase-traces/app |
-| rrweb | 2.2.0 | MIT | https://github.com/rrweb-io/rrweb | @couchbase-traces/app |
+| rrweb | 2.2.2 | MIT | https://github.com/rrweb-io/rrweb | @couchbase-traces/app |
 | rrweb-snapshot | 2.1.1 | MIT | https://github.com/rrweb-io/rrweb | @couchbase-traces/app |
-| rrweb-snapshot | 2.2.0 | MIT | https://github.com/rrweb-io/rrweb | @couchbase-traces/app |
+| rrweb-snapshot | 2.2.2 | MIT | https://github.com/rrweb-io/rrweb | @couchbase-traces/app |
 | rxjs | 7.8.1 | Apache-2.0 | https://github.com/reactivex/rxjs | @couchbase-traces/api |
 | rxjs | 7.8.2 | Apache-2.0 | https://github.com/reactivex/rxjs | @couchbase-traces/api |
 | safe-buffer | 5.1.2 | MIT | https://github.com/feross/safe-buffer | @couchbase-traces/api |
@@ -886,12 +819,12 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | simple-swizzle | 0.2.2 | MIT | https://github.com/qix-/node-simple-swizzle | @couchbase-traces/app |
 | slow-redact | 0.3.1 | MIT | https://github.com/pinojs/slow-redact | @couchbase-traces/api |
 | sonic-boom | 4.2.0 | MIT | https://github.com/pinojs/sonic-boom | @couchbase-traces/api |
-| sortablejs | 1.15.7 | MIT | https://github.com/SortableJS/Sortable | @couchbase-traces/app |
 | source-map | 0.6.1 | BSD-3-Clause | https://github.com/mozilla/source-map | @couchbase-traces/api |
 | source-map | 0.7.4 | BSD-3-Clause | https://github.com/mozilla/source-map | @couchbase-traces/api |
 | source-map | 0.7.6 | BSD-3-Clause | https://github.com/mozilla/source-map | @couchbase-traces/api |
 | source-map | 0.8.0-beta.0 | BSD-3-Clause | https://github.com/mozilla/source-map | @couchbase-traces/api |
 | source-map-js | 1.2.2 | BSD-3-Clause | https://github.com/7rulnik/source-map-js | @couchbase-traces/app |
+| source-map-js | 1.2.4 | BSD-3-Clause | https://github.com/7rulnik/source-map-js | @couchbase-traces/app |
 | space-separated-tokens | 2.0.2 | MIT | https://github.com/wooorm/space-separated-tokens | @couchbase-traces/app |
 | split2 | 4.2.0 | ISC | https://github.com/mcollina/split2 | @couchbase-traces/api |
 | sql-formatter | 15.7.2 | MIT | https://github.com/sql-formatter-org/sql-formatter | @couchbase-traces/app, @couchbase-traces/common-utils |
@@ -917,13 +850,12 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | supports-color | 5.5.0 | MIT | https://github.com/chalk/supports-color | @couchbase-traces/api |
 | supports-color | 7.2.0 | MIT | https://github.com/chalk/supports-color | @couchbase-traces/api |
 | supports-color | 8.1.1 | MIT | https://github.com/chalk/supports-color | @couchbase-traces/api |
-| systeminformation | 5.33.19 | MIT | https://github.com/sebhildebrandt/systeminformation | @couchbase-traces/api |
+| systeminformation | 5.33.19 | MIT | https://github.com/sebhildebrandt/systeminformation | @couchbase-traces/otel-node |
 | tabbable | 6.2.0 | MIT | https://github.com/focus-trap/tabbable | @couchbase-traces/app |
 | tar | 6.2.1 | ISC | https://github.com/isaacs/node-tar | @couchbase-traces/api |
 | tar | 7.5.22 | BlueOak-1.0.0 | https://github.com/isaacs/node-tar | @couchbase-traces/api |
 | thread-stream | 3.1.0 | MIT | https://github.com/mcollina/thread-stream | @couchbase-traces/api |
 | timestamp-nano | 1.0.1 | MIT | https://github.com/kawanet/timestamp-nano | @couchbase-traces/app |
-| tiny-invariant | 1.2.0 | MIT | https://github.com/alexreardon/tiny-invariant | @couchbase-traces/app |
 | tiny-invariant | 1.3.3 | MIT | https://github.com/alexreardon/tiny-invariant | @couchbase-traces/app |
 | to-regex-range | 5.0.1 | MIT | https://github.com/micromatch/to-regex-range | @couchbase-traces/api |
 | toggle-selection | 1.0.6 | MIT | https://github.com/sudodoki/toggle-selection | @couchbase-traces/app |
@@ -992,19 +924,19 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | wrap-ansi | 7.0.0 | MIT | https://github.com/chalk/wrap-ansi | @couchbase-traces/api |
 | wrap-ansi | 8.1.0 | MIT | https://github.com/chalk/wrap-ansi | @couchbase-traces/api |
 | wrap-ansi | 9.0.2 | MIT | https://github.com/chalk/wrap-ansi | @couchbase-traces/api |
-| xtend | 4.0.2 | MIT | https://github.com/Raynos/xtend | @couchbase-traces/api |
+| xtend | 4.0.2 | MIT | https://github.com/Raynos/xtend | @couchbase-traces/otel-node |
 | y18n | 4.0.3 | ISC | https://github.com/yargs/y18n | @couchbase-traces/api |
 | y18n | 5.0.8 | ISC | https://github.com/yargs/y18n | @couchbase-traces/api |
 | yallist | 2.1.2 | ISC | https://github.com/isaacs/yallist | @couchbase-traces/api |
 | yallist | 3.1.1 | ISC | https://github.com/isaacs/yallist | @couchbase-traces/api |
 | yallist | 4.0.0 | ISC | https://github.com/isaacs/yallist | @couchbase-traces/api |
 | yallist | 5.0.0 | BlueOak-1.0.0 | https://github.com/isaacs/yallist | @couchbase-traces/api |
-| yaml | 2.0.0-1 | ISC | https://github.com/eemeli/yaml | @couchbase-traces/api |
-| yaml | 2.8.1 | ISC | https://github.com/eemeli/yaml | @couchbase-traces/api |
-| yaml | 2.9.0 | ISC | https://github.com/eemeli/yaml | @couchbase-traces/api |
-| yaml | 2.9.1 | ISC | https://github.com/eemeli/yaml | @couchbase-traces/api |
-| yargs | 15.4.1 | MIT | https://github.com/yargs/yargs | @couchbase-traces/api |
-| yargs | 17.7.2 | MIT | https://github.com/yargs/yargs | @couchbase-traces/api |
+| yaml | 2.0.0-1 | ISC | https://github.com/eemeli/yaml | @couchbase-traces/otel-node |
+| yaml | 2.8.1 | ISC | https://github.com/eemeli/yaml | @couchbase-traces/otel-node |
+| yaml | 2.9.0 | ISC | https://github.com/eemeli/yaml | @couchbase-traces/otel-node |
+| yaml | 2.9.1 | ISC | https://github.com/eemeli/yaml | @couchbase-traces/otel-node |
+| yargs | 15.4.1 | MIT | https://github.com/yargs/yargs | @couchbase-traces/api, @couchbase-traces/otel-node |
+| yargs | 17.7.2 | MIT | https://github.com/yargs/yargs | @couchbase-traces/api, @couchbase-traces/otel-node |
 | yargs-parser | 18.1.3 | ISC | https://github.com/yargs/yargs-parser | @couchbase-traces/api |
 | yargs-parser | 21.1.1 | ISC | https://github.com/yargs/yargs-parser | @couchbase-traces/api |
 | zod | 3.25.76 | MIT | https://github.com/colinhacks/zod | @couchbase-traces/api, @couchbase-traces/app, @couchbase-traces/common-utils, @couchbase-traces/hdx-eval |
@@ -1070,9 +1002,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @ai-sdk/provider | 4.0.18 | https://github.com/vercel/ai |
 | @ai-sdk/provider-utils | 5.0.49 | https://github.com/vercel/ai |
 | @assemblyscript/loader | 0.19.23 | https://github.com/AssemblyScript/assemblyscript |
-| @clickhouse/click-ui | 0.12.0 | https://github.com/ClickHouse/click-ui |
-| @clickhouse/clickstack-browser | 1.2.1 | https://github.com/ClickHouse/clickstack-browser |
-| @clickhouse/clickstack-node | 1.0.2 | https://github.com/ClickHouse/clickstack-node |
 | @grpc/grpc-js | 1.14.7 | https://github.com/grpc/grpc-node.git#master |
 | @grpc/proto-loader | 0.8.1 | https://github.com/grpc/grpc-node |
 | @opentelemetry/api | 1.9.0 | https://github.com/open-telemetry/opentelemetry-js |
@@ -1171,7 +1100,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | baseline-browser-mapping | 2.10.0 | https://github.com/web-platform-dx/baseline-browser-mapping |
 | baseline-browser-mapping | 2.10.8 | https://github.com/web-platform-dx/baseline-browser-mapping |
 | baseline-browser-mapping | 2.8.30 | https://github.com/web-platform-dx/baseline-browser-mapping |
-| class-variance-authority | 0.7.1 | https://github.com/joe-bell/cva |
 | couchbase | 4.7.2 | https://github.com/couchbase/couchnode |
 | detect-libc | 2.1.2 | https://github.com/lovell/detect-libc |
 | fuse.js | 6.6.2 | https://github.com/krisk/Fuse |
@@ -1229,7 +1157,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | d3-ease | 3.0.1 | https://github.com/d3/d3-ease |
 | fast-uri | 3.1.9 | https://github.com/fastify/fast-uri |
 | flat | 5.0.2 | https://github.com/hughsk/flat |
-| highlight.js | 10.7.3 | https://github.com/highlightjs/highlight.js |
 | moo | 0.5.2 | https://github.com/tjvr/moo |
 | protobufjs | 7.6.2 | https://github.com/protobufjs/protobuf.js |
 | protobufjs | 7.6.5 | https://github.com/protobufjs/protobuf.js |
@@ -1242,6 +1169,7 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | source-map | 0.7.6 | https://github.com/mozilla/source-map |
 | source-map | 0.8.0-beta.0 | https://github.com/mozilla/source-map |
 | source-map-js | 1.2.2 | https://github.com/7rulnik/source-map-js |
+| source-map-js | 1.2.4 | https://github.com/7rulnik/source-map-js |
 
 #### CC-BY-4.0
 
@@ -1254,7 +1182,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 
 | Package | Version | Repository |
 | --- | --- | --- |
-| highlightjs-vue | 1.0.0 | https://github.com/highlightjs/highlightjs-vue |
 | railroad-diagrams | 1.0.0 | https://github.com/tabatkins/railroad-diagrams |
 
 #### ISC
@@ -1356,7 +1283,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @babel/runtime | 7.22.15 | https://github.com/babel/babel |
 | @babel/runtime | 7.24.0 | https://github.com/babel/babel |
 | @babel/runtime | 7.24.6 | https://github.com/babel/babel |
-| @babel/runtime | 7.29.7 | https://github.com/babel/babel |
 | @braintree/sanitize-url | 7.1.2 | https://github.com/braintree/sanitize-url |
 | @codemirror/autocomplete | 6.13.0 | https://github.com/codemirror/autocomplete |
 | @codemirror/commands | 6.3.3 | https://github.com/codemirror/commands |
@@ -1377,14 +1303,10 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @esm2cjs/p-queue | 7.3.0 | https://github.com/esm2cjs/p-queue |
 | @esm2cjs/p-timeout | 5.1.0 | https://github.com/esm2cjs/p-timeout |
 | @floating-ui/core | 1.7.5 | https://github.com/floating-ui/floating-ui |
-| @floating-ui/core | 1.8.0 | https://github.com/floating-ui/floating-ui |
 | @floating-ui/dom | 1.7.6 | https://github.com/floating-ui/floating-ui |
-| @floating-ui/dom | 1.8.0 | https://github.com/floating-ui/floating-ui |
 | @floating-ui/react | 0.27.19 | https://github.com/floating-ui/floating-ui |
 | @floating-ui/react-dom | 2.1.8 | https://github.com/floating-ui/floating-ui |
-| @floating-ui/react-dom | 2.1.9 | https://github.com/floating-ui/floating-ui |
 | @floating-ui/utils | 0.2.11 | https://github.com/floating-ui/floating-ui |
-| @floating-ui/utils | 0.2.12 | https://github.com/floating-ui/floating-ui |
 | @hono/node-server | 1.19.17 | https://github.com/honojs/node-server |
 | @hookform/resolvers | 3.9.0 | https://github.com/react-hook-form/resolvers |
 | @hyperdx/lucene | 3.1.1 | https://github.com/bripkens/lucene |
@@ -1403,54 +1325,13 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @mantine/store | 9.0.0 | https://github.com/mantinedev/mantine |
 | @modelcontextprotocol/sdk | 1.29.0 | https://github.com/modelcontextprotocol/typescript-sdk |
 | @next/env | 16.4.3 | https://github.com/vercel/next.js |
-| @radix-ui/primitive | 1.1.7 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-accordion | 1.2.20 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-arrow | 1.1.15 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-avatar | 1.2.6 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-checkbox | 1.3.11 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-collapsible | 1.1.20 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-collection | 1.1.15 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-compose-refs | 1.1.5 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-context | 1.2.2 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-context-menu | 2.3.7 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-dialog | 1.1.23 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-direction | 1.1.4 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-dismissable-layer | 1.1.19 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-dropdown-menu | 2.1.24 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-focus-guards | 1.1.6 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-focus-scope | 1.1.16 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-hover-card | 1.1.23 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-id | 1.1.4 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-menu | 2.1.24 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-popover | 1.1.23 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-popper | 1.3.7 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-portal | 1.1.17 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-presence | 1.1.10 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-primitive | 2.1.10 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-radio-group | 1.4.7 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-roving-focus | 1.1.19 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-separator | 1.1.15 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-slot | 1.3.3 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-switch | 1.3.7 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-tabs | 1.1.21 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-toast | 1.2.23 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-tooltip | 1.2.16 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-use-callback-ref | 1.1.4 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-use-controllable-state | 1.2.6 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-use-effect-event | 0.0.5 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-use-is-hydrated | 0.1.3 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-use-layout-effect | 1.1.4 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-use-rect | 1.1.4 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-use-size | 1.1.4 | https://github.com/radix-ui/primitives |
-| @radix-ui/react-visually-hidden | 1.2.11 | https://github.com/radix-ui/primitives |
-| @radix-ui/rect | 1.1.3 | https://github.com/radix-ui/primitives |
 | @reduxjs/toolkit | 2.12.0 | https://github.com/reduxjs/redux-toolkit |
-| @rrweb/record | 2.2.0 | https://github.com/rrweb-io/rrweb |
+| @rrweb/record | 2.2.2 | https://github.com/rrweb-io/rrweb |
 | @rrweb/replay | 2.1.1 | https://github.com/rrweb-io/rrweb |
 | @rrweb/types | 2.1.1 | https://github.com/rrweb-io/rrweb |
-| @rrweb/types | 2.2.0 | https://github.com/rrweb-io/rrweb |
+| @rrweb/types | 2.2.2 | https://github.com/rrweb-io/rrweb |
 | @rrweb/utils | 2.1.1 | https://github.com/rrweb-io/rrweb |
-| @rrweb/utils | 2.2.0 | https://github.com/rrweb-io/rrweb |
+| @rrweb/utils | 2.2.2 | https://github.com/rrweb-io/rrweb |
 | @slack/types | 2.20.0 | https://github.com/slackapi/node-slack-sdk |
 | @slack/webhook | 7.0.7 | https://github.com/slackapi/node-slack-sdk |
 | @standard-schema/spec | 1.1.0 | https://github.com/standard-schema/standard-schema |
@@ -1503,7 +1384,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | @types/pg | 8.15.6 | https://github.com/DefinitelyTyped/DefinitelyTyped |
 | @types/pg | 8.6.6 | https://github.com/DefinitelyTyped/DefinitelyTyped |
 | @types/pg-pool | 2.0.7 | https://github.com/DefinitelyTyped/DefinitelyTyped |
-| @types/prismjs | 1.26.6 | https://github.com/DefinitelyTyped/DefinitelyTyped |
 | @types/unist | 2.0.6 | https://github.com/DefinitelyTyped/DefinitelyTyped |
 | @types/unist | 3.0.2 | https://github.com/DefinitelyTyped/DefinitelyTyped |
 | @types/use-sync-external-store | 0.0.6 | https://github.com/DefinitelyTyped/DefinitelyTyped |
@@ -1530,7 +1410,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | ansi-styles | 6.2.1 | https://github.com/chalk/ansi-styles |
 | ansi-styles | 6.2.3 | https://github.com/chalk/ansi-styles |
 | argparse | 1.0.10 | https://github.com/nodeca/argparse |
-| aria-hidden | 1.2.6 | https://github.com/theKashey/aria-hidden |
 | array-flatten | 1.1.1 | https://github.com/blakeembrey/array-flatten |
 | asynckit | 0.4.0 | https://github.com/alexindigo/asynckit |
 | atomic-sleep | 1.0.0 | https://github.com/davidmarkclements/atomic-sleep |
@@ -1574,7 +1453,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | cjs-module-lexer | 2.1.1 | https://github.com/nodejs/cjs-module-lexer |
 | cjs-module-lexer | 2.3.0 | https://github.com/nodejs/cjs-module-lexer |
 | classcat | 5.0.5 | https://github.com/jorgebucaran/classcat |
-| classnames | 2.3.1 | https://github.com/JedWatson/classnames |
 | classnames | 2.3.2 | https://github.com/JedWatson/classnames |
 | client-only | 0.0.1 |  |
 | clsx | 1.2.1 | https://github.com/lukeed/clsx |
@@ -1671,13 +1549,11 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | express-session | 1.17.3 | https://github.com/expressjs/session |
 | extend | 3.0.2 | https://github.com/justmoon/node-extend |
 | fast-deep-equal | 3.1.3 | https://github.com/epoberezkin/fast-deep-equal |
-| fault | 1.0.4 | https://github.com/wooorm/fault |
 | file-selector | 2.1.2 | https://github.com/react-dropzone/file-selector |
 | fill-range | 7.1.1 | https://github.com/jonschlinkert/fill-range |
 | finalhandler | 1.3.2 | https://github.com/pillarjs/finalhandler |
 | follow-redirects | 1.16.0 | https://github.com/follow-redirects/follow-redirects |
 | form-data | 4.0.6 | https://github.com/form-data/form-data |
-| format | 0.2.2 | https://github.com/samsonjs/format |
 | forwarded | 0.2.0 | https://github.com/jshttp/forwarded |
 | forwarded-parse | 2.1.2 | https://github.com/lpinca/forwarded-parse |
 | fresh | 0.5.2 | https://github.com/jshttp/fresh |
@@ -1702,10 +1578,8 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | hasown | 2.0.0 | https://github.com/inspect-js/hasOwn |
 | hasown | 2.0.2 | https://github.com/inspect-js/hasOwn |
 | hasown | 2.0.4 | https://github.com/inspect-js/hasOwn |
-| hast-util-parse-selector | 4.0.0 | https://github.com/syntax-tree/hast-util-parse-selector |
 | hast-util-to-jsx-runtime | 2.3.6 | https://github.com/syntax-tree/hast-util-to-jsx-runtime |
 | hast-util-whitespace | 3.0.0 | https://github.com/syntax-tree/hast-util-whitespace |
-| hastscript | 9.0.1 | https://github.com/syntax-tree/hastscript |
 | hono | 4.13.13 | https://github.com/honojs/hono |
 | html-url-attributes | 3.0.1 | https://github.com/rehypejs/rehype-minify.git#main |
 | http-errors | 2.0.1 | https://github.com/jshttp/http-errors |
@@ -1760,7 +1634,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | lodash.isplainobject | 4.0.6 | https://github.com/lodash/lodash |
 | longest-streak | 3.1.0 | https://github.com/wooorm/longest-streak |
 | loose-envify | 1.4.0 | https://github.com/zertosh/loose-envify |
-| lowlight | 1.20.0 | https://github.com/wooorm/lowlight |
 | luxon | 3.7.2 | https://github.com/moment/luxon |
 | markdown-table | 3.0.4 | https://github.com/wooorm/markdown-table |
 | math-intrinsics | 1.1.0 | https://github.com/es-shims/math-intrinsics |
@@ -1780,7 +1653,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | mdast-util-to-markdown | 2.1.2 | https://github.com/syntax-tree/mdast-util-to-markdown |
 | mdast-util-to-string | 4.0.0 | https://github.com/syntax-tree/mdast-util-to-string |
 | media-typer | 0.3.0 | https://github.com/jshttp/media-typer |
-| memoize-one | 5.2.1 | https://github.com/alexreardon/memoize-one |
 | merge-descriptors | 1.0.3 | https://github.com/sindresorhus/merge-descriptors |
 | methods | 1.1.2 | https://github.com/jshttp/methods |
 | micromark | 4.0.2 | https://github.com/micromark/micromark.git#main |
@@ -1828,6 +1700,7 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | ms | 2.0.0 | https://github.com/zeit/ms |
 | ms | 2.1.3 | https://github.com/vercel/ms |
 | nanoid | 3.3.17 | https://github.com/ai/nanoid |
+| nanoid | 3.3.20 | https://github.com/ai/nanoid |
 | nearley | 2.20.1 | https://github.com/hardmath123/nearley |
 | negotiator | 0.6.3 | https://github.com/jshttp/negotiator |
 | negotiator | 0.6.4 | https://github.com/jshttp/negotiator |
@@ -1873,12 +1746,12 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | pkce-challenge | 5.0.1 | https://github.com/crouchcd/pkce-challenge |
 | postcss | 8.4.38 | https://github.com/postcss/postcss |
 | postcss | 8.5.23 | https://github.com/postcss/postcss |
+| postcss | 8.5.33 | https://github.com/postcss/postcss |
 | postcss | 8.5.6 | https://github.com/postcss/postcss |
 | postgres-array | 2.0.0 | https://github.com/bendrucker/postgres-array |
 | postgres-bytea | 1.0.0 | https://github.com/bendrucker/postgres-bytea |
 | postgres-date | 1.0.7 | https://github.com/bendrucker/postgres-date |
 | postgres-interval | 1.2.0 | https://github.com/bendrucker/postgres-interval |
-| prismjs | 1.30.0 | https://github.com/PrismJS/prism |
 | process-warning | 5.0.0 | https://github.com/fastify/process-warning |
 | promised-handlebars | 2.0.1 | https://github.com/nknapp/promised-handlebars |
 | prop-types | 15.8.1 | https://github.com/facebook/prop-types |
@@ -1917,18 +1790,13 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | react-remove-scroll | 2.7.2 | https://github.com/theKashey/react-remove-scroll |
 | react-remove-scroll-bar | 2.3.8 | https://github.com/theKashey/react-remove-scroll-bar |
 | react-resizable | 3.0.5 | https://github.com/react-grid-layout/react-resizable |
-| react-sortablejs | 6.1.4 | https://github.com/SortableJS/react-sortablejs |
 | react-style-singleton | 2.2.3 | https://github.com/theKashey/react-style-singleton |
-| react-syntax-highlighter | 16.1.1 | https://github.com/react-syntax-highlighter/react-syntax-highlighter |
-| react-virtualized-auto-sizer | 1.0.26 | https://github.com/bvaughn/react-virtualized-auto-sizer |
-| react-window | 1.8.11 | https://github.com/bvaughn/react-window |
 | readdirp | 3.6.0 | https://github.com/paulmillr/readdirp |
 | readdirp | 4.1.1 | https://github.com/paulmillr/readdirp |
 | real-require | 0.2.0 | https://github.com/pinojs/real-require |
 | recharts | 3.9.1 | https://github.com/recharts/recharts |
 | redux | 5.0.1 | https://github.com/reduxjs/redux |
 | redux-thunk | 3.1.0 | https://github.com/reduxjs/redux-thunk |
-| refractor | 5.0.0 | https://github.com/wooorm/refractor |
 | regenerator-runtime | 0.14.0 | https://github.com/facebook/regenerator.git#main |
 | remark-gfm | 4.0.1 | https://github.com/remarkjs/remark-gfm |
 | remark-parse | 11.0.0 | https://github.com/remarkjs/remark.git#main |
@@ -1940,11 +1808,11 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | reselect | 5.2.0 | https://github.com/reduxjs/reselect |
 | ret | 0.1.15 | https://github.com/fent/ret.js |
 | rrdom | 2.1.1 | https://github.com/rrweb-io/rrweb |
-| rrdom | 2.2.0 | https://github.com/rrweb-io/rrweb |
+| rrdom | 2.2.2 | https://github.com/rrweb-io/rrweb |
 | rrweb | 2.1.1 | https://github.com/rrweb-io/rrweb |
-| rrweb | 2.2.0 | https://github.com/rrweb-io/rrweb |
+| rrweb | 2.2.2 | https://github.com/rrweb-io/rrweb |
 | rrweb-snapshot | 2.1.1 | https://github.com/rrweb-io/rrweb |
-| rrweb-snapshot | 2.2.0 | https://github.com/rrweb-io/rrweb |
+| rrweb-snapshot | 2.2.2 | https://github.com/rrweb-io/rrweb |
 | safe-buffer | 5.1.2 | https://github.com/feross/safe-buffer |
 | safe-buffer | 5.2.1 | https://github.com/feross/safe-buffer |
 | safe-stable-stringify | 1.1.1 | https://github.com/BridgeAR/safe-stable-stringify |
@@ -1969,7 +1837,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | simple-swizzle | 0.2.2 | https://github.com/qix-/node-simple-swizzle |
 | slow-redact | 0.3.1 | https://github.com/pinojs/slow-redact |
 | sonic-boom | 4.2.0 | https://github.com/pinojs/sonic-boom |
-| sortablejs | 1.15.7 | https://github.com/SortableJS/Sortable |
 | space-separated-tokens | 2.0.2 | https://github.com/wooorm/space-separated-tokens |
 | sql-formatter | 15.7.2 | https://github.com/sql-formatter-org/sql-formatter |
 | sqlstring | 2.3.3 | https://github.com/mysqljs/sqlstring |
@@ -1998,7 +1865,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | tabbable | 6.2.0 | https://github.com/focus-trap/tabbable |
 | thread-stream | 3.1.0 | https://github.com/mcollina/thread-stream |
 | timestamp-nano | 1.0.1 | https://github.com/kawanet/timestamp-nano |
-| tiny-invariant | 1.2.0 | https://github.com/alexreardon/tiny-invariant |
 | tiny-invariant | 1.3.3 | https://github.com/alexreardon/tiny-invariant |
 | to-regex-range | 5.0.1 | https://github.com/micromatch/to-regex-range |
 | toggle-selection | 1.0.6 | https://github.com/sudodoki/toggle-selection |
@@ -2072,12 +1938,6 @@ Packages reachable from workspace `dependencies` (private workspaces are omitted
 | Package | Version | Repository |
 | --- | --- | --- |
 | argparse | 2.0.1 | https://github.com/nodeca/argparse |
-
-#### UNKNOWN
-
-| Package | Version | Repository |
-| --- | --- | --- |
-| @h6s/calendar | 2.2.0 | https://github.com/toss/h6s |
 
 #### Unlicense
 
@@ -2595,14 +2455,12 @@ Packages under GPL, AGPL, LGPL, SSPL, EUPL, MPL, CDDL, Elastic License, BUSL, Co
 | go | github.com/hashicorp/golang-lru/v2/internal | (module) | MPL-2.0 | collector builder manifest (OTel 0.155.0) |
 | go | github.com/hashicorp/nomad/api | v0.0.0-20260528135333-5b027732945f | MPL-2.0 | collector builder manifest (OTel 0.155.0) |
 | go | github.com/hashicorp/serf/coordinate | (module) | MPL-2.0 | collector builder manifest (OTel 0.155.0) |
-| npm | @h6s/calendar | 2.2.0 | UNKNOWN | @couchbase-traces/app |
 
-## Retained ClickHouse packages
+## Ported source code
 
-These `@clickhouse/*` packages are intentionally kept (UI kit and product telemetry SDKs per `PHASE_10_SPEC` §3).
+No `@clickhouse/*` package is installed (P3). This code was ported from them; see `NOTICE` and `licenses/Apache-2.0-ClickHouse.txt`.
 
-| Package | Version | License | Reason retained |
-| --- | --- | --- | --- |
-| @clickhouse/click-ui | 0.12.0 | Apache-2.0 | Shared UI kit (components and color tokens). Replacing it is follow-up work, not part of the data-layer port. |
-| @clickhouse/clickstack-node | 1.0.2 | Apache-2.0 | OpenTelemetry distribution for the API server's own telemetry; retained until a Couchbase-branded SDK replaces it. |
-| @clickhouse/clickstack-browser | 1.2.1 | Apache-2.0 | OpenTelemetry distribution for the web app's own telemetry; retained until a Couchbase-branded SDK replaces it. |
+| Ported from | License | Now in |
+| --- | --- | --- |
+| @clickhouse/clickstack-node 1.0.2 | Apache-2.0 | `packages/otel-node/src` |
+| @clickhouse/clickstack-browser 1.2.1 | Apache-2.0 | `packages/app/src/telemetry` |

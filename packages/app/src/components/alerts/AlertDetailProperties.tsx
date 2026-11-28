@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { Badge } from '@clickhouse/click-ui';
 import { Group, Text } from '@mantine/core';
 
 import { AlertPropertiesSummary } from '@/components/alerts/AlertPropertiesSummary';
+import { Badge } from '@/components/Badge/Badge';
 import type { AlertsPageItem } from '@/types';
 import { FormatTime } from '@/useFormatTime';
 import { isAlertSilenceExpired } from '@/utils/alerts';

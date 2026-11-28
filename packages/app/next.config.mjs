@@ -101,9 +101,6 @@ const nextConfig = {
   experimental: {
     agentUpgrade: false,
   },
-  // click-ui ships per-component CSS imports from node_modules, which Next
-  // rejects as global CSS unless the package is transpiled.
-  transpilePackages: ['@clickhouse/click-ui'],
   basePath: basePath,
   env: {
     // Ensures bundler-time replacements for client/server code that references this env var
@@ -118,7 +115,7 @@ const nextConfig = {
     '@opentelemetry/instrumentation',
     '@opentelemetry/sdk-node',
     '@opentelemetry/auto-instrumentations-node',
-    '@clickhouse/clickstack-node',
+    '@couchbase-traces/otel-node',
     // Outside of Vercel preview deployments, the `/api/[...all]` catch-all
     // proxies to a separately-deployed API service and never imports the
     // `@couchbase-traces/api` package at runtime. Mark it (and its subpaths) as a
@@ -141,6 +138,18 @@ const nextConfig = {
   ) => {
     if (isServer) {
       config.ignoreWarnings = [{ module: /opentelemetry/ }];
+
+      // serverExternalPackages only matches packages resolved under
+      // node_modules; this workspace package resolves through its symlink to
+      // packages/otel-node, so webpack would bundle it and fail on the ESM
+      // loader hooks it resolves at runtime.
+      config.externals = [
+        ...(config.externals ?? []),
+        ({ request }, callback) =>
+          request === '@couchbase-traces/otel-node'
+            ? callback(null, `commonjs ${request}`)
+            : callback(),
+      ];
 
       if (process.env.CBT_PREVIEW_INLINE_API !== 'true') {
         config.externals = [

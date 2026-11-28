@@ -1,6 +1,5 @@
 import { Fragment, useMemo, useState } from 'react';
 import { HTTPError } from 'ky';
-import { Separator } from '@clickhouse/click-ui';
 import {
   WebhookApiData,
   WebhookService,
@@ -12,6 +11,7 @@ import { IconPencil, IconX } from '@tabler/icons-react';
 
 import api from '@/api';
 import { useBrandDisplayName } from '@/brand';
+import { Separator } from '@/components/Separator/Separator';
 import { useConfirm } from '@/useConfirm';
 import {
   getWebhookServiceConfig,

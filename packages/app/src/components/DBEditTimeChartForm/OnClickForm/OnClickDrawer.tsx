@@ -6,7 +6,6 @@ import {
   UseFormSetValue,
   useWatch,
 } from 'react-hook-form';
-import { Separator } from '@clickhouse/click-ui';
 import { validateOnClickTemplate } from '@couchbase-traces/common-utils/dist/core/linkUrlBuilder';
 import { getFilterExpression } from '@couchbase-traces/common-utils/dist/filters';
 import {
@@ -29,6 +28,7 @@ import { notifications } from '@mantine/notifications';
 import { TextInputControlled } from '@/components/InputControlled';
 import { InputLabelWithTooltip } from '@/components/InputLabelWithTooltip';
 import SearchWhereInput from '@/components/SearchInput/SearchWhereInput';
+import { Separator } from '@/components/Separator/Separator';
 import { useDashboards } from '@/dashboard';
 import { useSources } from '@/source';
 

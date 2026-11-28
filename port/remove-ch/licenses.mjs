@@ -23,21 +23,20 @@ const OUT_PATH = join(ROOT, 'docs/licenses.md');
 const LICENSE_CHECKER_PKG = 'license-checker-rseidelsohn@5.0.1';
 const GO_LICENSES_MODULE = 'github.com/google/go-licenses@v1.6.0';
 
-const RETAINED_CLICKHOUSE = [
+/**
+ * Source ported into this repository rather than installed (P3), so no
+ * scanner sees it. The NOTICE file carries the attribution.
+ */
+const PORTED_SOURCE = [
   {
-    name: '@clickhouse/click-ui',
-    reason:
-      'Shared UI kit (components and color tokens). Replacing it is follow-up work, not part of the data-layer port.',
+    origin: '@clickhouse/clickstack-node 1.0.2',
+    license: 'Apache-2.0',
+    path: 'packages/otel-node/src',
   },
   {
-    name: '@clickhouse/clickstack-node',
-    reason:
-      "OpenTelemetry distribution for the API server's own telemetry; retained until a Couchbase-branded SDK replaces it.",
-  },
-  {
-    name: '@clickhouse/clickstack-browser',
-    reason:
-      "OpenTelemetry distribution for the web app's own telemetry; retained until a Couchbase-branded SDK replaces it.",
+    origin: '@clickhouse/clickstack-browser 1.2.1',
+    license: 'Apache-2.0',
+    path: 'packages/app/src/telemetry',
   },
 ];
 
@@ -460,16 +459,6 @@ function buildMarkdown(npm, goRows) {
       a.package.localeCompare(b.package),
   );
 
-  const retained = RETAINED_CLICKHOUSE.map(({ name, reason }) => {
-    const entry = npmList.find(r => r.package === name);
-    return {
-      name,
-      license: entry?.license ?? '(not in production closure)',
-      version: entry?.version ?? '',
-      reason,
-    };
-  });
-
   const parts = [];
   parts.push('# Dependency license report');
   parts.push('');
@@ -576,16 +565,16 @@ function buildMarkdown(npm, goRows) {
   }
 
   parts.push('');
-  parts.push('## Retained ClickHouse packages');
+  parts.push('## Ported source code');
   parts.push('');
   parts.push(
-    'These `@clickhouse/*` packages are intentionally kept (UI kit and product telemetry SDKs per `PHASE_10_SPEC` §3).',
+    'No `@clickhouse/*` package is installed (P3). This code was ported from them; see `NOTICE` and `licenses/Apache-2.0-ClickHouse.txt`.',
   );
   parts.push('');
   parts.push(
     renderTable(
-      ['Package', 'Version', 'License', 'Reason retained'],
-      retained.map(r => [r.name, r.version, r.license, r.reason]),
+      ['Ported from', 'License', 'Now in'],
+      PORTED_SOURCE.map(r => [r.origin, r.license, `\`${r.path}\``]),
     ),
   );
 

@@ -5,11 +5,11 @@ import {
   UseFormSetValue,
   useWatch,
 } from 'react-hook-form';
-import { Badge } from '@clickhouse/click-ui';
 import { validateFormula } from '@couchbase-traces/common-utils/dist/core/formula';
 import { TextInput } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
 
+import { Badge } from '@/components/Badge/Badge';
 import { ChartSeriesControls } from '@/components/ChartEditor/ChartSeriesControls';
 import { ChartEditorFormState } from '@/components/ChartEditor/types';
 import SeriesNumberFormatDrawer from '@/components/SeriesNumberFormatDrawer';

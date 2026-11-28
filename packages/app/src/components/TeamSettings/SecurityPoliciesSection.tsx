@@ -1,5 +1,6 @@
-import { Separator } from '@clickhouse/click-ui';
 import { Box, Card, Text } from '@mantine/core';
+
+import { Separator } from '@/components/Separator/Separator';
 
 export default function SecurityPoliciesSection({
   allowedAuthMethods,

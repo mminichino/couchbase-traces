@@ -88,16 +88,6 @@
       ]
     },
     {
-      "token": "CLICKSTACK_CAPTURE_HTTP_BODY",
-      "replacement": null,
-      "status": "allowed",
-      "reason": "external_dependency",
-      "occurrences": 1,
-      "files": [
-        "packages/api/.env.development"
-      ]
-    },
-    {
       "token": "ClickHouse Cloud",
       "replacement": null,
       "status": "allowed",
@@ -486,16 +476,6 @@
       "occurrences": 1,
       "files": [
         "packages/app/src/layout.tsx"
-      ]
-    },
-    {
-      "token": "clickstack-browser.ts",
-      "replacement": null,
-      "status": "allowed",
-      "reason": "internal_identifier",
-      "occurrences": 1,
-      "files": [
-        "packages/app/jest.config.js"
       ]
     },
     {

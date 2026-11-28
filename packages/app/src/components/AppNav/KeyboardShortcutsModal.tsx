@@ -1,6 +1,7 @@
 import React from 'react';
-import { Separator } from '@clickhouse/click-ui';
 import { Group, Kbd, Modal, Stack, Text } from '@mantine/core';
+
+import { Separator } from '@/components/Separator/Separator';
 
 type ShortcutRow = {
   keys: readonly string[];

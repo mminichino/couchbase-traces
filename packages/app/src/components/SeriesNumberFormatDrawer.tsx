@@ -1,6 +1,5 @@
 import { useCallback, useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
-import { Separator } from '@clickhouse/click-ui';
 import { NumberFormat } from '@couchbase-traces/common-utils/dist/types';
 import {
   Button,
@@ -10,6 +9,8 @@ import {
   Stack,
   Text,
 } from '@mantine/core';
+
+import { Separator } from '@/components/Separator/Separator';
 
 import { DEFAULT_NUMBER_FORMAT, NumberFormatForm } from './NumberFormat';
 

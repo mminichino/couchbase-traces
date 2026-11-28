@@ -107,6 +107,7 @@ describe('version locations', () => {
         'pkg:common-utils',
         'pkg:ingest',
         'pkg:otel-collector',
+        'pkg:otel-node',
         'env:CODE_VERSION',
         'env:IMAGE_VERSION',
         'env:IMAGE_VERSION_SUB_TAG',

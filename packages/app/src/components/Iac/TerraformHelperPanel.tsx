@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Badge } from '@clickhouse/click-ui';
 import {
   Anchor,
   Collapse,
@@ -9,6 +8,7 @@ import {
   Text,
 } from '@mantine/core';
 
+import { Badge } from '@/components/Badge/Badge';
 import { CopySnippet } from '@/components/CollectorOnboarding/CopySnippet';
 
 export type TerraformSnippet = {

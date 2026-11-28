@@ -1,6 +1,7 @@
 import * as React from 'react';
-import { Badge } from '@clickhouse/click-ui';
 import { Divider, Group, Modal, Select, Stack, Text } from '@mantine/core';
+
+import { Badge } from '@/components/Badge/Badge';
 
 import { TimeZoneSelect, TimeZoneShortcuts } from './components/TimeZoneSelect';
 import { isContentFontSize, OPTIONS_CONTENT_FONT_SIZE } from './config/fonts';

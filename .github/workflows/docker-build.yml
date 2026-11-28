@@ -122,6 +122,7 @@ jobs:
             packages/api/**
             packages/app/**
             packages/common-utils/**
+            packages/otel-node/**
             docker/hyperdx/**
             package.json
             yarn.lock

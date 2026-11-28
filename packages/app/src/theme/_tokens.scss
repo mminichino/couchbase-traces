@@ -15,6 +15,7 @@
  */
 
 @use './chart-categorical-tokens' as shared-chart;
+@use './component-tokens';
 
 @mixin chart-tokens {
   @include shared-chart.chart-categorical-tokens;
@@ -223,6 +224,7 @@
   --color-json-punctuation: #666980;
 
   @include chart-tokens;
+  @include component-tokens.component-tokens-dark;
 
   /* Visualization Range Selector (minimap viewports, brush ranges, etc.) */
   --color-viz-range-handle: var(--palette-brand-300);
@@ -460,6 +462,7 @@
   --color-json-punctuation: #868e96;
 
   @include chart-tokens;
+  @include component-tokens.component-tokens-light;
 
   /* Visualization Range Selector (minimap viewports, brush ranges, etc.) */
   --color-viz-range-handle: var(--mantine-color-indigo-8);

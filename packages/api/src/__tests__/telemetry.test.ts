@@ -1,7 +1,7 @@
 const mockInit = jest.fn();
 let mockIsMainThread = true;
 
-jest.mock('@clickhouse/clickstack-node', () => ({
+jest.mock('@couchbase-traces/otel-node', () => ({
   init: (...args: unknown[]) => mockInit(...args),
 }));
 jest.mock('node:worker_threads', () => ({

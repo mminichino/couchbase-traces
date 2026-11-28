@@ -1,7 +1,6 @@
 import React from 'react';
 /* Polyfills for browser APIs in Node.js test environment */
 import { TextDecoder, TextEncoder } from 'util';
-import { ClickUIProvider } from '@clickhouse/click-ui';
 import { MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { render } from '@testing-library/react';
@@ -36,10 +35,8 @@ Object.defineProperty(window, 'matchMedia', {
 
 global.TestProviders = ({ children }: { children: React.ReactNode }) => (
   <MantineProvider>
-    <ClickUIProvider theme="dark" persistTheme={false}>
-      <Notifications />
-      {children}
-    </ClickUIProvider>
+    <Notifications />
+    {children}
   </MantineProvider>
 );
 

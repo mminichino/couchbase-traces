@@ -1,5 +1,4 @@
 import { useMemo, useState } from 'react';
-import { Badge, Separator } from '@clickhouse/click-ui';
 import {
   buildImportFile,
   collectImportableResources,
@@ -21,7 +20,9 @@ import {
 import { IconDownload } from '@tabler/icons-react';
 
 import api from '@/api';
+import { Badge } from '@/components/Badge/Badge';
 import { useIacImportManifest } from '@/components/Iac/useIacImportManifest';
+import { Separator } from '@/components/Separator/Separator';
 import { BASE_PATH } from '@/config';
 import { downloadTextFile } from '@/utils/downloadFile';
 

@@ -408,41 +408,6 @@
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
-      "path": "docs/licenses.md",
-      "term": "clickstack",
-      "snippet": "| @clickhouse/clickstack-browser | 1.2.1 | Apache-2.0 | https://github.com/ClickHouse/clickstack-browser | @couchbase-traces/app |",
-      "reason": "external_dependency",
-      "note": "Retained package in license report."
-    },
-    {
-      "path": "docs/licenses.md",
-      "term": "clickstack",
-      "snippet": "| @clickhouse/clickstack-browser | 1.2.1 | https://github.com/ClickHouse/clickstack-browser |",
-      "reason": "external_dependency",
-      "note": "Retained package in license report."
-    },
-    {
-      "path": "docs/licenses.md",
-      "term": "clickstack",
-      "snippet": "| @clickhouse/clickstack-node | 1.0.2 | Apache-2.0 | https://github.com/ClickHouse/clickstack-node | @couchbase-traces/api, @couchbase-traces/app |",
-      "reason": "external_dependency",
-      "note": "Retained package in license report."
-    },
-    {
-      "path": "docs/licenses.md",
-      "term": "clickstack",
-      "snippet": "| @clickhouse/clickstack-node | 1.0.2 | https://github.com/ClickHouse/clickstack-node |",
-      "reason": "external_dependency",
-      "note": "Retained package in license report."
-    },
-    {
-      "path": "docs/licenses.md",
-      "term": "url",
-      "snippet": "https://github.com/ClickHouse/click-ui",
-      "reason": "external_dependency",
-      "note": "Package repository URL in license report."
-    },
-    {
       "path": "docs/upstream-AGENTS.md",
       "term": "hyperdx",
       "snippet": "[play.hyperdx.io](https://play.hyperdx.io) when the bug shows there, or from",
@@ -457,11 +422,18 @@
       "note": "Token \"hyperdx\" allowed in the token map"
     },
     {
-      "path": "packages/api/.env.development",
-      "term": "clickstack",
-      "snippet": "CLICKSTACK_CAPTURE_HTTP_BODY=true",
-      "reason": "external_dependency",
-      "note": "Token \"CLICKSTACK_CAPTURE_HTTP_BODY\" allowed in the token map"
+      "path": "licenses/Apache-2.0-ClickHouse.txt",
+      "term": "clickhouse, inc.",
+      "snippet": "Copyright 2016-2026 ClickHouse, Inc.",
+      "reason": "upstream_attribution",
+      "note": "Apache-2.0 license text for the code ported from the ClickHouse telemetry SDKs (P3); kept verbatim."
+    },
+    {
+      "path": "licenses/Apache-2.0-ClickHouse.txt",
+      "term": "clickhouse, inc.",
+      "snippet": "Copyright 2026 ClickHouse, Inc.",
+      "reason": "upstream_attribution",
+      "note": "Apache-2.0 license text for the code ported from the ClickHouse telemetry SDKs (P3); kept verbatim."
     },
     {
       "path": "packages/api/Dockerfile",
@@ -637,13 +609,6 @@
       "snippet": "const VERIFY_SENTINEL = 'hyperdx-token-encryption-check';",
       "reason": "internal_identifier",
       "note": "Token \"hyperdx-token-encryption-check\" allowed in the token map"
-    },
-    {
-      "path": "packages/app/jest.config.js",
-      "term": "clickstack",
-      "snippet": "'<rootDir>/src/__mocks__/clickstack-browser.ts',",
-      "reason": "internal_identifier",
-      "note": "Token \"clickstack-browser.ts\" allowed in the token map"
     },
     {
       "path": "packages/app/src/__tests__/hdxDebug.test.ts",

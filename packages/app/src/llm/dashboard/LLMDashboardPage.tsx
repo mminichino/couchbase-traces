@@ -9,7 +9,6 @@ import {
   useQueryStates,
 } from 'nuqs';
 import { useForm, useWatch } from 'react-hook-form';
-import { Badge } from '@clickhouse/click-ui';
 import { tcFromSource } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { SourceKind } from '@couchbase-traces/common-utils/dist/types';
 import {
@@ -27,6 +26,7 @@ import {
 import { IconInfoCircle } from '@tabler/icons-react';
 
 import { usePageTitle } from '@/brand';
+import { Badge } from '@/components/Badge/Badge';
 import OnboardingModal from '@/components/OnboardingModal';
 import SearchWhereInput, {
   getStoredLanguage,

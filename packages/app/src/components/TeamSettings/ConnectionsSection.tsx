@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import { Separator } from '@clickhouse/click-ui';
 import { isCouchbaseConnection } from '@couchbase-traces/common-utils/dist/types';
 import { Box, Button, Card, Flex, Stack, Text } from '@mantine/core';
 import { IconPencil, IconX } from '@tabler/icons-react';
 
 import { ConnectionForm } from '@/components/ConnectionForm';
+import { Separator } from '@/components/Separator/Separator';
 import { IS_LOCAL_MODE } from '@/config';
 import { useConnections } from '@/connection';
 

@@ -1,5 +1,6 @@
-import { Badge } from '@clickhouse/click-ui';
 import { Box, Group, Text } from '@mantine/core';
+
+import { Badge } from '@/components/Badge/Badge';
 
 import type { WhatsNew } from './useWhatsNew';
 

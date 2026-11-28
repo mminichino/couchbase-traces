@@ -1,10 +1,10 @@
 import { useMemo } from 'react';
-import { Separator } from '@clickhouse/click-ui';
 import { Box, Card, Text } from '@mantine/core';
 
 import api from '@/api';
 import { type DeploymentShape } from '@/components/CollectorOnboarding/installSnippets';
 import McpInstallPanel from '@/components/CollectorOnboarding/McpInstallPanel';
+import { Separator } from '@/components/Separator/Separator';
 
 /**
  * Renders the "Connect your AI Agents" section on the Team

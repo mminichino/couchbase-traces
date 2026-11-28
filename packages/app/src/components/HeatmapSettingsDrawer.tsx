@@ -1,13 +1,13 @@
 import { useCallback, useEffect } from 'react';
 import { useForm, useWatch } from 'react-hook-form';
 import { z } from 'zod';
-import { Separator } from '@clickhouse/click-ui';
 import { TableConnection } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { Button, Drawer, Group, Stack } from '@mantine/core';
 import { IconPlayerPlay } from '@tabler/icons-react';
 
 import { HeatmapScaleControl } from '@/components/DBHeatmapChart/HeatmapScaleControl';
+import { Separator } from '@/components/Separator/Separator';
 import { SQLInlineEditorControlled } from '@/components/SQLEditor/SQLInlineEditor';
 
 const HeatmapSettingsSchema = z.object({

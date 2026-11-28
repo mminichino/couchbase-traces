@@ -1,15 +1,11 @@
 import React from 'react';
-import {
-  setAttributes,
-  setUser,
-  startNewSession,
-} from '@clickhouse/clickstack-browser';
 import { fireEvent, screen } from '@testing-library/react';
 
 import {
   AppNavContext,
   AppNavUserMenu,
 } from '@/components/AppNav/AppNav.components';
+import { setAttributes, setUser, startNewSession } from '@/telemetry/browser';
 
 const renderAppNavUserMenu = (userName?: string, logoutUrl?: string) => {
   return renderWithMantine(

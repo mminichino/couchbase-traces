@@ -3,7 +3,6 @@ import { add, Duration, sub } from 'date-fns';
 import { useAtom } from 'jotai';
 import { atomWithStorage } from 'jotai/utils';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { Separator } from '@clickhouse/click-ui';
 import {
   Button,
   Card,
@@ -25,6 +24,7 @@ import { DateInput, DateInputProps } from '@mantine/dates';
 import { useDisclosure } from '@mantine/hooks';
 import { IconBolt, IconCalendarFilled } from '@tabler/icons-react';
 
+import { Separator } from '@/components/Separator/Separator';
 import { useTimeZoneOverride } from '@/timeZoneOverride';
 import { useDisplayTimeZone } from '@/useDisplayTimeZone';
 import { useUserPreferences } from '@/useUserPreferences';

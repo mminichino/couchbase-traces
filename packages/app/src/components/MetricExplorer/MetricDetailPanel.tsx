@@ -1,15 +1,16 @@
 import { useCallback, useMemo, useState } from 'react';
-import { Badge, Separator } from '@clickhouse/click-ui';
 import { TMetricSource } from '@couchbase-traces/common-utils/dist/types';
 import { Box, Group, Loader, ScrollArea, Stack, Text } from '@mantine/core';
 import { IconChartLine } from '@tabler/icons-react';
 
+import { Badge } from '@/components/Badge/Badge';
 import EmptyState from '@/components/EmptyState';
 import {
   AttributeList,
   AttributeValueList,
   formatUnitDisplay,
 } from '@/components/MetricAttributeHelperPanel';
+import { Separator } from '@/components/Separator/Separator';
 import { useFetchMetricAttributeValues } from '@/hooks/useFetchMetricAttributeValues';
 import {
   type AttributeKey,

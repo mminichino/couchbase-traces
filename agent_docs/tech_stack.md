@@ -10,6 +10,8 @@
 | Shared logic | `packages/common-utils` (SQL++, chart rendering, Lucene) |
 | Tests | Jest (unit/int), Playwright (E2E) |
 
-Self-instrumentation uses telemetry SDKs (`@clickhouse/clickstack-node` /
-`@clickhouse/clickstack-browser`) and `@clickhouse/click-ui` for theming — not
-part of the telemetry data path.
+Self-instrumentation uses `@couchbase-traces/otel-node` (`packages/otel-node`,
+API and Next.js server) and `packages/app/src/telemetry` (browser RUM and
+session replay), both on the plain OpenTelemetry SDKs — not part of the
+telemetry data path. No `@clickhouse/*` package is installed;
+`scripts/ci/check-no-clickhouse-packages.sh` keeps it that way.

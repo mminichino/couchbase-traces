@@ -1,6 +1,5 @@
 import { useCallback, useState } from 'react';
 import { SubmitHandler, useForm } from 'react-hook-form';
-import { Separator } from '@clickhouse/click-ui';
 import { DEFAULT_METADATA_MAX_ROWS_TO_READ } from '@couchbase-traces/common-utils/dist/core/metadata';
 import { type TeamQuerySettings } from '@couchbase-traces/common-utils/dist/types';
 import {
@@ -19,6 +18,7 @@ import { IconHelpCircle, IconPencil } from '@tabler/icons-react';
 
 import api from '@/api';
 import SelectControlled from '@/components/SelectControlled';
+import { Separator } from '@/components/Separator/Separator';
 import {
   DEFAULT_FILTER_KEYS_FETCH_LIMIT,
   DEFAULT_QUERY_TIMEOUT,

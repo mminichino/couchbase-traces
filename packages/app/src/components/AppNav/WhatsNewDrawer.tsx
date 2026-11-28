@@ -1,5 +1,4 @@
 import ReactMarkdown from 'react-markdown';
-import { Badge, Separator } from '@clickhouse/click-ui';
 import {
   Anchor,
   Card,
@@ -12,6 +11,9 @@ import {
   Title,
 } from '@mantine/core';
 import { IconPackageExport } from '@tabler/icons-react';
+
+import { Badge } from '@/components/Badge/Badge';
+import { Separator } from '@/components/Separator/Separator';
 
 import { changelogUrl, formatCounts, useWhatsNew } from './useWhatsNew';
 import { WhatsNewHighlightRow } from './WhatsNewHighlightRow';

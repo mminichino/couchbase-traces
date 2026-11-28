@@ -1,0 +1,33 @@
+/* Matches the click-ui 0.12 Separator spacing scale. */
+$sizes: (
+  xs: 0,
+  sm: 0.25rem,
+  md: 0.5rem,
+  lg: 1rem,
+  xl: 1.5rem,
+  xxl: 2rem,
+);
+
+.separator {
+  flex-shrink: 0;
+
+  &[data-orientation='horizontal'] {
+    width: 100%;
+    border-top: 1px solid var(--separator-color);
+  }
+
+  &[data-orientation='vertical'] {
+    height: 100%;
+    border-right: 1px solid var(--separator-color);
+  }
+
+  @each $size, $space in $sizes {
+    &[data-orientation='horizontal'][data-size='#{$size}'] {
+      margin: $space 0;
+    }
+
+    &[data-orientation='vertical'][data-size='#{$size}'] {
+      margin: 0 $space;
+    }
+  }
+}

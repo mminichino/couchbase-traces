@@ -152,32 +152,27 @@ $transition-slow: 0.2s ease;
 }
 
 .collapseButton {
-  /* Click UI token names are camelCase. */
-  /* stylelint-disable custom-property-pattern */
   flex-shrink: 0;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   margin: 0;
-  padding: var(--click-button-iconButton-sm-space-y)
-    var(--click-button-iconButton-sm-space-x);
-  border: var(--click-button-stroke) solid
-    var(--click-button-iconButton-color-primary-stroke-default);
-  border-radius: var(--click-button-iconButton-radii-all);
-  background: var(--click-button-iconButton-color-primary-background-default);
-  color: var(--click-button-iconButton-color-primary-text-default);
+  padding: 0.25rem;
+  border: 1px solid transparent;
+  border-radius: 0.25rem;
+  background: transparent;
+  color: var(--icon-button-text);
   cursor: pointer;
   line-height: 0;
 
   svg {
-    width: var(--click-image-sm-size-width);
-    height: var(--click-image-sm-size-height);
+    width: 1rem;
+    height: 1rem;
   }
 
   &:hover {
-    border-color: var(--click-button-iconButton-color-primary-stroke-hover);
-    background: var(--click-button-iconButton-color-primary-background-hover);
-    color: var(--click-button-iconButton-color-primary-text-hover);
+    border-color: var(--icon-button-background-hover);
+    background: var(--icon-button-background-hover);
   }
 
   &:focus-visible {
@@ -188,7 +183,6 @@ $transition-slow: 0.2s ease;
   &Collapsed {
     transform: rotate(180deg);
   }
-  /* stylelint-enable custom-property-pattern */
 }
 
 .scrollContainer {

@@ -20,18 +20,12 @@ module.exports = {
   transformIgnorePatterns: ['/node_modules/'],
   moduleNameMapper: {
     '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
+    '^@/telemetry/browser$': '<rootDir>/src/__mocks__/browserTelemetry.ts',
     '^@/(.*)$': '<rootDir>/src/$1',
     '^ky-universal$': '<rootDir>/src/__mocks__/ky-universal.ts',
     '^ky$': '<rootDir>/src/__mocks__/ky-universal.ts',
     '^react-markdown$': '<rootDir>/src/__mocks__/react-markdown.tsx',
     '^remark-gfm$': '<rootDir>/src/__mocks__/remark-gfm.ts',
-    '^react-syntax-highlighter$':
-      '<rootDir>/src/__mocks__/react-syntax-highlighter.tsx',
-    '^@clickhouse/clickstack-browser$':
-      '<rootDir>/src/__mocks__/clickstack-browser.ts',
-    // @clickhouse/click-ui depends on ESM-only lodash-es; lodash has the same API.
-    '^lodash-es$': 'lodash',
-    '^lodash-es/(.*)$': 'lodash/$1',
     // See port/jest/dataLayerShim.cjs.
     '^@couchbase-traces/common-utils/dist/dataLayer$':
       '<rootDir>/../../port/jest/dataLayerShim.cjs',

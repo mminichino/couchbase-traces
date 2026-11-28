@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import { Badge } from '@clickhouse/click-ui';
 import { Group, Stack, Table, Text } from '@mantine/core';
 
+import { Badge } from '@/components/Badge/Badge';
 import { IS_LLM_COST_ENABLED } from '@/config';
 import { resolveSpanCostUsd } from '@/llm/lib/cost';
 import { LLMSpanInfo } from '@/llm/lib/types';

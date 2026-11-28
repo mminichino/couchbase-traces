@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { getSessionId } from '@clickhouse/clickstack-browser';
 
 import {
   APP_VERSION,
@@ -14,6 +13,7 @@ import {
   IS_OSS,
   IS_PROMQL_ENABLED,
 } from '@/config';
+import { getSessionId } from '@/telemetry/browser';
 import { copyTextToClipboard } from '@/utils/clipboard';
 
 // `window.hdx` — a small, namespaced debug handle for the browser console.

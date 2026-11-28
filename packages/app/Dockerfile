@@ -9,6 +9,7 @@ COPY .yarnrc.yml yarn.lock package.json nx.json .prettierrc .prettierignore ./ts
 # Only copy package.json for workspace resolution during yarn install;
 # full source is copied in the build stages that need it.
 COPY ./packages/common-utils/package.json ./packages/common-utils/package.json
+COPY ./packages/otel-node/package.json ./packages/otel-node/package.json
 COPY ./packages/app/jest.config.js ./packages/app/tsconfig.json ./packages/app/tsconfig.build.json ./packages/app/package.json ./packages/app/next.config.mjs ./packages/app/mdx.d.ts ./packages/app/css.d.ts ./packages/app/eslint.config.mjs ./packages/app/
 RUN --mount=type=cache,target=/root/.yarn/berry/cache,id=yarn-cache,sharing=locked \
     yarn install --mode=skip-build
@@ -18,6 +19,8 @@ RUN --mount=type=cache,target=/root/.yarn/berry/cache,id=yarn-cache,sharing=lock
 FROM base AS dev
 
 COPY ./packages/common-utils ./packages/common-utils
+COPY ./packages/otel-node ./packages/otel-node
+RUN yarn workspace @couchbase-traces/otel-node run build
 
 EXPOSE 8080
 
@@ -31,6 +34,8 @@ FROM base AS common-utils-builder
 
 COPY ./packages/common-utils ./packages/common-utils
 RUN yarn workspace @couchbase-traces/common-utils run build
+COPY ./packages/otel-node ./packages/otel-node
+RUN yarn workspace @couchbase-traces/otel-node run build
 
 
 ## builder #########################################################################################
@@ -39,6 +44,7 @@ FROM base AS builder
 
 # Copy pre-built common-utils from its dedicated build stage
 COPY --from=common-utils-builder /app/packages/common-utils ./packages/common-utils
+COPY --from=common-utils-builder /app/packages/otel-node ./packages/otel-node
 
 # Expose custom env variables to the browser (needs NEXT_PUBLIC_ prefix)
 # doc: https://nextjs.org/docs/pages/building-your-application/configuring/environment-variables#bundling-environment-variables-for-the-browser

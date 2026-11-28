@@ -125,7 +125,7 @@ export async function startNextServerTelemetry(): Promise<void> {
   // OTEL_LOG_LEVEL wins.
   process.env.OTEL_LOG_LEVEL ??= 'error';
 
-  const { init } = await import('@clickhouse/clickstack-node');
+  const { init } = await import('@couchbase-traces/otel-node');
   init({
     apiKey: telemetry.apiKey,
     instrumentations: {

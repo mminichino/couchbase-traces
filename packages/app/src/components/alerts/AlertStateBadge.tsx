@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { Badge } from '@clickhouse/click-ui';
 import { AlertState } from '@couchbase-traces/common-utils/dist/types';
 
+import { Badge } from '@/components/Badge/Badge';
 import { ALERT_STATE_LABELS } from '@/utils/alerts';
 
 type AlertStateBadgeProps = {

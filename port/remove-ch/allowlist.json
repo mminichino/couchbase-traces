@@ -56,24 +56,6 @@
       "note": "Port tooling/history."
     },
     {
-      "path": "yarn.lock",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Lockfile retained packages."
-    },
-    {
-      "path": ".yarnrc.yml",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Preapproved retained packages."
-    },
-    {
-      "path": "**/package.json",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained package dependencies."
-    },
-    {
       "path": ".github/scripts/__tests__/pr-triage-classify.test.js",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
@@ -110,12 +92,6 @@
       "note": "Retained @clickhouse package import or reference."
     },
     {
-      "path": "packages/api/.env.development",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
       "path": "packages/api/openapi.json",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
@@ -126,18 +102,6 @@
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
-      "path": "packages/api/src/__tests__/telemetry.test.ts",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/api/src/index.ts",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
     },
     {
       "path": "packages/api/src/mcp/__tests__/alerts.int.test.ts",
@@ -470,18 +434,6 @@
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
-      "path": "packages/api/src/server.ts",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/api/src/tasks/__tests__/index.test.ts",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
       "path": "packages/api/src/tasks/checkAlerts/__tests__/checkAlerts.int.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
@@ -518,18 +470,6 @@
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
-      "path": "packages/api/src/tasks/index.ts",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/api/src/telemetry.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
       "path": "packages/api/src/utils/__tests__/redactSecrets.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
@@ -548,18 +488,6 @@
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
-      "path": "packages/app/instrumentation-client.ts",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/jest.config.js",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
       "path": "packages/app/next.config.mjs",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
@@ -572,12 +500,6 @@
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
-      "path": "packages/app/src/DBChartPage.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
       "path": "packages/app/src/DBSearchPage.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
@@ -588,18 +510,6 @@
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
-      "path": "packages/app/src/NamespaceDetailsSidePanel.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/NodeDetailsSidePanel.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
     },
     {
       "path": "packages/app/src/OnboardingChecklist/useOnboardingCompletion.ts",
@@ -618,30 +528,6 @@
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
-      "path": "packages/app/src/ThemeWrapper.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/UserPreferencesModal.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/__mocks__/clickstack-browser.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
-      "path": "packages/app/src/__mocks__/react-syntax-highlighter.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
     },
     {
       "path": "packages/app/src/__tests__/DBDashboardImportPage.test.tsx",
@@ -674,12 +560,6 @@
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
-      "path": "packages/app/src/__tests__/hdxDebug.test.ts",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
       "path": "packages/app/src/__tests__/metricDrilldownWarning.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
@@ -702,54 +582,6 @@
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
-      "path": "packages/app/src/components/AppNav/AppNav.components.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/AppNav/AppNav.tsx",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
-      "path": "packages/app/src/components/AppNav/InstanceLabel.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/AppNav/KeyboardShortcutsModal.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/AppNav/WhatsNewDrawer.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/AppNav/WhatsNewHighlightRow.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/AppNav/__tests__/WhatsNewHighlightRow.test.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/ChartDisplaySettingsDrawer.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
     },
     {
       "path": "packages/app/src/components/ChartSQLPreview.tsx",
@@ -776,36 +608,6 @@
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
-      "path": "packages/app/src/components/ContactSupportText.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/DBEditTimeChartForm/ChartFormulaEditor.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/DBEditTimeChartForm/ChartSeriesEditor.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/DBEditTimeChartForm/OnClickForm/OnClickDrawer.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/DBEditTimeChartForm/TileAlertEditor.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
       "path": "packages/app/src/components/DBEditTimeChartForm/__tests__/utils.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
@@ -830,22 +632,10 @@
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
-      "path": "packages/app/src/components/DBRowSidePanel.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
       "path": "packages/app/src/components/DBSearchPageFilters.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
-      "path": "packages/app/src/components/DBSearchPageFilters/FilterSettingsPopover.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
     },
     {
       "path": "packages/app/src/components/DBSearchPageFilters/hooks.ts",
@@ -872,40 +662,10 @@
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
-      "path": "packages/app/src/components/DashboardFiltersModal/AdhocFilterEditForm.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/DashboardFiltersModal/QueryExpressionFilterEditForm.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
       "path": "packages/app/src/components/Dashboards/__tests__/DashboardsListPage.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
-      "path": "packages/app/src/components/ExceptionSubpanel.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/HeatmapSettingsDrawer.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/Iac/TerraformHelperPanel.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
     },
     {
       "path": "packages/app/src/components/Iac/__tests__/ResourceTerraformPopover.test.tsx",
@@ -926,52 +686,16 @@
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
-      "path": "packages/app/src/components/ListingCard.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/ListingListRow.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/MetricAttributeHelperPanel.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/MetricExplorer/MetricDetailPanel.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
       "path": "packages/app/src/components/MetricExplorer/MetricExplorer.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
-      "path": "packages/app/src/components/NetworkPropertyPanel.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
       "path": "packages/app/src/components/Patterns/__tests__/reconstructTemplate.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
-      "path": "packages/app/src/components/RequestLine.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
     },
     {
       "path": "packages/app/src/components/RevealSnippet/RevealSnippet.stories.tsx",
@@ -1022,30 +746,6 @@
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
-      "path": "packages/app/src/components/SeriesNumberFormatDrawer.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/ServiceMap/ServiceMapSidePanel.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/ServiceMap/ServiceMapTooltip.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/Sources/SourceForm/LogTableModelForm.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
       "path": "packages/app/src/components/Sources/SourceForm/MetricTableModelForm.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
@@ -1058,28 +758,10 @@
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
-      "path": "packages/app/src/components/Sources/SourceForm/TraceTableModelForm.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
       "path": "packages/app/src/components/Sources/SourceForm/constants.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
-      "path": "packages/app/src/components/Sources/SourcesList.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/TeamSettings/ApiKeysSection.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
     },
     {
       "path": "packages/app/src/components/TeamSettings/ConnectionsSection.tsx",
@@ -1088,58 +770,10 @@
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
-      "path": "packages/app/src/components/TeamSettings/IacMigrationSection.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/TeamSettings/IntegrationsSection.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/TeamSettings/McpServerSection.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/TeamSettings/OrgApiKeysSection.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/TeamSettings/SecurityPoliciesSection.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/TeamSettings/SourcesSection.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/TeamSettings/TeamMembersSection.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
       "path": "packages/app/src/components/TeamSettings/TeamQueryConfigSection.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
-      "path": "packages/app/src/components/TeamSettings/WebhooksSection.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
     },
     {
       "path": "packages/app/src/components/TeamSettings/__tests__/IacMigrationSection.test.tsx",
@@ -1154,12 +788,6 @@
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
-      "path": "packages/app/src/components/TimePicker/TimePicker.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
       "path": "packages/app/src/components/TimelineChart/TimelineChart.stories.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
@@ -1170,12 +798,6 @@
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
-      "path": "packages/app/src/components/__tests__/AppNavUserMenu.test.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
     },
     {
       "path": "packages/app/src/components/__tests__/DBDeltaChart.test.tsx",
@@ -1238,12 +860,6 @@
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
-      "path": "packages/app/src/components/__tests__/FormatPodStatus.test.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
       "path": "packages/app/src/components/__tests__/HyperJson.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
@@ -1280,34 +896,10 @@
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
-      "path": "packages/app/src/components/alerts/AlertDetailProperties.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/alerts/AlertDetails.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/components/alerts/AlertStateBadge.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
       "path": "packages/app/src/components/alerts/__tests__/AlertHistoryCards.test.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
-      "path": "packages/app/src/components/alerts/__tests__/AlertStateBadge.test.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
     },
     {
       "path": "packages/app/src/components/linkedSpans.tsx",
@@ -1412,18 +1004,6 @@
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
-      "path": "packages/app/src/llm/__tests__/ChatMessageItem.test.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/llm/__tests__/LLMSpanSubpanel.test.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
       "path": "packages/app/src/llm/__tests__/chartConfig.test.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
@@ -1434,30 +1014,6 @@
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
-      "path": "packages/app/src/llm/components/ChatMessageItem.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/llm/components/LLMSpanSubpanel.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/llm/dashboard/LLMDashboardPage.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
-      "path": "packages/app/src/llm/dashboard/LLMSessionPanel.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
     },
     {
       "path": "packages/app/src/searchFilters.test.ts",
@@ -1484,22 +1040,10 @@
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
-      "path": "packages/app/src/setupTests.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
       "path": "packages/app/src/stories/Brand.stories.tsx",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
-      "path": "packages/app/src/stories/ClickUI.stories.tsx",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
     },
     {
       "path": "packages/app/src/stories/Code.stories.tsx",
@@ -1514,19 +1058,7 @@
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
     },
     {
-      "path": "packages/app/src/utils/__tests__/nextServerTelemetry.test.ts",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
-    },
-    {
       "path": "packages/app/src/utils/__tests__/rrwebChunkAssembler.test.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
-      "path": "packages/app/src/utils/browserTelemetry.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
@@ -1542,12 +1074,6 @@
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
-      "path": "packages/app/src/utils/nextServerTelemetry.ts",
-      "pattern": "@clickhouse/(click-ui|clickstack-node|clickstack-browser)",
-      "reason": "retained_dependency",
-      "note": "Retained @clickhouse package import or reference."
     },
     {
       "path": "packages/app/src/utils/rrwebChunkAssembler.ts",
@@ -1803,12 +1329,6 @@
     },
     {
       "path": "packages/common-utils/src/query/columnTypes.ts",
-      "pattern": "clickhouse|clickstack|chSql",
-      "reason": "port_history",
-      "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
-    },
-    {
-      "path": "packages/common-utils/src/selfTelemetry.ts",
       "pattern": "clickhouse|clickstack|chSql",
       "reason": "port_history",
       "note": "Legacy kind, MCP tool ids, IaC names, mapping table, residual docs, or §12 messaging."
@@ -2652,6 +2172,54 @@
       "pattern": "clickhouse",
       "reason": "upstream_attribution",
       "note": "1.0.0 release notes describe ClickHouse as the replaced upstream store and its breaking change"
+    },
+    {
+      "path": "NOTICE",
+      "pattern": "@clickhouse/clickstack-(node|browser)|ClickHouse/clickstack-(node|browser)|ClickHouse, Inc\\.|Apache-2.0-ClickHouse",
+      "reason": "upstream_attribution",
+      "note": "Apache-2.0 attribution for the self-telemetry code ported in P3."
+    },
+    {
+      "path": "licenses/Apache-2.0-ClickHouse.txt",
+      "pattern": "ClickHouse",
+      "reason": "upstream_attribution",
+      "note": "Apache-2.0 license text for the code ported from clickstack-node and clickstack-browser (P3)."
+    },
+    {
+      "path": "packages/otel-node/src/**",
+      "pattern": "@clickhouse/clickstack-(node|browser)|ClickHouse/clickstack-(node|browser)|ClickHouse, Inc\\.",
+      "reason": "upstream_attribution",
+      "note": "Ported-from header (P3), see NOTICE."
+    },
+    {
+      "path": "packages/app/src/telemetry/**",
+      "pattern": "@clickhouse/clickstack-(node|browser)|ClickHouse/clickstack-(node|browser)|ClickHouse, Inc\\.",
+      "reason": "upstream_attribution",
+      "note": "Ported-from header (P3), see NOTICE."
+    },
+    {
+      "path": "packages/app/src/theme/_component-tokens.scss",
+      "pattern": "@clickhouse/click-ui",
+      "reason": "port_history",
+      "note": "Says where the Badge and Separator tokens came from (P3)."
+    },
+    {
+      "path": "scripts/ci/check-no-clickhouse-packages.sh",
+      "pattern": "clickhouse|clickstack",
+      "reason": "port_history",
+      "note": "The guard that keeps @clickhouse packages out (P3)."
+    },
+    {
+      "path": "packages/app/src/components/Iac/TerraformHelperPanel.tsx",
+      "pattern": "ClickHouse Terraform",
+      "reason": "retained_dependency",
+      "note": "The Terraform provider is ClickHouse's; named on purpose (D2b, docs/port-notes.md)."
+    },
+    {
+      "path": "packages/app/src/components/TeamSettings/IacMigrationSection.tsx",
+      "pattern": "ClickHouse Terraform",
+      "reason": "retained_dependency",
+      "note": "The Terraform provider is ClickHouse's; named on purpose (D2b, docs/port-notes.md)."
     }
   ]
 }

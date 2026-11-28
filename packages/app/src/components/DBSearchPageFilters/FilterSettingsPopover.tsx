@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Separator } from '@clickhouse/click-ui';
 import {
   ActionIcon,
   Checkbox,
@@ -10,6 +9,8 @@ import {
   UnstyledButton,
 } from '@mantine/core';
 import { IconSettings } from '@tabler/icons-react';
+
+import { Separator } from '@/components/Separator/Separator';
 
 function SettingsPopover({
   target,

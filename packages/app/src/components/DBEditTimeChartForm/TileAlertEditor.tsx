@@ -4,7 +4,6 @@ import {
   UseFormSetValue,
   useWatch,
 } from 'react-hook-form';
-import { Badge } from '@clickhouse/click-ui';
 import { formatTileAlertDisplayName } from '@couchbase-traces/common-utils/dist/alerts';
 import {
   AlertThresholdType,
@@ -40,6 +39,7 @@ import { AlertChannelForm } from '@/components/Alerts';
 import { AckAlert } from '@/components/alerts/AckAlert';
 import { AlertHistoryCardList } from '@/components/alerts/AlertHistoryCards';
 import { AlertScheduleFields } from '@/components/AlertScheduleFields';
+import { Badge } from '@/components/Badge/Badge';
 import { ChartEditorFormState } from '@/components/ChartEditor/types';
 import { useDashboards } from '@/dashboard';
 import { useConfirm } from '@/useConfirm';

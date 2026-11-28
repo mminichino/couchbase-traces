@@ -1,0 +1,102 @@
+/*
+ * Tokens for the small primitives that came from @clickhouse/click-ui
+ * (Badge, Separator, the AppNav icon button). Its provider injected them at
+ * run time; they are declared here so the components look the same without
+ * the package. Values are carried over from click-ui 0.12 unchanged.
+ */
+
+@mixin component-tokens-dark {
+  --badge-opaque-background-default: #1f1f1c;
+  --badge-opaque-background-success: rgb(20% 100% 26.667% / 20%);
+  --badge-opaque-background-neutral: rgb(62.745% 62.745% 62.745% / 20%);
+  --badge-opaque-background-danger: rgb(100% 13.725% 13.725% / 20%);
+  --badge-opaque-background-disabled: #414141;
+  --badge-opaque-background-info: rgb(26.275% 49.412% 93.725% / 20%);
+  --badge-opaque-background-warning: rgb(100% 46.667% 16.078% / 20%);
+  --badge-opaque-text-default: #b3b6bd;
+  --badge-opaque-text-success: #ccffd0;
+  --badge-opaque-text-neutral: #c0c0c0;
+  --badge-opaque-text-danger: #ffbaba;
+  --badge-opaque-text-disabled: #808080;
+  --badge-opaque-text-info: #d0dffb;
+  --badge-opaque-text-warning: #ffb88f;
+  --badge-opaque-stroke-default: #323232;
+  --badge-opaque-stroke-success: rgb(20% 100% 26.667% / 10%);
+  --badge-opaque-stroke-neutral: rgb(62.745% 62.745% 62.745% / 10%);
+  --badge-opaque-stroke-danger: rgb(100% 22.353% 22.353% / 20%);
+  --badge-opaque-stroke-disabled: rgb(24.216% 24.216% 24.216%);
+  --badge-opaque-stroke-info: rgb(26.275% 49.412% 93.725% / 10%);
+  --badge-opaque-stroke-warning: rgb(100% 46.667% 16.078% / 10%);
+  --badge-solid-background-default: #c0c0c0;
+  --badge-solid-background-success: #99ffa1;
+  --badge-solid-background-neutral: #c0c0c0;
+  --badge-solid-background-danger: #ff9898;
+  --badge-solid-background-disabled: #414141;
+  --badge-solid-background-info: #a1bef7;
+  --badge-solid-background-warning: #ff9457;
+  --badge-solid-text-default: #1f1f1c;
+  --badge-solid-text-success: #1f1f1c;
+  --badge-solid-text-neutral: #1f1f1c;
+  --badge-solid-text-danger: #1f1f1c;
+  --badge-solid-text-disabled: #808080;
+  --badge-solid-text-info: #1f1f1c;
+  --badge-solid-text-warning: #1f1f1c;
+  --badge-solid-stroke-default: rgb(19.608% 19.608% 19.608% / 10%);
+  --badge-solid-stroke-success: rgb(20% 100% 26.667% / 10%);
+  --badge-solid-stroke-neutral: rgb(62.745% 62.745% 62.745% / 10%);
+  --badge-solid-stroke-danger: rgb(100% 22.353% 22.353% / 20%);
+  --badge-solid-stroke-disabled: rgb(24.216% 24.216% 24.216%);
+  --badge-solid-stroke-info: rgb(26.275% 49.412% 93.725% / 10%);
+  --badge-solid-stroke-warning: rgb(100% 46.667% 16.078% / 10%);
+  --separator-color: #323232;
+  --icon-button-text: #fff;
+  --icon-button-background-hover: #282828;
+}
+
+@mixin component-tokens-light {
+  --badge-opaque-background-default: #f6f7fa;
+  --badge-opaque-background-success: rgb(20% 100% 26.667% / 10%);
+  --badge-opaque-background-neutral: rgb(41.176% 43.137% 47.451% / 10%);
+  --badge-opaque-background-danger: rgb(100% 13.725% 13.725% / 10%);
+  --badge-opaque-background-disabled: #dfdfdf;
+  --badge-opaque-background-info: rgb(26.275% 49.412% 93.725% / 10%);
+  --badge-opaque-background-warning: rgb(100% 46.667% 16.078% / 10%);
+  --badge-opaque-text-default: #696e79;
+  --badge-opaque-text-success: #008a0b;
+  --badge-opaque-text-neutral: #53575f;
+  --badge-opaque-text-danger: #c10000;
+  --badge-opaque-text-disabled: #a0a0a0;
+  --badge-opaque-text-info: #437eef;
+  --badge-opaque-text-warning: #a33c00;
+  --badge-opaque-stroke-default: #e6e7e9;
+  --badge-opaque-stroke-success: rgb(20% 100% 26.667% / 5%);
+  --badge-opaque-stroke-neutral: rgb(41.176% 43.137% 47.451% / 10%);
+  --badge-opaque-stroke-danger: rgb(100% 13.725% 13.725% / 5%);
+  --badge-opaque-stroke-disabled: rgb(83.078% 83.078% 83.078%);
+  --badge-opaque-stroke-info: rgb(26.275% 49.412% 93.725% / 5%);
+  --badge-opaque-stroke-warning: rgb(100% 46.667% 16.078% / 5%);
+  --badge-solid-background-default: #a0a0a0;
+  --badge-solid-background-success: #008a0b;
+  --badge-solid-background-neutral: #606060;
+  --badge-solid-background-danger: #c10000;
+  --badge-solid-background-disabled: #dfdfdf;
+  --badge-solid-background-info: #104ec6;
+  --badge-solid-background-warning: #d64f00;
+  --badge-solid-text-default: #fff;
+  --badge-solid-text-success: #fff;
+  --badge-solid-text-neutral: #fff;
+  --badge-solid-text-danger: #fff;
+  --badge-solid-text-disabled: #a0a0a0;
+  --badge-solid-text-info: #fff;
+  --badge-solid-text-warning: #fff;
+  --badge-solid-stroke-default: #e6e7e9;
+  --badge-solid-stroke-success: rgb(20% 100% 26.667% / 5%);
+  --badge-solid-stroke-neutral: rgb(41.176% 43.137% 47.451% / 10%);
+  --badge-solid-stroke-danger: rgb(100% 13.725% 13.725% / 5%);
+  --badge-solid-stroke-disabled: rgb(83.078% 83.078% 83.078%);
+  --badge-solid-stroke-info: rgb(26.275% 49.412% 93.725% / 5%);
+  --badge-solid-stroke-warning: rgb(100% 46.667% 16.078% / 5%);
+  --separator-color: #e6e7e9;
+  --icon-button-text: #161517;
+  --icon-button-background-hover: #f6f7fa;
+}

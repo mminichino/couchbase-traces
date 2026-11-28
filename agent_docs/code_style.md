@@ -406,31 +406,15 @@ The UI is built with **Mantine components**, but **colors and surfaces** should 
 
 Mantine theme overrides in `packages/app/src/theme/**` may map Mantine’s scale to our palette; that does not replace using **`var(--color-...)`** in new styling where you need explicit color control.
 
-## Click UI (incremental adoption)
+## Badge and Separator
 
-`@clickhouse/click-ui` is a dependency of `packages/app`. `ThemeWrapper` mounts
-`ClickUIProvider` inside `MantineProvider` with `persistTheme={false}`, so it
-follows the app color mode and never writes its own theme to localStorage.
-Storybook and `renderWithMantine` in tests get the provider for free.
-
-- **Do**: Prefer a click-ui component over a new Mantine one when click-ui has
-  an equivalent for a simple primitive (`Link`, `Text`, `Title`, `Container`,
-  `Badge`, `Separator`, `Spacer`, `Icon`). Import from `@clickhouse/click-ui`.
-- **Do not**: Mix both libraries inside one small component, and do not
-  replace working Mantine code outside the change you were asked to make.
-- **`Container` is not a `Box`**: click-ui has no plain-wrapper equivalent of
-  Mantine `Box`. `Container` is a flex layout, closer to `Group` or `Stack`. It
-  defaults to `display="flex"`, `orientation="horizontal"`, and
-  `alignItems="center"`, so a direct swap puts the children in one row. It also
-  has no `m`/`p`/`w`-style props, only `gap` and `padding` tokens. To replace a
-  `Box` that only carries attributes such as `id` or `data-testid`, use a plain
-  HTML element. To replace a `Box` that uses Mantine style props, keep the
-  `Box`, or set `Container` props to match the layout and check it visually.
-- **Styling**: click-ui styles live in the `clickui` CSS cascade layer, so any
-  unlayered app or Mantine rule wins over them. Override `--click-*` variables
-  outside the layer if a token must change.
-- **First use**: `packages/app/src/components/ContactSupportText.tsx` and the
-  `Click UI/Link` story in `packages/app/src/stories/ClickUI.stories.tsx`.
+`Badge` (`@/components/Badge/Badge`) and `Separator`
+(`@/components/Separator/Separator`) are local components that replaced the
+`@clickhouse/click-ui` ones in P3; the props and look are unchanged. Their
+colors live in `packages/app/src/theme/_component-tokens.scss`, one mixin per
+color scheme. Use Mantine for every other primitive (`Anchor` for links,
+`Text`, `Title`, `Group`, `Stack`). Unit tests can read a badge's `data-state`,
+`data-type`, and `data-size` attributes directly.
 
 **Chart and visualization colors are a separate, more specific contract** — they have their own categorical, semantic, and heatmap palettes wired through `packages/app/src/utils.ts` helpers. Don't hard-code series colors or reuse `--color-text-*` for charts. See [`data_viz_colors.md`](./data_viz_colors.md) before touching anything that renders data.
 

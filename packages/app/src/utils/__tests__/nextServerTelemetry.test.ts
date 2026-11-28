@@ -8,7 +8,7 @@ const mockInit = jest.fn();
 let mockExporterEnabled = true;
 let mockBasePath = '';
 
-jest.mock('@clickhouse/clickstack-node', () => ({
+jest.mock('@couchbase-traces/otel-node', () => ({
   init: (...args: unknown[]) => mockInit(...args),
 }));
 jest.mock('@/config', () => ({

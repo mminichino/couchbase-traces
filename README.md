@@ -67,7 +67,8 @@ make e2e              # Playwright full stack on Couchbase
 ```
 
 Full setup, sample data, and tests: [docs/development.md](docs/development.md).
-Releases: [docs/release.md](docs/release.md). Contribution workflow:
+Releases: [docs/release.md](docs/release.md). Open and proposed work:
+[docs/backlog.md](docs/backlog.md). Contribution workflow:
 [CONTRIBUTING.md](CONTRIBUTING.md).
 
 ## License

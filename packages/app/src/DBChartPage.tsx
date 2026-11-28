@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { parseAsJson, parseAsString, useQueryState } from 'nuqs';
 import { useForm } from 'react-hook-form';
 import { useHotkeys } from 'react-hotkeys-hook';
-import { Badge, Separator } from '@clickhouse/click-ui';
 import {
   SavedChartConfig,
   SourceKind,
@@ -34,8 +33,10 @@ import { useQueryClient } from '@tanstack/react-query';
 import api from '@/api';
 import { useBrandDisplayName, usePageTitle } from '@/brand';
 import { DEFAULT_CHART_CONFIG } from '@/ChartUtils';
+import { Badge } from '@/components/Badge/Badge';
 import EditTimeChartForm from '@/components/DBEditTimeChartForm';
 import { InputControlled } from '@/components/InputControlled';
+import { Separator } from '@/components/Separator/Separator';
 import { SourceSelectControlled } from '@/components/SourceSelect';
 import { IS_ALERT_DETAILS_ENABLED } from '@/config';
 import { useChartAssistant } from '@/hooks/ai';

@@ -2,7 +2,6 @@ import { useCallback, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { parseAsString, useQueryState } from 'nuqs';
 import SqlString from 'sqlstring';
-import { Badge } from '@clickhouse/click-ui';
 import {
   Accordion,
   Anchor,
@@ -13,6 +12,7 @@ import {
   Text,
 } from '@mantine/core';
 
+import { Badge } from '@/components/Badge/Badge';
 import { DrawerBody, DrawerHeader } from '@/components/DrawerUtils';
 import { IS_LLM_COST_ENABLED } from '@/config';
 import { useQueriedChartConfig } from '@/hooks/useChartConfig';
