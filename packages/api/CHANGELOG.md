@@ -1,5 +1,13 @@
 # @couchbase-traces/api
 
+## 1.1.1
+
+### Patch Changes
+
+- Self-telemetry uses `@couchbase-traces/otel-node` instead of
+  `@clickhouse/clickstack-node`. `CLICKSTACK_CAPTURE_HTTP_BODY` is renamed
+  `CBT_CAPTURE_HTTP_BODY` (the old name is not read).
+
 ## 1.1.0
 
 ### Minor Changes

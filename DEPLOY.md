@@ -159,6 +159,19 @@ curl -u "$CBT_COUCHBASE_ADMIN_USER:$CBT_COUCHBASE_ADMIN_PASSWORD" \
   -d '{"completed": {"+statement": "%\"surface\":\"alert\"%"}}'
 ```
 
+### Self-telemetry settings
+
+The API, the task runner and the Next.js server report their own traces and logs
+through `@couchbase-traces/otel-node` when `CBT_API_KEY` is set.
+
+| Variable                | Default | Purpose                                                                                                        |
+| ----------------------- | ------- | -------------------------------------------------------------------------------------------------------------- |
+| `CBT_CAPTURE_HTTP_BODY` | unset   | `true` records HTTP request and response bodies (up to 8 KiB, sensitive keys redacted) on self-telemetry spans |
+
+> **Upgrade note (1.1.1):** `CLICKSTACK_CAPTURE_HTTP_BODY` was renamed to
+> `CBT_CAPTURE_HTTP_BODY`. The old name is no longer read, so a deployment that
+> set it stops capturing bodies until the variable is renamed.
+
 ## All-in-one Docker Compose Stack
 
 The easiest way to get started from scratch is the product Docker Compose stack

@@ -1,5 +1,13 @@
 # @couchbase-traces/app
 
+## 1.1.1
+
+### Patch Changes
+
+- Local `Badge` and `Separator` replace `@clickhouse/click-ui`; browser RUM and
+  session replay are ported into `src/telemetry` (same replay record format);
+  the Next.js server uses `@couchbase-traces/otel-node`.
+
 ## 1.1.0
 
 ### Minor Changes
